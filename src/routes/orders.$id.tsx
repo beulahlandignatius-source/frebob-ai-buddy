@@ -97,6 +97,7 @@ function OrderDetail() {
               <div className="mt-3 flex flex-wrap items-center gap-2">
                 <BalanceBadge status={order.paymentStatus} />
                 <OrderStatusBadge status={order.orderStatus} />
+                {sourceScanIds.map((sid) => <ScanSourceChip key={sid} scanId={sid} />)}
               </div>
             </section>
 

@@ -52,9 +52,10 @@ function useNotifStore() {
 function NotificationsPage() {
   const navigate = useNavigate();
   useNotifStore(); // subscribe
-  const items = listNotifications();
-  const summary = summarise();
-  const [settings, setSettingsState] = useState(getSettings());
+  const [mounted, setMounted] = useState(false);
+  const items = mounted ? listNotifications() : [];
+  const summary = mounted ? summarise() : { unread: 0, critical: 0, total: 0, today: 0, thisWeek: 0 };
+  const [settings, setSettingsState] = useState(() => getSettings());
   const [view, setView] = useState<ViewState>("ready");
   const [category, setCategory] = useState<CategoryFilter>("all");
   const [priority, setPriority] = useState<PriorityFilter>("all");
@@ -63,6 +64,7 @@ function NotificationsPage() {
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     // First-load generation (idempotent)
     generateNotifications();
   }, []);

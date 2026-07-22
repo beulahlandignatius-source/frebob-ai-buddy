@@ -262,17 +262,100 @@ function NewConversation() {
               </div>
             )}
 
+            {(tab === "voice" || tab === "whatsapp") && (
+              <div className="bg-card border border-secondary rounded-[20px] p-5 space-y-4">
+                {tab === "voice" ? (
+                  <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-secondary py-8 text-center">
+                    <div className={cn(
+                      "h-16 w-16 rounded-full flex items-center justify-center transition",
+                      recording ? "bg-accent/20 text-accent animate-pulse" : "brand-gradient text-primary-foreground shadow-elegant",
+                    )}>
+                      {recording ? <Square className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
+                    </div>
+                    <div>
+                      <p className="font-bold text-sm">
+                        {recording ? "Recording…" : transcribing ? "Bob is transcribing…" : "Record a business summary"}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {recording
+                          ? `${Math.floor(elapsed / 60)}:${String(elapsed % 60).padStart(2, "0")} — tap stop when done`
+                          : "Speak in English, Pidgin, Yoruba, Hausa or Igbo. Bob will draft the record."}
+                      </p>
+                    </div>
+                    {!recording ? (
+                      <Button size="sm" onClick={startRecording} disabled={transcribing}>
+                        <Mic className="h-4 w-4" /> Start recording
+                      </Button>
+                    ) : (
+                      <Button size="sm" variant="outline" onClick={stopRecording}>
+                        <Square className="h-4 w-4" /> Stop & transcribe
+                      </Button>
+                    )}
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-secondary py-10 text-center cursor-pointer hover:border-primary/40 transition">
+                    <MessageCircle className="h-6 w-6 text-primary" />
+                    <p className="font-bold">Upload a WhatsApp voice note</p>
+                    <p className="text-xs text-muted-foreground">.ogg, .opus, .m4a, .mp3, .wav — up to 20MB</p>
+                    <input
+                      type="file"
+                      accept="audio/*,.ogg,.opus,.m4a,.mp3,.wav,.webm"
+                      className="hidden"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) handleAudioUpload(f);
+                      }}
+                    />
+                  </label>
+                )}
+
+                {transcribing && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Loader2 className="h-4 w-4 animate-spin" /> Transcribing audio…
+                  </div>
+                )}
+
+                {transcript && !transcribing && (
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-xs font-bold uppercase tracking-wider text-primary/60">
+                        Transcript {audioFileName ? `· ${audioFileName}` : ""}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => { setTranscript(""); setAudioSource(null); setAudioFileName(null); }}
+                        className="text-xs text-primary hover:underline inline-flex items-center gap-1"
+                      >
+                        <RefreshCw className="h-3 w-3" /> Redo
+                      </button>
+                    </div>
+                    <textarea
+                      value={transcript}
+                      onChange={(e) => setTranscript(e.target.value)}
+                      className="w-full min-h-[200px] resize-y rounded-xl border border-secondary bg-background p-3 text-sm leading-relaxed focus:outline-none focus:border-primary/40"
+                    />
+                    <p className="mt-2 text-[11px] text-muted-foreground">
+                      Edit anything Bob got wrong before processing.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
             {tab !== "demo" && (
               <div className="flex items-center justify-end gap-3">
                 <Button
                   onClick={() => {
                     if (tab === "paste") start("paste", text);
-                    else if (file) start("upload", file.text, file.name);
+                    else if (tab === "upload" && file) start("upload", file.text, file.name);
+                    else if ((tab === "voice" || tab === "whatsapp") && transcript.trim()) {
+                      start(audioSource ?? (tab === "voice" ? "voice" : "whatsapp_audio"), transcript, audioFileName ?? undefined);
+                    }
                   }}
                   disabled={!canProcess}
                   loading={busy}
                 >
-                  <Sparkles className="h-4 w-4" /> Process with AI
+                  <Sparkles className="h-4 w-4" /> Process with Bob
                 </Button>
               </div>
             )}

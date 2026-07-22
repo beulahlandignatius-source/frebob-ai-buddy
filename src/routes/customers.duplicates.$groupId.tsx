@@ -102,7 +102,7 @@ function DuplicateCompare() {
     navigate({ to: "/customers/duplicates" });
   }
   function handleMerge() {
-    if (!primary || !secondary) return;
+    if (!primary || !secondary || !group) return;
     setError(null);
     const res = performMerge({
       primaryId: primary.id,

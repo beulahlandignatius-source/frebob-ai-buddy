@@ -173,8 +173,19 @@
 }
 
 @layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
   * {
     border-color: var(--color-border);
+  }
+  html,
+  body,
+  #root {
+    max-width: 100%;
+    overflow-x: hidden;
   }
   html {
     -webkit-text-size-adjust: 100%;
@@ -187,6 +198,12 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+  }
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+    display: block;
   }
   h1,
   h2,

@@ -131,12 +131,12 @@ function Hero() {
   return (
     <section className="relative hero-glow">
       <div className="absolute inset-0 pointer-events-none opacity-70 [background:radial-gradient(600px_300px_at_50%_0%,color-mix(in_oklab,#5d2ac2_10%,transparent),transparent)]" />
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-14 pb-20 lg:pt-24 lg:pb-28 grid lg:grid-cols-2 gap-12 items-center relative">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-16 sm:pb-20 lg:pt-24 lg:pb-28 grid lg:grid-cols-2 gap-8 lg:gap-12 items-center relative">
         <div className="flex flex-col gap-6 lg:pr-6">
           <span className="inline-flex items-center gap-2 self-start rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
             <Sparkles className="h-3.5 w-3.5" /> Your Business Assistant
           </span>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.05] tracking-tight">
+          <h1 className="text-[2rem] sm:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight break-words">
             Run Your Business with a{" "}
             <span className="brand-gradient-text">Smarter Assistant</span>
           </h1>
@@ -572,22 +572,22 @@ function WhyDifferent() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHead eyebrow="Why FreBob is different" title="A category shift, not another tool." />
         <div className="mt-12 grid md:grid-cols-2 gap-5">
-          <div className="rounded-3xl border border-border bg-background p-8">
+          <div className="rounded-3xl border border-border bg-background p-6 sm:p-8">
             <div className="text-sm font-semibold text-muted-foreground">Traditional Apps</div>
             <ul className="mt-4 space-y-3">
               {traditional.map((t) => (
                 <li key={t} className="flex items-center gap-3 text-foreground/80">
-                  <X className="h-4 w-4 text-destructive" /> {t}
+                  <X className="h-4 w-4 shrink-0 text-destructive" /> {t}
                 </li>
               ))}
             </ul>
           </div>
-          <div className="rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5 p-8 shadow-elegant">
+          <div className="rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5 p-6 sm:p-8 shadow-elegant">
             <div className="text-sm font-semibold text-primary flex items-center gap-2"><Sparkles className="h-4 w-4" /> FreBob</div>
             <ul className="mt-4 space-y-3">
               {frebob.map((t) => (
                 <li key={t} className="flex items-center gap-3 text-foreground">
-                  <Check className="h-4 w-4 text-success" /> {t}
+                  <Check className="h-4 w-4 shrink-0 text-success" /> {t}
                 </li>
               ))}
             </ul>
@@ -730,7 +730,7 @@ function LanguagesSection() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHead eyebrow="Languages" title="Speaks the way your customers do." />
         <div className="mt-12 grid md:grid-cols-2 gap-5">
-          <div className="rounded-3xl border border-border bg-background p-8">
+          <div className="rounded-3xl border border-border bg-background p-6 sm:p-8">
             <div className="flex items-center gap-2 text-primary"><Globe className="h-5 w-5" /><div className="font-semibold">Interface</div></div>
             <div className="mt-4 flex flex-wrap gap-2">
               {["English", "Nigerian Pidgin", "Yoruba", "Hausa", "Igbo"].map((l) => (
@@ -738,7 +738,7 @@ function LanguagesSection() {
               ))}
             </div>
           </div>
-          <div className="rounded-3xl border border-border bg-background p-8">
+          <div className="rounded-3xl border border-border bg-background p-6 sm:p-8">
             <div className="flex items-center gap-2 text-accent"><Mic className="h-5 w-5" /><div className="font-semibold">Voice</div></div>
             <div className="mt-4 flex flex-wrap gap-2">
               {["English", "Yoruba", "Hausa", "Igbo"].map((l) => (
@@ -828,11 +828,11 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 
 function FinalCTA() {
   return (
-    <section className="py-24">
+    <section className="py-16 sm:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-[2rem] p-10 sm:p-16 text-center brand-gradient text-primary-foreground shadow-elegant">
+        <div className="relative overflow-hidden rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-10 lg:p-16 text-center brand-gradient text-primary-foreground shadow-elegant">
           <div className="absolute inset-0 [background:radial-gradient(500px_240px_at_20%_0%,rgba(255,255,255,0.15),transparent),radial-gradient(500px_240px_at_100%_100%,rgba(247,147,30,0.35),transparent)] pointer-events-none" />
-          <h2 className="relative text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight max-w-3xl mx-auto">
+          <h2 className="relative text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight max-w-3xl mx-auto">
             Start running your business smarter today.
           </h2>
           <p className="relative mt-4 text-primary-foreground/80 max-w-xl mx-auto">
@@ -862,7 +862,7 @@ function Footer() {
   ];
   return (
     <footer className="border-t border-border bg-background">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14 grid gap-10 md:grid-cols-[1.4fr_repeat(3,1fr)]">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14 grid gap-10 grid-cols-1 sm:grid-cols-2 md:grid-cols-[1.4fr_repeat(3,1fr)]">
         <div>
           <div className="flex items-center gap-2">
             <Logo size={32} />
@@ -878,7 +878,7 @@ function Footer() {
         {groups.map((g) => (
           <div key={g.title}>
             <div className="text-xs uppercase tracking-widest text-muted-foreground">{g.title}</div>
-            <ul className="mt-4 space-y-2 text-sm">
+            <ul className="mt-4 space-y-2 text-sm [overflow-wrap:anywhere]">
               {g.links.map(([label, href]) => (
                 <li key={label}><a href={href} className="text-foreground/80 hover:text-primary">{label}</a></li>
               ))}

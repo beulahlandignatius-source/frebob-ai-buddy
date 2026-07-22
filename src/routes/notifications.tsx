@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
-import { CheckCheck, RefreshCcw, Search, Settings2, Trash2 } from "lucide-react";
+import { Bell, CheckCheck, RefreshCcw, Search, Settings2, Trash2 } from "lucide-react";
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
 import { PageHeader } from "@/components/dash";

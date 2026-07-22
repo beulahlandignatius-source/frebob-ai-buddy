@@ -122,46 +122,70 @@ export const askCopilot = createServerFn({ method: "POST" })
       { role: "user", content: data.question },
     ];
 
-    try {
-      const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: { "content-type": "application/json", "Lovable-API-Key": key },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
-          messages,
-          temperature: 0.3,
-        }),
-      });
+    // Primary: OpenAI GPT-5.5. Fallback: Google Gemini 2.5 Flash if the
+    // primary is rate-limited, out of credits, or errors upstream.
+    const MODELS: { id: string; label: string }[] = [
+      { id: "openai/gpt-5.5", label: "gpt-5.5" },
+      { id: "google/gemini-2.5-flash", label: "gemini-2.5-flash" },
+    ];
 
-      if (res.status === 429) {
-        const queryId = await log({ answer: "", evidence: [], error: "rate_limited" });
-        return { mode: "mock", text: "", evidence: [], note: "Rate limited — client fallback in use.", queryId };
-      }
-      if (res.status === 402) {
-        const queryId = await log({ answer: "", evidence: [], error: "credits_exhausted" });
-        return { mode: "mock", text: "", evidence: [], note: "AI credits exhausted — client fallback in use.", queryId };
-      }
-      if (!res.ok) {
-        const queryId = await log({ answer: "", evidence: [], error: `ai_error_${res.status}` });
-        return { mode: "mock", text: "", evidence: [], note: `AI error ${res.status} — fallback in use.`, queryId };
-      }
+    let lastNote = "AI request failed";
+    let lastError = "ai_error";
+    let terminalNote: string | null = null;
+    let terminalError: string | null = null;
 
-      const json = (await res.json()) as { choices?: { message?: { content?: string } }[] };
-      const content = json.choices?.[0]?.message?.content?.trim();
-      if (!content) {
-        const queryId = await log({ answer: "", evidence: [], error: "empty_response" });
-        return { mode: "mock", text: "", evidence: [], note: "AI returned empty response.", queryId };
-      }
+    for (let i = 0; i < MODELS.length; i++) {
+      const model = MODELS[i];
+      const isLast = i === MODELS.length - 1;
+      try {
+        const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+          method: "POST",
+          headers: { "content-type": "application/json", "Lovable-API-Key": key },
+          body: JSON.stringify({ model: model.id, messages, temperature: 0.3 }),
+        });
 
-      const evidence: EvidenceItem[] = [
-        { label: "Source", value: "Business Memory" },
-        { label: "Approved Records", value: String(data.snapshot.totalApproved ?? 0) },
-      ];
-      const queryId = await log({ answer: content, evidence });
-      return { mode: "ai", text: content, evidence, queryId };
-    } catch (err) {
-      const note = err instanceof Error ? err.message : "AI request failed";
-      const queryId = await log({ answer: "", evidence: [], error: note });
-      return { mode: "mock", text: "", evidence: [], note: `${note} — fallback in use.`, queryId };
+        if (res.status === 429) {
+          lastNote = `Rate limited on ${model.label}`;
+          lastError = "rate_limited";
+          if (isLast) { terminalNote = "Rate limited — client fallback in use."; terminalError = "rate_limited"; }
+          continue;
+        }
+        if (res.status === 402) {
+          lastNote = `Credits exhausted on ${model.label}`;
+          lastError = "credits_exhausted";
+          if (isLast) { terminalNote = "AI credits exhausted — client fallback in use."; terminalError = "credits_exhausted"; }
+          continue;
+        }
+        if (!res.ok) {
+          lastNote = `AI error ${res.status} on ${model.label}`;
+          lastError = `ai_error_${res.status}`;
+          if (isLast) { terminalNote = `AI error ${res.status} — fallback in use.`; terminalError = lastError; }
+          continue;
+        }
+
+        const json = (await res.json()) as { choices?: { message?: { content?: string } }[] };
+        const content = json.choices?.[0]?.message?.content?.trim();
+        if (!content) {
+          lastNote = `Empty response from ${model.label}`;
+          lastError = "empty_response";
+          if (isLast) { terminalNote = "AI returned empty response."; terminalError = "empty_response"; }
+          continue;
+        }
+
+        const evidence: EvidenceItem[] = [
+          { label: "Source", value: "Business Memory" },
+          { label: "Approved Records", value: String(data.snapshot.totalApproved ?? 0) },
+          { label: "Model", value: model.label },
+        ];
+        const queryId = await log({ answer: content, evidence });
+        return { mode: "ai", text: content, evidence, queryId };
+      } catch (err) {
+        lastNote = err instanceof Error ? err.message : "AI request failed";
+        lastError = "network_error";
+        if (isLast) { terminalNote = `${lastNote} — fallback in use.`; terminalError = lastError; }
+      }
     }
+
+    const queryId = await log({ answer: "", evidence: [], error: terminalError ?? lastError });
+    return { mode: "mock", text: "", evidence: [], note: terminalNote ?? lastNote, queryId };
   });

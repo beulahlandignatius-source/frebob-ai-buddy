@@ -3,7 +3,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import {
   Home, MessageCircle, Plus, BarChart3, User, Brain, Boxes,
   ShoppingCart, Users, ScanLine, Bell, Settings, HelpCircle, PlayCircle,
-  LayoutDashboard, FileText, UserPlus, X,
+  LayoutDashboard, FileText, UserPlus, X, Pencil,
 } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { cn } from "@/lib/utils";
@@ -27,6 +27,8 @@ const mobileNav: (NavItem | { center: true })[] = [
 
 const createActions: { to: string; label: string; icon: typeof Home }[] = [
   { to: "/add-record", label: "Add Business Record", icon: FileText },
+  { to: "/records/manual", label: "Manual Record", icon: Pencil },
+  { to: "/business-memory", label: "Open Business Memory", icon: Brain },
   { to: "/orders", label: "Create Order", icon: ShoppingCart },
   { to: "/inventory", label: "Add Product", icon: Boxes },
   { to: "/customers/new", label: "Add Customer", icon: UserPlus },

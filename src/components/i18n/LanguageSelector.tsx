@@ -1,9 +1,10 @@
-import { Check, Globe } from "lucide-react";
-import { useState } from "react";
+import { Check, Globe, Languages } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useLanguage } from "@/hooks/use-language";
 import { LANGUAGES, type LanguageCode, isAudioSupported } from "@/i18n/languages";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { isAutoTranslateOn, setAutoTranslate } from "@/lib/i18n-runtime";
 
 type Props = {
   className?: string;
@@ -14,6 +15,9 @@ type Props = {
 export function LanguageSelector({ className, compact, showAudioStatus = true }: Props) {
   const { current, change, t } = useLanguage();
   const [open, setOpen] = useState(false);
+  const [autoOn, setAutoOn] = useState<boolean>(false);
+
+  useEffect(() => { setAutoOn(isAutoTranslateOn()); }, []);
 
   const active = LANGUAGES.find((l) => l.code === current) ?? LANGUAGES[0];
 
@@ -22,6 +26,12 @@ export function LanguageSelector({ className, compact, showAudioStatus = true }:
     if (code === current) return;
     await change(code);
     toast.success(t("language.changeSaved"));
+  }
+
+  function toggleAuto(next: boolean) {
+    setAutoOn(next);
+    setAutoTranslate(next);
+    toast.success(next ? "Auto-translate on. The app will translate to your language." : "Auto-translate off.");
   }
 
   return (
@@ -45,7 +55,7 @@ export function LanguageSelector({ className, compact, showAudioStatus = true }:
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <ul
             role="listbox"
-            className="absolute right-0 z-50 mt-2 w-64 rounded-2xl border border-secondary bg-card shadow-elegant p-1.5"
+            className="absolute right-0 z-50 mt-2 w-72 rounded-2xl border border-secondary bg-card shadow-elegant p-1.5"
           >
             {LANGUAGES.map((l) => {
               const selected = l.code === current;
@@ -72,6 +82,25 @@ export function LanguageSelector({ className, compact, showAudioStatus = true }:
                 </li>
               );
             })}
+            <li className="mt-1 border-t border-secondary/70 pt-2 px-2">
+              <label className="flex items-start gap-2 py-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="mt-1 accent-primary"
+                  checked={autoOn}
+                  onChange={(e) => toggleAuto(e.target.checked)}
+                />
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold flex items-center gap-1.5">
+                    <Languages className="h-3.5 w-3.5 text-primary/70" />
+                    Auto-translate everything
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">
+                    Uses Google AI to translate any untranslated text in the app on the fly. Results are cached on this device.
+                  </p>
+                </div>
+              </label>
+            </li>
           </ul>
         </>
       )}

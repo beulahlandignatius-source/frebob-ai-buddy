@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
-import { Mail, Phone, MapPin, Award, LogOut, Camera } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Mail, Phone, MapPin, Award, LogOut, Camera, Globe2 } from "lucide-react";
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
 import { PageCanvas, SurfaceHeader, SectionLabel, SuccessBanner, StatusBadge } from "@/components/dash";
@@ -8,6 +8,8 @@ import { DEMO_USER, fmt, orders, customers } from "@/lib/mock-data";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { EnterDemoButton } from "@/components/demo/EnterDemoButton";
+import { LanguageSelector } from "@/components/i18n/LanguageSelector";
+
 
 
 export const Route = createFileRoute("/profile")({
@@ -25,9 +27,17 @@ export const Route = createFileRoute("/profile")({
 function Profile() {
   const navigate = useNavigate();
   const [saved, setSaved] = useState<string | null>(null);
+  const [displayName, setDisplayName] = useState<string>(DEMO_USER.firstName);
+
+  useEffect(() => {
+    try {
+      const n = window.localStorage.getItem("frebob.userName");
+      if (n && n.trim()) setDisplayName(n.trim());
+    } catch { /* ignore */ }
+  }, []);
 
   const totalSales = orders.reduce((s, o) => s + o.total, 0);
-  const initials = DEMO_USER.firstName.slice(0, 1);
+  const initials = displayName.slice(0, 1).toUpperCase();
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -61,7 +71,7 @@ function Profile() {
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <h2 className="font-display text-2xl font-extrabold text-primary truncate">{DEMO_USER.firstName} Okoye</h2>
+                <h2 className="font-display text-2xl font-extrabold text-primary truncate">{displayName}</h2>
                 <StatusBadge tone="success">Verified</StatusBadge>
               </div>
               <p className="text-sm text-subtle-foreground truncate">{DEMO_USER.businessName}</p>
@@ -91,7 +101,20 @@ function Profile() {
           <SetupRow label="Team members invited" status="pending" />
         </section>
 
-        <div className="mt-6">
+        <SectionLabel>Language</SectionLabel>
+        <section className="rounded-[20px] border border-secondary bg-card p-4 mb-6 flex flex-wrap items-center justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="font-display font-bold text-sm flex items-center gap-2">
+              <Globe2 className="h-4 w-4 text-primary/70" /> App language
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Switch between English, Naija Pidgin, Yoruba, Hausa or Igbo. Turn on auto-translate to render every screen in your language.
+            </p>
+          </div>
+          <LanguageSelector />
+        </section>
+
+        <div className="mt-2">
           <EnterDemoButton variant="ghost" label="Explore Demo Business" subtitle="See FreBob populated with a sample Nigerian SME" />
         </div>
 

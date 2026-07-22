@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { MessageSquare, Pencil, ScanLine, MessageCircle } from "lucide-react";
+import { MessageSquare, Pencil, ScanLine, MessageCircle, Brain } from "lucide-react";
 import { AppShell } from "@/components/nav/AppShell";
 import { PageCanvas, SurfaceHeader } from "@/components/dash";
 import { RecordSourceCard } from "@/components/record";
-import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/add-record")({
   head: () => ({
@@ -37,10 +37,10 @@ function AddRecord() {
           />
           <RecordSourceCard
             title="Manual Record"
-            description="Enter a sale or payment yourself when there is no conversation to import."
+            description="Enter a sale, payment or reservation yourself, or import a text file for Bob to extract."
             status="Available"
             icon={Pencil}
-            onClick={() => toast("Manual entry — basic form coming in Batch 4.")}
+            to="/records/manual"
           />
           <RecordSourceCard
             title="Scanner"
@@ -56,6 +56,14 @@ function AddRecord() {
             icon={MessageCircle}
             to="/conversations/new"
           />
+          <RecordSourceCard
+            title="Business Memory"
+            description="See every approved record — the source of truth Bob answers from."
+            status="Available"
+            icon={Brain}
+            to="/business-memory"
+          />
+
 
         </div>
 

@@ -49,6 +49,7 @@ function NewConversation() {
   const [text, setText] = useState("");
   const [file, setFile] = useState<{ name: string; size: number; text: string } | null>(null);
   const [language, setLanguage] = useState<Language>("auto");
+  const [translateVoiceToEnglish, setTranslateVoiceToEnglish] = useState<boolean>(true);
   const [busy, setBusy] = useState(false);
 
   // Voice recording state
@@ -98,7 +99,13 @@ function NewConversation() {
         return;
       }
       const langCode = STT_LANG[language];
-      const result = await transcribe({ data: { audioBase64: base64, filename: fileName.replace(/\.[^.]+$/, ".wav"), language: langCode } });
+      const shouldTranslate = translateVoiceToEnglish && langCode !== "en";
+      const result = await transcribe({ data: {
+        audioBase64: base64,
+        filename: fileName.replace(/\.[^.]+$/, ".wav"),
+        language: shouldTranslate ? undefined : langCode,
+        translateToEnglish: shouldTranslate,
+      } });
       if (result.ok) {
         setTranscript(result.text);
         toast.success("Bob transcribed your audio. Review and edit before processing.");

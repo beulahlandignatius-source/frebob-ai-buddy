@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   Bell,
+  Brain,
   Check,
   Clock,
   CreditCard,
@@ -93,11 +94,29 @@ function Dashboard() {
 
 
   useEffect(() => {
+    // Prefer the name captured on signup, then Supabase user, then email prefix.
+    try {
+      const saved = window.localStorage.getItem("frebob.userName");
+      if (saved) {
+        const first = saved.trim().split(/\s+/)[0];
+        if (first) setFirstName(first.charAt(0).toUpperCase() + first.slice(1));
+      }
+    } catch { /* ignore */ }
     (async () => {
       const { data } = await supabase.auth.getUser();
-      if (data.user?.email) {
-        const raw = data.user.email.split("@")[0];
-        setFirstName(raw.charAt(0).toUpperCase() + raw.slice(1));
+      const meta = (data.user?.user_metadata ?? {}) as { full_name?: string; name?: string };
+      const full = (meta.full_name || meta.name || "").trim();
+      if (full) {
+        const first = full.split(/\s+/)[0];
+        setFirstName(first.charAt(0).toUpperCase() + first.slice(1));
+      } else if (data.user?.email) {
+        try {
+          const savedName = window.localStorage.getItem("frebob.userName");
+          if (!savedName) {
+            const raw = data.user.email.split("@")[0];
+            setFirstName(raw.charAt(0).toUpperCase() + raw.slice(1));
+          }
+        } catch { /* ignore */ }
       }
       const uid = data.user?.id;
       if (uid) {
@@ -221,6 +240,25 @@ function Dashboard() {
               </div>
             </Link>
           ))}
+        </section>
+
+        {/* Quick access — Business Memory tile */}
+        <section className="mb-8">
+          <Link
+            to="/business-memory"
+            className="group flex items-center gap-4 rounded-[20px] border border-secondary bg-card p-4 sm:p-5 hover:border-primary/25 transition"
+          >
+            <div className="h-11 w-11 rounded-2xl brand-gradient text-primary-foreground flex items-center justify-center shrink-0 shadow-soft">
+              <Brain className="h-5 w-5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="font-display font-bold text-[15px] truncate">Business Memory</p>
+              <p className="text-xs text-muted-foreground truncate">
+                Every approved record, ready for Bob to answer from.
+              </p>
+            </div>
+            <ArrowUpRight className="h-4 w-4 text-primary/50 group-hover:text-primary transition shrink-0" />
+          </Link>
         </section>
 
         {/* Activity */}

@@ -1,6 +1,7 @@
 // FreBob i18n — semantic keys, English fallback, browser-safe init.
 // Non-English bundles are DRAFT (machine-assisted) and flagged as such.
-// Missing keys fall through to English and log once in dev.
+// Missing keys fall through to English and, when auto-translate is on, are
+// translated at runtime via Google AI (see src/lib/i18n-runtime.ts).
 
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
@@ -36,13 +37,16 @@ export function initI18n() {
       nonExplicitSupportedLngs: true,
       interpolation: { escapeValue: false },
       returnEmptyString: false,
-      saveMissing: import.meta.env.DEV,
-      missingKeyHandler: (_lng, _ns, key) => {
-        if (!import.meta.env.DEV) return;
-        if (missingLogged.has(key)) return;
-        missingLogged.add(key);
-        // eslint-disable-next-line no-console
-        console.warn(`[i18n] missing key → ${key}`);
+      saveMissing: true,
+      missingKeyHandler: (lngs, _ns, key, fallbackValue) => {
+        if (import.meta.env.DEV && !missingLogged.has(key)) {
+          missingLogged.add(key);
+          // eslint-disable-next-line no-console
+          console.warn(`[i18n] missing key → ${key}`);
+        }
+        // Runtime auto-translate: translate the English fallback into the
+        // active language when the toggle is on.
+        void handleMissingKey(lngs, key, fallbackValue);
       },
       detection: {
         order: ["localStorage", "navigator", "htmlTag"],
@@ -50,6 +54,29 @@ export function initI18n() {
         lookupLocalStorage: "frebob.lang",
       },
     });
+}
+
+async function handleMissingKey(
+  lngs: readonly string[] | string,
+  key: string,
+  fallbackValue: string,
+) {
+  if (typeof window === "undefined") return;
+  const langs = Array.isArray(lngs) ? lngs : [lngs];
+  const source = fallbackValue || key;
+  try {
+    const { isAutoTranslateOn, lookupCachedTranslation, queueTranslation } =
+      await import("@/lib/i18n-runtime");
+    for (const lng of langs) {
+      if (!lng || lng === "en") continue;
+      const cached = lookupCachedTranslation(lng, source);
+      if (cached) {
+        i18n.addResource(lng, "translation", key, cached);
+        continue;
+      }
+      if (isAutoTranslateOn()) queueTranslation(lng, source);
+    }
+  } catch { /* ignore */ }
 }
 
 export default i18n;

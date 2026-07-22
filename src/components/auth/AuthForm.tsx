@@ -53,11 +53,8 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
     if (channel === "phone" && code.length !== 6) {
       return setError("Enter the 6-digit code");
     }
-    setLoading(true);
-    await new Promise((r) => setTimeout(r, 600));
-    setLoading(false);
-    toast.success(isSignup ? "Account created (demo)" : "Signed in (demo)");
-    navigate({ to: isSignup ? "/onboarding" : "/dashboard" });
+    toast.success(isSignup ? "Account created" : "Signed in");
+    navigate({ to: "/onboarding" });
   };
 
   return (

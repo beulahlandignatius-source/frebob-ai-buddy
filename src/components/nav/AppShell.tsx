@@ -53,10 +53,14 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { start } = useTour();
   const { active: demoActive } = useDemo();
+  const [createOpen, setCreateOpen] = useState(false);
+
+  useEffect(() => { setCreateOpen(false); }, [pathname]);
 
   return (
     <div className="min-h-screen bg-background">
       <aside className="hidden lg:flex fixed inset-y-0 left-0 w-64 flex-col border-r border-sidebar-border bg-sidebar">
+
         <div className="flex items-center gap-2 px-5 h-16 border-b border-sidebar-border">
           <Logo size={32} />
           <span className="font-bold text-lg tracking-tight">FreBob</span>

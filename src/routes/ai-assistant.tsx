@@ -10,7 +10,7 @@ import { History, Plus, Sparkles } from "lucide-react";
 import { BobAvatar } from "@/components/copilot/BobAvatar";
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
-import { PageCanvas, SurfaceHeader } from "@/components/dash";
+
 import {
   ChatBubble,
   ChatInput,

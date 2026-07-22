@@ -168,14 +168,35 @@ function ConversationReview() {
         setExtraction(withBalance);
         saveConversation({ ...conv, edited: withBalance });
       }}
-      onApprove={() => {
-        const rec = approveConversation(conv, extraction);
-        setApproved({ reference: rec.reference, id: rec.id });
+      onApprove={async () => {
+        // Always keep the local record in sync for legacy screens.
+        const localRec = approveConversation(conv, extraction);
+        let reference = localRec.reference;
+        let recordId = localRec.id;
+        if (conv.extractionId) {
+          try {
+            const res = await approveServer({
+              data: { extractionId: conv.extractionId, payloadJson: JSON.stringify(extraction) },
+            });
+            reference = res.reference;
+            recordId = res.approvedRecordId;
+            saveConversation({ ...conv, edited: extraction, status: "approved", approvedRecordId: recordId, approvedReference: reference });
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : "Cloud approval failed.";
+            toast.error(`Saved locally, but Cloud sync failed: ${msg}`);
+          }
+        }
+        setApproved({ reference, id: recordId });
         setPhase("approved");
         toast.success("Approved and added to Business Memory.");
       }}
-      onReject={() => {
+      onReject={async () => {
         rejectConversation(conv);
+        if (conv.extractionId) {
+          try { await rejectServer({ data: { extractionId: conv.extractionId } }); } catch (err) {
+            console.warn("[review] cloud reject failed", err);
+          }
+        }
         toast("This draft was rejected and was not added to Business Memory.");
         navigate({ to: "/business-memory" });
       }}

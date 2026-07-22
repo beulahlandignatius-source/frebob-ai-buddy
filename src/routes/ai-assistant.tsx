@@ -383,12 +383,43 @@ function AIAssistantPage() {
 
         {/* Composer */}
         <div className="shrink-0 border-t border-secondary/70 bg-card">
+          {showRecorder && (
+            <div className="px-3 pt-3">
+              <div className="rounded-2xl border border-primary/20 bg-secondary/40 p-3 space-y-2">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-semibold text-primary">Record a message for Bob</p>
+                  <button
+                    type="button"
+                    onClick={() => setShowRecorder(false)}
+                    className="p-1 rounded-full hover:bg-secondary text-muted-foreground"
+                    aria-label="Close recorder"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+                <VoiceRecorder
+                  compact
+                  autoStart
+                  maxSeconds={120}
+                  confirmLabel="Transcribe & use"
+                  onConfirm={handleVoiceConfirm}
+                  onCancel={() => setShowRecorder(false)}
+                />
+              </div>
+            </div>
+          )}
+          {transcribing && (
+            <div className="px-4 pt-2 text-xs text-muted-foreground">Transcribing your voice…</div>
+          )}
           <ChatInput
             value={input}
             onChange={setInput}
             onSubmit={() => send(input)}
+            onVoice={() => setShowRecorder((s) => !s)}
+            voiceActive={showRecorder}
+            voiceBusy={transcribing}
             onClear={messages.length > 0 ? handleClear : undefined}
-            disabled={thinking}
+            disabled={thinking || transcribing}
             language={language}
             onLanguageChange={setLanguage}
             languages={COPILOT_LANGUAGES}

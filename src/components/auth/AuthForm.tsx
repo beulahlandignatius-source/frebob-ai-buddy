@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Mail, Phone, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EnterDemoButton } from "@/components/demo/EnterDemoButton";
+import { lovable } from "@/integrations/lovable";
 
 
 type Channel = "email" | "phone";

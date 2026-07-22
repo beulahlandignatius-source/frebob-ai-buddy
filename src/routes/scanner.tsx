@@ -8,6 +8,7 @@ import { CaptureOptionCard, ScanHistoryCard } from "@/components/scanner";
 import { listScans, type DocumentScan } from "@/lib/scanner-store";
 import { cn } from "@/lib/utils";
 import { DemoHint } from "@/components/demo/DemoHint";
+import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
 
 export const Route = createFileRoute("/scanner")({
   head: () => ({

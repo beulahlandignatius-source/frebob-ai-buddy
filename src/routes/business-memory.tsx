@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { listApprovedRecords, type ApprovedRecord } from "@/lib/records-store";
 import { humanise, StatusPill } from "@/components/record";
 import { DemoHint } from "@/components/demo/DemoHint";
+import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
 
 export const Route = createFileRoute("/business-memory")({
   head: () => ({

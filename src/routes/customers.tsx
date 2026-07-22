@@ -17,6 +17,7 @@ import {
   type Customer, type CustomerMetrics, type CustomerStatus,
 } from "@/lib/customers-store";
 import { DemoHint } from "@/components/demo/DemoHint";
+import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
 
 export const Route = createFileRoute("/customers")({
   head: () => ({

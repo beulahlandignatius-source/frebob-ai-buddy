@@ -35,6 +35,7 @@ import { listApprovedRecords } from "@/lib/records-store";
 import { ListenButton } from "@/components/audio/ListenButton";
 import type { LanguageCode } from "@/i18n/languages";
 import { DemoHint } from "@/components/demo/DemoHint";
+import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
 
 const COPILOT_TO_LANG: Record<CopilotLanguage, LanguageCode> = {
   english: "en",

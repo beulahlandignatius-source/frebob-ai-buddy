@@ -13,6 +13,7 @@ import { formatMoney, listOrders, summariseOrders, type Order } from "@/lib/orde
 import type { OrderStatus, PaymentStatus } from "@/lib/records-store";
 import { toast } from "sonner";
 import { DemoHint } from "@/components/demo/DemoHint";
+import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
 
 export const Route = createFileRoute("/orders")({
   head: () => ({

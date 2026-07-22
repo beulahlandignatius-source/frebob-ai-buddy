@@ -25,6 +25,7 @@ import {
 } from "@/lib/notifications-store";
 import { toast } from "sonner";
 import { DemoHint } from "@/components/demo/DemoHint";
+import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
 
 export const Route = createFileRoute("/notifications")({
   head: () => ({

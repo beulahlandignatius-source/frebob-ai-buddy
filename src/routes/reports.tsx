@@ -16,6 +16,7 @@ import {
   resolvePreset, resolveCompare, type PresetKey, type CompareKey,
 } from "@/lib/reporting/period";
 import { DemoHint } from "@/components/demo/DemoHint";
+import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
 
 const TAB_VALUES = ["overview", "sales", "payments", "orders", "inventory", "customers", "ai"] as const;
 type TabKey = typeof TAB_VALUES[number];

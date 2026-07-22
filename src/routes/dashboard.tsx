@@ -28,6 +28,7 @@ import {
 } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 import { DemoHint } from "@/components/demo/DemoHint";
+import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({

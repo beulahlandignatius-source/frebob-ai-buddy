@@ -267,7 +267,7 @@ export function generateNotifications(): { created: number; total: number } {
     }
   }
 
-  // Orders: pending, cancelled, new
+  // Orders: pending, cancelled, awaiting pickup/delivery
   if (settings.order) {
     const orders = listOrders();
     for (const o of orders) {
@@ -276,7 +276,7 @@ export function generateNotifications(): { created: number; total: number } {
           category: "order",
           priority: "medium",
           title: "Order cancelled",
-          description: `Order ${o.orderNumber} was cancelled.`,
+          description: `Order ${o.id} was cancelled.`,
           relatedModule: "orders",
           relatedRecordId: o.id,
           actionUrl: `/orders/${o.id}`,
@@ -285,12 +285,12 @@ export function generateNotifications(): { created: number; total: number } {
         });
         continue;
       }
-      if (o.orderStatus === "pending" || o.orderStatus === "processing") {
+      if (o.orderStatus === "pending" || o.orderStatus === "reserved") {
         upsert({
           category: "order",
           priority: "high",
           title: "Order awaiting action",
-          description: `${o.orderNumber} is ${o.orderStatus.replace("_", " ")}.`,
+          description: `${o.id} is ${o.orderStatus.replace("_", " ")}.`,
           relatedModule: "orders",
           relatedRecordId: o.id,
           actionUrl: `/orders/${o.id}`,
@@ -303,7 +303,7 @@ export function generateNotifications(): { created: number; total: number } {
           category: "order",
           priority: "medium",
           title: o.orderStatus === "awaiting_pickup" ? "Awaiting pickup" : "Awaiting delivery",
-          description: `${o.orderNumber} is ready — customer collection pending.`,
+          description: `${o.id} is ready — customer collection pending.`,
           relatedModule: "orders",
           relatedRecordId: o.id,
           actionUrl: `/orders/${o.id}`,
@@ -323,7 +323,7 @@ export function generateNotifications(): { created: number; total: number } {
           category: "payment",
           priority: o.balance > 100000 ? "high" : "medium",
           title: "Outstanding balance",
-          description: `${o.orderNumber} still owes ₦${o.balance.toLocaleString("en-NG")}.`,
+          description: `${o.id} still owes ₦${o.balance.toLocaleString("en-NG")}.`,
           relatedModule: "orders",
           relatedRecordId: o.id,
           actionUrl: `/orders/${o.id}/payment`,
@@ -331,6 +331,7 @@ export function generateNotifications(): { created: number; total: number } {
           dedupeKey: `payment:outstanding:${o.id}`,
         });
       }
+    }
     }
     // Recent payments (informational)
     const payments = listPayments().slice(0, 20);

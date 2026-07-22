@@ -70,7 +70,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
               <span className="text-foreground">Fre</span>
               <span className="text-accent">bob</span>
             </h1>
-            <p className="text-xs text-muted-foreground">AI Operations Assistant</p>
+            <p className="text-xs text-muted-foreground">Smart Business Assistant for Every SME</p>
           </div>
         </div>
 

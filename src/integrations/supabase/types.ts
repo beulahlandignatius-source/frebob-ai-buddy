@@ -18,41 +18,65 @@ export type Database = {
         Row: {
           address: string | null
           category: string | null
+          city: string | null
+          country: string | null
           created_at: string
           currency: string
+          description: string | null
+          email: string | null
           id: string
           initial_inventory: string | null
           initial_products: string | null
+          logo_url: string | null
           name: string
           owner_id: string
           phone: string | null
+          settings: Json
+          state: string | null
           updated_at: string
+          website: string | null
         }
         Insert: {
           address?: string | null
           category?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string
           currency?: string
+          description?: string | null
+          email?: string | null
           id?: string
           initial_inventory?: string | null
           initial_products?: string | null
+          logo_url?: string | null
           name: string
           owner_id: string
           phone?: string | null
+          settings?: Json
+          state?: string | null
           updated_at?: string
+          website?: string | null
         }
         Update: {
           address?: string | null
           category?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string
           currency?: string
+          description?: string | null
+          email?: string | null
           id?: string
           initial_inventory?: string | null
           initial_products?: string | null
+          logo_url?: string | null
           name?: string
           owner_id?: string
           phone?: string | null
+          settings?: Json
+          state?: string | null
           updated_at?: string
+          website?: string | null
         }
         Relationships: []
       }
@@ -91,6 +115,47 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      settings_audit: {
+        Row: {
+          actor_id: string
+          business_id: string
+          created_at: string
+          id: string
+          new_value: Json | null
+          old_value: Json | null
+          section: string
+          setting_key: string
+        }
+        Insert: {
+          actor_id: string
+          business_id: string
+          created_at?: string
+          id?: string
+          new_value?: Json | null
+          old_value?: Json | null
+          section: string
+          setting_key: string
+        }
+        Update: {
+          actor_id?: string
+          business_id?: string
+          created_at?: string
+          id?: string
+          new_value?: Json | null
+          old_value?: Json | null
+          section?: string
+          setting_key?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "settings_audit_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

@@ -27,6 +27,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AiAssistantRouteImport } from './routes/ai-assistant'
 import { Route as AddRecordRouteImport } from './routes/add-record'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SettingsBusinessRouteImport } from './routes/settings.business'
 import { Route as ScannerNewRouteImport } from './routes/scanner.new'
 import { Route as ScannerHistoryRouteImport } from './routes/scanner.history'
 import { Route as ScannerScanIdRouteImport } from './routes/scanner.$scanId'
@@ -132,6 +133,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsBusinessRoute = SettingsBusinessRouteImport.update({
+  id: '/business',
+  path: '/business',
+  getParentRoute: () => SettingsRoute,
+} as any)
 const ScannerNewRoute = ScannerNewRouteImport.update({
   id: '/new',
   path: '/new',
@@ -220,7 +226,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/reports': typeof ReportsRoute
   '/scanner': typeof ScannerRouteWithChildren
-  '/settings': typeof SettingsRoute
+  '/settings': typeof SettingsRouteWithChildren
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/conversations/$id': typeof ConversationsIdRoute
@@ -233,6 +239,7 @@ export interface FileRoutesByFullPath {
   '/scanner/$scanId': typeof ScannerScanIdRouteWithChildren
   '/scanner/history': typeof ScannerHistoryRoute
   '/scanner/new': typeof ScannerNewRoute
+  '/settings/business': typeof SettingsBusinessRoute
   '/customers/$id/edit': typeof CustomersIdEditRoute
   '/customers/duplicates/$groupId': typeof CustomersDuplicatesGroupIdRoute
   '/orders/$id/payment': typeof OrdersIdPaymentRoute
@@ -254,7 +261,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/reports': typeof ReportsRoute
   '/scanner': typeof ScannerRouteWithChildren
-  '/settings': typeof SettingsRoute
+  '/settings': typeof SettingsRouteWithChildren
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/conversations/$id': typeof ConversationsIdRoute
@@ -267,6 +274,7 @@ export interface FileRoutesByTo {
   '/scanner/$scanId': typeof ScannerScanIdRouteWithChildren
   '/scanner/history': typeof ScannerHistoryRoute
   '/scanner/new': typeof ScannerNewRoute
+  '/settings/business': typeof SettingsBusinessRoute
   '/customers/$id/edit': typeof CustomersIdEditRoute
   '/customers/duplicates/$groupId': typeof CustomersDuplicatesGroupIdRoute
   '/orders/$id/payment': typeof OrdersIdPaymentRoute
@@ -289,7 +297,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/reports': typeof ReportsRoute
   '/scanner': typeof ScannerRouteWithChildren
-  '/settings': typeof SettingsRoute
+  '/settings': typeof SettingsRouteWithChildren
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/conversations/$id': typeof ConversationsIdRoute
@@ -302,6 +310,7 @@ export interface FileRoutesById {
   '/scanner/$scanId': typeof ScannerScanIdRouteWithChildren
   '/scanner/history': typeof ScannerHistoryRoute
   '/scanner/new': typeof ScannerNewRoute
+  '/settings/business': typeof SettingsBusinessRoute
   '/customers/$id/edit': typeof CustomersIdEditRoute
   '/customers/duplicates/$groupId': typeof CustomersDuplicatesGroupIdRoute
   '/orders/$id/payment': typeof OrdersIdPaymentRoute
@@ -338,6 +347,7 @@ export interface FileRouteTypes {
     | '/scanner/$scanId'
     | '/scanner/history'
     | '/scanner/new'
+    | '/settings/business'
     | '/customers/$id/edit'
     | '/customers/duplicates/$groupId'
     | '/orders/$id/payment'
@@ -372,6 +382,7 @@ export interface FileRouteTypes {
     | '/scanner/$scanId'
     | '/scanner/history'
     | '/scanner/new'
+    | '/settings/business'
     | '/customers/$id/edit'
     | '/customers/duplicates/$groupId'
     | '/orders/$id/payment'
@@ -406,6 +417,7 @@ export interface FileRouteTypes {
     | '/scanner/$scanId'
     | '/scanner/history'
     | '/scanner/new'
+    | '/settings/business'
     | '/customers/$id/edit'
     | '/customers/duplicates/$groupId'
     | '/orders/$id/payment'
@@ -428,7 +440,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   ReportsRoute: typeof ReportsRoute
   ScannerRoute: typeof ScannerRouteWithChildren
-  SettingsRoute: typeof SettingsRoute
+  SettingsRoute: typeof SettingsRouteWithChildren
   SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
   ConversationsIdRoute: typeof ConversationsIdRoute
@@ -562,6 +574,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/settings/business': {
+      id: '/settings/business'
+      path: '/business'
+      fullPath: '/settings/business'
+      preLoaderRoute: typeof SettingsBusinessRouteImport
+      parentRoute: typeof SettingsRoute
     }
     '/scanner/new': {
       id: '/scanner/new'
@@ -755,6 +774,18 @@ const ScannerRouteChildren: ScannerRouteChildren = {
 const ScannerRouteWithChildren =
   ScannerRoute._addFileChildren(ScannerRouteChildren)
 
+interface SettingsRouteChildren {
+  SettingsBusinessRoute: typeof SettingsBusinessRoute
+}
+
+const SettingsRouteChildren: SettingsRouteChildren = {
+  SettingsBusinessRoute: SettingsBusinessRoute,
+}
+
+const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
+  SettingsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AddRecordRoute: AddRecordRoute,
@@ -771,7 +802,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   ReportsRoute: ReportsRoute,
   ScannerRoute: ScannerRouteWithChildren,
-  SettingsRoute: SettingsRoute,
+  SettingsRoute: SettingsRouteWithChildren,
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,
   ConversationsIdRoute: ConversationsIdRoute,

@@ -97,7 +97,11 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="mx-auto max-w-6xl px-4 lg:px-8 py-6 lg:py-10">{children}</div>
       </main>
 
-      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 border-t border-border bg-background/95 backdrop-blur-lg">
+      <nav
+        aria-label="Primary"
+        className="lg:hidden fixed bottom-0 inset-x-0 z-30 border-t border-border/60 bg-white/85 backdrop-blur-xl supports-[backdrop-filter]:bg-white/70"
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      >
         <div className="grid grid-cols-5 h-16">
           {mobileNav.map((item) => {
             const Icon = item.icon;
@@ -107,14 +111,15 @@ export function AppShell({ children }: { children: ReactNode }) {
                 key={item.to}
                 to={item.to}
                 data-tour={item.tour}
-                className="flex flex-col items-center justify-center gap-1 text-xs text-muted-foreground"
+                className="flex flex-col items-center justify-center gap-1 text-xs text-muted-foreground min-h-11"
                 aria-label={item.label}
+                aria-current={active ? "page" : undefined}
               >
                 <span
                   className={cn(
                     "flex items-center justify-center",
                     item.highlight
-                      ? "brand-gradient text-primary-foreground h-11 w-11 rounded-2xl shadow-elegant -mt-6"
+                      ? "brand-gradient text-primary-foreground h-[52px] w-[52px] rounded-2xl shadow-elegant -mt-6"
                       : "h-6",
                   )}
                 >
@@ -131,4 +136,5 @@ export function AppShell({ children }: { children: ReactNode }) {
     </div>
   );
 }
+
 

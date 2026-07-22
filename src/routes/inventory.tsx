@@ -108,6 +108,13 @@ function Inventory() {
           <LoadingSkeleton rows={5} />
         ) : state === "error" ? (
           <ErrorState onRetry={() => setState("ready")} />
+        ) : combined.length === 0 ? (
+          <IntelligentEmptyState
+            icon={Boxes}
+            title="Your inventory is empty"
+            description="Add your first product to begin tracking stock, prices and reorder points."
+            primary={{ label: "Add Product", icon: Plus, onClick: () => setShowAdd(true) }}
+          />
         ) : rows.length === 0 ? (
           <EmptyState
             icon={Boxes}

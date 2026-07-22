@@ -27,6 +27,9 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AiAssistantRouteImport } from './routes/ai-assistant'
 import { Route as AddRecordRouteImport } from './routes/add-record'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ScannerNewRouteImport } from './routes/scanner.new'
+import { Route as ScannerHistoryRouteImport } from './routes/scanner.history'
+import { Route as ScannerScanIdRouteImport } from './routes/scanner.$scanId'
 import { Route as OrdersIdRouteImport } from './routes/orders.$id'
 import { Route as CustomersNewRouteImport } from './routes/customers.new'
 import { Route as CustomersMergeHistoryRouteImport } from './routes/customers.merge-history'
@@ -128,6 +131,21 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ScannerNewRoute = ScannerNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => ScannerRoute,
+} as any)
+const ScannerHistoryRoute = ScannerHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => ScannerRoute,
+} as any)
+const ScannerScanIdRoute = ScannerScanIdRouteImport.update({
+  id: '/$scanId',
+  path: '/$scanId',
+  getParentRoute: () => ScannerRoute,
+} as any)
 const OrdersIdRoute = OrdersIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -195,7 +213,7 @@ export interface FileRoutesByFullPath {
   '/orders': typeof OrdersRouteWithChildren
   '/profile': typeof ProfileRoute
   '/reports': typeof ReportsRoute
-  '/scanner': typeof ScannerRoute
+  '/scanner': typeof ScannerRouteWithChildren
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
@@ -206,6 +224,9 @@ export interface FileRoutesByFullPath {
   '/customers/merge-history': typeof CustomersMergeHistoryRoute
   '/customers/new': typeof CustomersNewRoute
   '/orders/$id': typeof OrdersIdRouteWithChildren
+  '/scanner/$scanId': typeof ScannerScanIdRoute
+  '/scanner/history': typeof ScannerHistoryRoute
+  '/scanner/new': typeof ScannerNewRoute
   '/customers/$id/edit': typeof CustomersIdEditRoute
   '/customers/duplicates/$groupId': typeof CustomersDuplicatesGroupIdRoute
   '/orders/$id/payment': typeof OrdersIdPaymentRoute
@@ -225,7 +246,7 @@ export interface FileRoutesByTo {
   '/orders': typeof OrdersRouteWithChildren
   '/profile': typeof ProfileRoute
   '/reports': typeof ReportsRoute
-  '/scanner': typeof ScannerRoute
+  '/scanner': typeof ScannerRouteWithChildren
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
@@ -236,6 +257,9 @@ export interface FileRoutesByTo {
   '/customers/merge-history': typeof CustomersMergeHistoryRoute
   '/customers/new': typeof CustomersNewRoute
   '/orders/$id': typeof OrdersIdRouteWithChildren
+  '/scanner/$scanId': typeof ScannerScanIdRoute
+  '/scanner/history': typeof ScannerHistoryRoute
+  '/scanner/new': typeof ScannerNewRoute
   '/customers/$id/edit': typeof CustomersIdEditRoute
   '/customers/duplicates/$groupId': typeof CustomersDuplicatesGroupIdRoute
   '/orders/$id/payment': typeof OrdersIdPaymentRoute
@@ -256,7 +280,7 @@ export interface FileRoutesById {
   '/orders': typeof OrdersRouteWithChildren
   '/profile': typeof ProfileRoute
   '/reports': typeof ReportsRoute
-  '/scanner': typeof ScannerRoute
+  '/scanner': typeof ScannerRouteWithChildren
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
@@ -267,6 +291,9 @@ export interface FileRoutesById {
   '/customers/merge-history': typeof CustomersMergeHistoryRoute
   '/customers/new': typeof CustomersNewRoute
   '/orders/$id': typeof OrdersIdRouteWithChildren
+  '/scanner/$scanId': typeof ScannerScanIdRoute
+  '/scanner/history': typeof ScannerHistoryRoute
+  '/scanner/new': typeof ScannerNewRoute
   '/customers/$id/edit': typeof CustomersIdEditRoute
   '/customers/duplicates/$groupId': typeof CustomersDuplicatesGroupIdRoute
   '/orders/$id/payment': typeof OrdersIdPaymentRoute
@@ -299,6 +326,9 @@ export interface FileRouteTypes {
     | '/customers/merge-history'
     | '/customers/new'
     | '/orders/$id'
+    | '/scanner/$scanId'
+    | '/scanner/history'
+    | '/scanner/new'
     | '/customers/$id/edit'
     | '/customers/duplicates/$groupId'
     | '/orders/$id/payment'
@@ -329,6 +359,9 @@ export interface FileRouteTypes {
     | '/customers/merge-history'
     | '/customers/new'
     | '/orders/$id'
+    | '/scanner/$scanId'
+    | '/scanner/history'
+    | '/scanner/new'
     | '/customers/$id/edit'
     | '/customers/duplicates/$groupId'
     | '/orders/$id/payment'
@@ -359,6 +392,9 @@ export interface FileRouteTypes {
     | '/customers/merge-history'
     | '/customers/new'
     | '/orders/$id'
+    | '/scanner/$scanId'
+    | '/scanner/history'
+    | '/scanner/new'
     | '/customers/$id/edit'
     | '/customers/duplicates/$groupId'
     | '/orders/$id/payment'
@@ -379,7 +415,7 @@ export interface RootRouteChildren {
   OrdersRoute: typeof OrdersRouteWithChildren
   ProfileRoute: typeof ProfileRoute
   ReportsRoute: typeof ReportsRoute
-  ScannerRoute: typeof ScannerRoute
+  ScannerRoute: typeof ScannerRouteWithChildren
   SettingsRoute: typeof SettingsRoute
   SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
@@ -514,6 +550,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/scanner/new': {
+      id: '/scanner/new'
+      path: '/new'
+      fullPath: '/scanner/new'
+      preLoaderRoute: typeof ScannerNewRouteImport
+      parentRoute: typeof ScannerRoute
+    }
+    '/scanner/history': {
+      id: '/scanner/history'
+      path: '/history'
+      fullPath: '/scanner/history'
+      preLoaderRoute: typeof ScannerHistoryRouteImport
+      parentRoute: typeof ScannerRoute
+    }
+    '/scanner/$scanId': {
+      id: '/scanner/$scanId'
+      path: '/$scanId'
+      fullPath: '/scanner/$scanId'
+      preLoaderRoute: typeof ScannerScanIdRouteImport
+      parentRoute: typeof ScannerRoute
     }
     '/orders/$id': {
       id: '/orders/$id'
@@ -652,6 +709,21 @@ const OrdersRouteChildren: OrdersRouteChildren = {
 const OrdersRouteWithChildren =
   OrdersRoute._addFileChildren(OrdersRouteChildren)
 
+interface ScannerRouteChildren {
+  ScannerScanIdRoute: typeof ScannerScanIdRoute
+  ScannerHistoryRoute: typeof ScannerHistoryRoute
+  ScannerNewRoute: typeof ScannerNewRoute
+}
+
+const ScannerRouteChildren: ScannerRouteChildren = {
+  ScannerScanIdRoute: ScannerScanIdRoute,
+  ScannerHistoryRoute: ScannerHistoryRoute,
+  ScannerNewRoute: ScannerNewRoute,
+}
+
+const ScannerRouteWithChildren =
+  ScannerRoute._addFileChildren(ScannerRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AddRecordRoute: AddRecordRoute,
@@ -667,7 +739,7 @@ const rootRouteChildren: RootRouteChildren = {
   OrdersRoute: OrdersRouteWithChildren,
   ProfileRoute: ProfileRoute,
   ReportsRoute: ReportsRoute,
-  ScannerRoute: ScannerRoute,
+  ScannerRoute: ScannerRouteWithChildren,
   SettingsRoute: SettingsRoute,
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,
@@ -677,13 +749,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

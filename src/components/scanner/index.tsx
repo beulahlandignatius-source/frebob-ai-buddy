@@ -225,7 +225,7 @@ export function FinancialValidationAlert({ warnings }: { warnings: string[] }) {
 export function EditableField({
   label, value, onChange, type = "text", placeholder, needsReview, hint,
 }: {
-  label: string; value: string | number | null; onChange: (v: string) => void;
+  label: string; value: string | number | null | undefined; onChange: (v: string) => void;
   type?: "text" | "number" | "date"; placeholder?: string; needsReview?: boolean; hint?: string;
 }) {
   return (

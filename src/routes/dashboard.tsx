@@ -8,29 +8,26 @@ import {
   ScanLine,
   Sparkles,
   BarChart3,
-  Sparkle,
-  TrendingUp,
-  Wallet,
-  Clock3,
-  PackageSearch,
+  Check,
+  Clock,
+  CreditCard,
+  Package,
+  Wrench,
+  ArrowUpRight,
 } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/nav/AppShell";
 import {
-  MetricCard,
-  QuickActionCard,
-  ActivityItem,
-  InventoryAlertRow,
-  PageHeader,
-} from "@/components/dash";
-import {
   dashboardMetrics,
   lowStock,
   recentActivities,
   greeting,
+  fmt,
   DEMO_USER,
+  type Activity,
 } from "@/lib/mock-data";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/dashboard")({
@@ -44,6 +41,34 @@ export const Route = createFileRoute("/dashboard")({
   }),
   component: Dashboard,
 });
+
+const SectionLabel = ({ children, right }: { children: React.ReactNode; right?: React.ReactNode }) => (
+  <div className="flex items-end justify-between mb-4">
+    <h2 className="font-display text-[11px] font-bold uppercase tracking-[0.18em] text-primary/40">
+      {children}
+    </h2>
+    {right}
+  </div>
+);
+
+const metricValueTone: Record<string, string> = {
+  sales: "text-foreground",
+  received: "text-[var(--success)]",
+  outstanding: "text-accent",
+  pending: "text-foreground",
+};
+
+const activityStyle: Record<
+  Activity["type"],
+  { icon: typeof Check; bg: string; fg: string }
+> = {
+  sale: { icon: Check, bg: "bg-[color-mix(in_oklab,var(--success)_14%,transparent)]", fg: "text-[var(--success)]" },
+  payment: { icon: CreditCard, bg: "bg-[color-mix(in_oklab,var(--success)_14%,transparent)]", fg: "text-[var(--success)]" },
+  order: { icon: Clock, bg: "bg-accent/15", fg: "text-accent" },
+  restock: { icon: Package, bg: "bg-secondary", fg: "text-primary" },
+  correction: { icon: Wrench, bg: "bg-secondary", fg: "text-primary" },
+  customer: { icon: Package, bg: "bg-secondary", fg: "text-primary" },
+};
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -77,121 +102,270 @@ function Dashboard() {
 
   return (
     <AppShell>
-      {/* Header */}
-      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 mb-6">
-        <div className="min-w-0">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground">{today}</p>
-          <h1 className="mt-1 text-2xl sm:text-3xl font-bold tracking-tight truncate">
-            {greeting()}, {firstName}
-          </h1>
-          <p className="text-sm text-muted-foreground truncate">{businessName}</p>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <Link
-            to="/notifications"
-            className="relative h-10 w-10 rounded-full border border-border bg-card flex items-center justify-center hover:border-primary/30"
-            aria-label="Notifications"
-          >
-            <Bell className="h-4 w-4" />
-            {unread > 0 && (
-              <span className="absolute -top-1 -right-1 h-5 min-w-5 rounded-full bg-accent text-[10px] font-bold text-accent-foreground flex items-center justify-center px-1">
-                {unread}
-              </span>
-            )}
-          </Link>
-          <div
-            className="h-10 w-10 rounded-full brand-gradient text-primary-foreground font-semibold flex items-center justify-center"
-            aria-label="Profile"
-          >
-            {firstName.slice(0, 1)}
+      <div className="-mx-4 lg:-mx-8 -my-6 lg:-my-10 px-4 lg:px-8 py-6 lg:py-10 bg-[var(--surface-tinted)] min-h-[calc(100vh-0px)]">
+        {/* Header */}
+        <header className="flex items-center justify-between mb-6">
+          <div className="min-w-0">
+            <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-primary/60">
+              {today}
+            </p>
+            <h1 className="mt-1 font-display text-[26px] sm:text-[32px] font-extrabold text-primary tracking-tight truncate">
+              {greeting()}, {firstName}
+            </h1>
+            <p className="text-sm text-subtle-foreground truncate">{businessName}</p>
           </div>
-        </div>
-      </div>
+          <div className="flex items-center gap-3 shrink-0">
+            <Link
+              to="/notifications"
+              className="relative h-10 w-10 rounded-full bg-card shadow-card flex items-center justify-center text-primary hover:shadow-soft transition"
+              aria-label="Notifications"
+            >
+              <Bell className="h-[18px] w-[18px]" />
+              {unread > 0 && (
+                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-accent ring-2 ring-card" />
+              )}
+            </Link>
+            <div
+              className="h-10 w-10 rounded-full brand-gradient text-primary-foreground font-bold flex items-center justify-center ring-2 ring-white shadow-soft"
+              aria-label="Profile"
+            >
+              {firstName.slice(0, 1)}
+            </div>
+          </div>
+        </header>
 
-      {/* Today at a Glance */}
-      <section className="glass-card rounded-3xl p-5 sm:p-6 relative overflow-hidden">
-        <div className="absolute inset-0 hero-glow opacity-50 -z-10" />
-        <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-primary">
-          <Sparkle className="h-3.5 w-3.5" /> Today at a Glance
-          <span className="ml-auto text-[10px] text-muted-foreground normal-case tracking-normal">
-            Demo summary
-          </span>
-        </div>
-        <p className="mt-2 text-sm sm:text-base leading-relaxed text-foreground">
-          You recorded <strong>8 orders</strong> today. Total sales value is{" "}
-          <strong>₦485,000</strong>. You received <strong>₦350,000</strong>, while{" "}
-          <strong>₦135,000</strong> is still outstanding. <strong>Samsung A15</strong> is running low.
-        </p>
-      </section>
+        {/* Today at a Glance — AI glass panel */}
+        <section className="relative overflow-hidden rounded-[24px] p-5 sm:p-6 glass-card mb-8">
+          <div className="pointer-events-none absolute -right-6 -top-6 h-32 w-32 rounded-full bg-accent/20 blur-3xl" />
+          <div className="pointer-events-none absolute -left-10 bottom-0 h-24 w-24 rounded-full bg-primary/15 blur-3xl" />
+          <div className="relative flex items-start gap-3">
+            <div className="mt-1 h-8 w-8 rounded-xl brand-gradient text-primary-foreground flex items-center justify-center shrink-0 shadow-soft">
+              <Sparkles className="h-4 w-4" />
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <h3 className="font-display text-sm font-bold text-primary">Today at a Glance</h3>
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-subtle-foreground">
+                  AI recap
+                </span>
+              </div>
+              <p className="mt-1.5 text-[15px] leading-relaxed text-foreground/85">
+                You've had <strong className="text-primary">8 orders</strong> today — sales up{" "}
+                <strong className="text-[var(--success)]">+12%</strong> from yesterday.{" "}
+                <span className="text-accent font-semibold">Samsung A15</span> is moving fast — only
+                3 units left in stock.
+              </p>
+            </div>
+          </div>
+        </section>
 
-      {/* Metrics */}
-      <section className="mt-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        {dashboardMetrics.map((m) => {
-          const iconMap: Record<string, typeof TrendingUp> = {
-            sales: TrendingUp,
-            received: Wallet,
-            outstanding: Clock3,
-            pending: PackageSearch,
-          };
-          return (
-            <MetricCard
+        {/* Metrics */}
+        <section className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-8">
+          {dashboardMetrics.map((m) => (
+            <Link
               key={m.key}
-              label={m.label}
-              value={m.value}
-              changePct={m.changePct}
-              sub={m.sub}
-              linkLabel={m.linkLabel}
-              linkTo={m.linkTo}
-              isCurrency={m.key !== "pending"}
-              icon={iconMap[m.key]}
-            />
-          );
-        })}
-      </section>
+              to={m.linkTo}
+              className="group bg-card p-4 sm:p-5 rounded-[20px] border border-secondary hover:border-primary/25 transition"
+            >
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-primary/50">
+                {m.label}
+              </p>
+              <p
+                className={cn(
+                  "mt-2 font-display text-[22px] sm:text-[24px] font-extrabold tracking-tight leading-none",
+                  metricValueTone[m.key] ?? "text-foreground",
+                )}
+              >
+                {m.key === "pending" ? String(m.value).padStart(2, "0") : fmt(m.value)}
+              </p>
+              <div className="mt-3 flex items-center justify-between text-[11px] text-subtle-foreground">
+                {typeof m.changePct === "number" ? (
+                  <span
+                    className={cn(
+                      "inline-flex items-center gap-1 font-semibold",
+                      m.changePct >= 0 ? "text-[var(--success)]" : "text-destructive",
+                    )}
+                  >
+                    {m.changePct >= 0 ? "▲" : "▼"} {Math.abs(m.changePct)}%
+                  </span>
+                ) : (
+                  <span>{m.sub}</span>
+                )}
+                <ArrowUpRight className="h-3.5 w-3.5 text-primary/40 group-hover:text-primary transition" />
+              </div>
+            </Link>
+          ))}
+        </section>
 
-      {/* Quick actions */}
-      <section className="mt-8">
-        <h2 className="text-lg font-semibold mb-3">Quick actions</h2>
+        {/* Quick actions */}
+        <section className="mb-8">
+          <SectionLabel>Quick Actions</SectionLabel>
+          <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-7 gap-3">
+            <button
+              type="button"
+              onClick={() => toast("Coming in a later batch")}
+              className="col-span-3 sm:col-span-1 lg:col-span-2 flex flex-col justify-center gap-2 p-5 brand-gradient text-primary-foreground rounded-[20px] shadow-elegant hover:opacity-95 active:scale-[0.98] transition text-left"
+            >
+              <div className="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center">
+                <Plus className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="font-display text-sm font-extrabold leading-tight">
+                  Add Business Record
+                </p>
+                <p className="text-[11px] text-white/70 mt-0.5">Sale, payment or expense</p>
+              </div>
+            </button>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          <QuickActionCard icon={Plus} label="Add Business Record" hint="Sale, payment, expense" primary onClick={() => toast("Coming in a later batch")} />
-          <QuickActionCard icon={Boxes} label="View Inventory" hint="Stock & prices" onClick={() => toast("Coming in a later batch")} />
-          <QuickActionCard icon={ShoppingCart} label="View Orders" hint="Open & completed" onClick={() => toast("Coming in a later batch")} />
-          <QuickActionCard icon={ScanLine} label="Open Scanner" hint="Scan receipt or product" onClick={() => toast("Coming in a later batch")} />
-          <QuickActionCard icon={Sparkles} label="Ask FreBob" hint="AI assistant" onClick={() => toast("Coming in a later batch")} />
-          <QuickActionCard icon={BarChart3} label="View Reports" hint="Daily / weekly / monthly" to="/reports" />
-        </div>
-      </section>
-
-      {/* Two column: Stock + Activity */}
-      <section className="mt-8 grid gap-6 lg:grid-cols-5">
-        <div className="lg:col-span-2">
-          <PageHeader title="Stock Needing Attention" subtitle="Restock these before you run out." />
-          <div className="space-y-3">
-            {lowStock.map((it) => (
-              <InventoryAlertRow key={it.id} item={it} onRestock={() => toast("Coming in a later batch")} />
-            ))}
+            {[
+              { icon: Boxes, label: "Inventory", tint: "bg-accent/10 text-accent", onClick: () => toast("Coming in a later batch") },
+              { icon: ShoppingCart, label: "Orders", tint: "bg-secondary text-primary", onClick: () => toast("Coming in a later batch") },
+              { icon: ScanLine, label: "Scanner", tint: "bg-secondary text-primary", onClick: () => toast("Coming in a later batch") },
+              { icon: Sparkles, label: "Ask FreBob", tint: "bg-secondary text-primary", onClick: () => toast("Coming in a later batch") },
+              { icon: BarChart3, label: "Reports", tint: "bg-secondary text-primary", to: "/reports" as const },
+            ].map((a, i) => {
+              const Icon = a.icon;
+              const inner = (
+                <>
+                  <div className={cn("h-9 w-9 rounded-xl flex items-center justify-center", a.tint)}>
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <span className="text-[11px] font-bold text-foreground">{a.label}</span>
+                </>
+              );
+              const cls =
+                "flex flex-col items-center justify-center gap-2 p-4 bg-card rounded-[20px] border border-secondary hover:border-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition";
+              return a.to ? (
+                <Link key={i} to={a.to} className={cls}>
+                  {inner}
+                </Link>
+              ) : (
+                <button key={i} type="button" onClick={a.onClick} className={cls}>
+                  {inner}
+                </button>
+              );
+            })}
           </div>
-        </div>
-        <div className="lg:col-span-3">
-          <PageHeader title="Recent Activity" subtitle="Latest movements in your business." />
-          <div className="rounded-2xl border border-border bg-card divide-y divide-border px-4">
-            {recentActivities.map((a) => (
-              <ActivityItem key={a.id} item={a} />
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Footer sign-out for prototype access */}
-      <div className="mt-10 text-center">
-        <button
-          type="button"
-          className="text-xs text-muted-foreground hover:text-foreground"
-          onClick={async () => { await supabase.auth.signOut(); navigate({ to: "/signin" }); }}
-        >
-          Sign out
-        </button>
+        {/* Stock + Activity */}
+        <section className="grid gap-6 lg:grid-cols-5 mb-8">
+          <div className="lg:col-span-2">
+            <SectionLabel
+              right={
+                <span className="text-[10px] font-bold text-accent uppercase tracking-wider">
+                  {lowStock.length} items low
+                </span>
+              }
+            >
+              Stock Alerts
+            </SectionLabel>
+            <div className="bg-card rounded-[24px] border border-secondary overflow-hidden">
+              {lowStock.map((item, i) => {
+                const out = item.status === "out";
+                return (
+                  <div
+                    key={item.id}
+                    className={cn(
+                      "flex items-center justify-between p-4",
+                      i !== lowStock.length - 1 && "border-b border-secondary/70",
+                    )}
+                  >
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-foreground truncate">{item.name}</p>
+                      <p
+                        className={cn(
+                          "text-[11px] font-medium mt-0.5",
+                          out ? "text-destructive" : "text-accent",
+                        )}
+                      >
+                        {out ? "Out of stock" : `Only ${item.stock} ${item.unit} left`}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => toast("Coming in a later batch")}
+                      className={cn(
+                        "px-4 py-1.5 text-[11px] font-bold rounded-full transition",
+                        out
+                          ? "bg-accent text-white hover:brightness-105"
+                          : "bg-secondary text-primary hover:bg-primary hover:text-primary-foreground",
+                      )}
+                    >
+                      Restock
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="lg:col-span-3">
+            <SectionLabel
+              right={
+                <Link
+                  to="/reports"
+                  className="text-[10px] font-bold text-primary uppercase tracking-wider hover:underline"
+                >
+                  See all
+                </Link>
+              }
+            >
+              Activity Feed
+            </SectionLabel>
+            <div className="space-y-2.5">
+              {recentActivities.map((a) => {
+                const s = activityStyle[a.type];
+                const Icon = s.icon;
+                const isMoneyIn = a.type === "payment" || a.type === "sale";
+                return (
+                  <div
+                    key={a.id}
+                    className="flex items-center gap-3 bg-card/80 hover:bg-card p-3.5 rounded-[16px] border border-transparent hover:border-secondary transition"
+                  >
+                    <div
+                      className={cn(
+                        "h-10 w-10 rounded-full flex items-center justify-center shrink-0",
+                        s.bg,
+                        s.fg,
+                      )}
+                    >
+                      <Icon className="h-4 w-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[13px] font-semibold text-foreground truncate">
+                        {a.description}
+                      </p>
+                      <p className="text-[11px] text-subtle-foreground mt-0.5">{a.time}</p>
+                    </div>
+                    {typeof a.amount === "number" && (
+                      <p
+                        className={cn(
+                          "font-display text-sm font-extrabold shrink-0",
+                          isMoneyIn ? "text-[var(--success)]" : "text-accent",
+                        )}
+                      >
+                        {isMoneyIn ? "+" : ""}
+                        {fmt(a.amount)}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* Footer sign-out for prototype access */}
+        <div className="text-center">
+          <button
+            type="button"
+            className="text-xs text-subtle-foreground hover:text-foreground"
+            onClick={async () => { await supabase.auth.signOut(); navigate({ to: "/signin" }); }}
+          >
+            Sign out
+          </button>
+        </div>
       </div>
     </AppShell>
   );

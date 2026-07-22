@@ -341,13 +341,28 @@ const NO_DATA: Record<CopilotLanguage, string> = {
 export function deterministicAnswer(intent: Intent, snap: BusinessSnapshot, lang: CopilotLanguage): CopilotAnswer | null {
   const empty = snap.totalApproved === 0;
 
+  if (intent === "health_check") {
+    return formatHealthReport(snap, lang);
+  }
+
   if (intent === "low_stock") {
+    if (snap.lowStockProducts.length === 0) {
+      return {
+        text: lang === "english"
+          ? "No products are flagged low or out of stock in your inventory right now."
+          : "No product dey low or finish for your inventory now.",
+        evidence: [{ label: "Low-stock products", value: "0" }, { label: "Source", value: "Inventory" }],
+        hasData: true,
+      };
+    }
+    const lines = snap.lowStockProducts.map((p) => `• ${p.name} — ${p.stock} ${p.unit} left (reorder at ${p.reorder})${p.status === "out" ? " · OUT OF STOCK" : ""}`).join("\n");
     return {
-      text: lang === "english"
-        ? "Low-stock tracking needs inventory data. Approved records don't yet include current stock levels, so I can't confirm what is running low."
-        : "I no fit confirm low stock — approved records no dey carry current stock levels.",
-      evidence: [{ label: "Data source", value: "Business Memory" }, { label: "Approved records", value: String(snap.totalApproved) }],
-      hasData: false,
+      text: `${snap.lowStockProducts.length} product${snap.lowStockProducts.length === 1 ? "" : "s"} need${snap.lowStockProducts.length === 1 ? "s" : ""} restocking:\n\n${lines}`,
+      evidence: [
+        { label: "Low-stock products", value: String(snap.lowStockProducts.length) },
+        { label: "Source", value: "Inventory" },
+      ],
+      hasData: true,
     };
   }
 

@@ -3,7 +3,6 @@
 // Design: brand purple / orange, generous spacing, no glassmorphism.
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
-import { Rocket } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/fb/Button";
 import { useDemo } from "@/lib/demo/context";

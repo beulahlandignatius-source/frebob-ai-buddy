@@ -1,48 +1,35 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import {
-  LayoutDashboard,
-  Sparkles,
-  Plus,
-  BarChart3,
-  User,
-  Brain,
-  Boxes,
-  ShoppingCart,
-  Users,
-  ScanLine,
-  Bell,
-  Settings,
+  LayoutDashboard, Sparkles, Plus, BarChart3, User, Brain, Boxes,
+  ShoppingCart, Users, ScanLine, Bell, Settings,
 } from "lucide-react";
-import { toast } from "sonner";
 import { Logo } from "@/components/brand/Logo";
 import { cn } from "@/lib/utils";
 
-type NavItem = { to?: string; label: string; icon: typeof LayoutDashboard; highlight?: boolean; soon?: boolean };
+type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; highlight?: boolean };
 
 const mobileNav: NavItem[] = [
   { to: "/dashboard", label: "Home", icon: LayoutDashboard },
-  { label: "AI", icon: Sparkles, soon: true },
-  { label: "Add", icon: Plus, highlight: true, soon: true },
+  { to: "/ai-assistant", label: "AI", icon: Sparkles },
+  { to: "/scanner", label: "Add", icon: Plus, highlight: true },
   { to: "/reports", label: "Reports", icon: BarChart3 },
-  { label: "Profile", icon: User, soon: true },
+  { to: "/profile", label: "Profile", icon: User },
 ];
 
 const desktopNav: NavItem[] = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { label: "Business Memory", icon: Brain, soon: true },
-  { label: "AI Assistant", icon: Sparkles, soon: true },
-  { label: "Inventory", icon: Boxes, soon: true },
-  { label: "Orders", icon: ShoppingCart, soon: true },
-  { label: "Customers", icon: Users, soon: true },
-  { label: "Scanner", icon: ScanLine, soon: true },
+  { to: "/business-memory", label: "Business Memory", icon: Brain },
+  { to: "/ai-assistant", label: "AI Assistant", icon: Sparkles },
+  { to: "/inventory", label: "Inventory", icon: Boxes },
+  { to: "/orders", label: "Orders", icon: ShoppingCart },
+  { to: "/customers", label: "Customers", icon: Users },
+  { to: "/scanner", label: "Scanner", icon: ScanLine },
   { to: "/reports", label: "Reports", icon: BarChart3 },
   { to: "/notifications", label: "Notifications", icon: Bell },
-  { label: "Settings", icon: Settings, soon: true },
-  { label: "Profile", icon: User, soon: true },
+  { to: "/settings", label: "Settings", icon: Settings },
+  { to: "/profile", label: "Profile", icon: User },
 ];
-
-const notifySoon = () => toast("Coming in a later batch");
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -55,25 +42,20 @@ export function AppShell({ children }: { children: ReactNode }) {
           <span className="font-bold text-lg tracking-tight">FreBob</span>
         </div>
         <nav className="flex-1 overflow-y-auto p-3 space-y-1">
-          {desktopNav.map((item, i) => {
+          {desktopNav.map((item) => {
             const Icon = item.icon;
-            const active = !!item.to && pathname === item.to;
-            const cls = cn(
-              "flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent transition",
-              active && "bg-sidebar-accent text-sidebar-accent-foreground font-semibold",
-            );
-            if (item.to) {
-              return (
-                <Link key={i} to={item.to} className={cls} aria-label={item.label}>
-                  <Icon className="h-4 w-4" /> {item.label}
-                </Link>
-              );
-            }
+            const active = pathname === item.to;
             return (
-              <button key={i} type="button" onClick={notifySoon} className={cn(cls, "w-full text-left")} aria-label={`${item.label} (coming soon)`}>
+              <Link
+                key={item.to}
+                to={item.to}
+                className={cn(
+                  "flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent transition",
+                  active && "bg-sidebar-accent text-sidebar-accent-foreground font-semibold",
+                )}
+              >
                 <Icon className="h-4 w-4" /> {item.label}
-                <span className="ml-auto text-[10px] text-muted-foreground">Soon</span>
-              </button>
+              </Link>
             );
           })}
         </nav>
@@ -85,11 +67,16 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 border-t border-border bg-background/95 backdrop-blur-lg">
         <div className="grid grid-cols-5 h-16">
-          {mobileNav.map((item, i) => {
+          {mobileNav.map((item) => {
             const Icon = item.icon;
-            const active = !!item.to && pathname === item.to;
-            const inner = (
-              <>
+            const active = pathname === item.to;
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                className="flex flex-col items-center justify-center gap-1 text-xs text-muted-foreground"
+                aria-label={item.label}
+              >
                 <span
                   className={cn(
                     "flex items-center justify-center",
@@ -103,20 +90,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 {!item.highlight && (
                   <span className={cn(active ? "text-primary font-semibold" : "")}>{item.label}</span>
                 )}
-              </>
-            );
-            const cls = "flex flex-col items-center justify-center gap-1 text-xs text-muted-foreground";
-            if (item.to) {
-              return (
-                <Link key={i} to={item.to} className={cls} aria-label={item.label}>
-                  {inner}
-                </Link>
-              );
-            }
-            return (
-              <button key={i} type="button" onClick={notifySoon} className={cls} aria-label={`${item.label} (coming soon)`}>
-                {inner}
-              </button>
+              </Link>
             );
           })}
         </div>

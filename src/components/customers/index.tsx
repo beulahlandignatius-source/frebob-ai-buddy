@@ -244,9 +244,9 @@ export function CustomerActivityTimeline({ items }: { items: TimelineItem[] }) {
                 {new Date(e.time).toLocaleString("en-NG", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
               </p>
               {e.linkTo && (
-                <Link to={e.linkTo} className="text-[10px] font-semibold text-primary hover:underline">
+                <a href={e.linkTo} className="text-[10px] font-semibold text-primary hover:underline">
                   {e.linkLabel ?? "View"}
-                </Link>
+                </a>
               )}
             </div>
           </div>

@@ -28,9 +28,12 @@ import { Route as AiAssistantRouteImport } from './routes/ai-assistant'
 import { Route as AddRecordRouteImport } from './routes/add-record'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as OrdersIdRouteImport } from './routes/orders.$id'
+import { Route as CustomersNewRouteImport } from './routes/customers.new'
+import { Route as CustomersIdRouteImport } from './routes/customers.$id'
 import { Route as ConversationsNewRouteImport } from './routes/conversations.new'
 import { Route as ConversationsIdRouteImport } from './routes/conversations.$id'
 import { Route as OrdersIdPaymentRouteImport } from './routes/orders.$id.payment'
+import { Route as CustomersIdEditRouteImport } from './routes/customers.$id.edit'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -127,6 +130,16 @@ const OrdersIdRoute = OrdersIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => OrdersRoute,
 } as any)
+const CustomersNewRoute = CustomersNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => CustomersRoute,
+} as any)
+const CustomersIdRoute = CustomersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => CustomersRoute,
+} as any)
 const ConversationsNewRoute = ConversationsNewRouteImport.update({
   id: '/conversations/new',
   path: '/conversations/new',
@@ -142,6 +155,11 @@ const OrdersIdPaymentRoute = OrdersIdPaymentRouteImport.update({
   path: '/payment',
   getParentRoute: () => OrdersIdRoute,
 } as any)
+const CustomersIdEditRoute = CustomersIdEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => CustomersIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -150,7 +168,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/business-memory': typeof BusinessMemoryRoute
   '/business-setup': typeof BusinessSetupRoute
-  '/customers': typeof CustomersRoute
+  '/customers': typeof CustomersRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/inventory': typeof InventoryRoute
   '/notifications': typeof NotificationsRoute
@@ -164,7 +182,10 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/conversations/$id': typeof ConversationsIdRoute
   '/conversations/new': typeof ConversationsNewRoute
+  '/customers/$id': typeof CustomersIdRouteWithChildren
+  '/customers/new': typeof CustomersNewRoute
   '/orders/$id': typeof OrdersIdRouteWithChildren
+  '/customers/$id/edit': typeof CustomersIdEditRoute
   '/orders/$id/payment': typeof OrdersIdPaymentRoute
 }
 export interface FileRoutesByTo {
@@ -174,7 +195,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/business-memory': typeof BusinessMemoryRoute
   '/business-setup': typeof BusinessSetupRoute
-  '/customers': typeof CustomersRoute
+  '/customers': typeof CustomersRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/inventory': typeof InventoryRoute
   '/notifications': typeof NotificationsRoute
@@ -188,7 +209,10 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/conversations/$id': typeof ConversationsIdRoute
   '/conversations/new': typeof ConversationsNewRoute
+  '/customers/$id': typeof CustomersIdRouteWithChildren
+  '/customers/new': typeof CustomersNewRoute
   '/orders/$id': typeof OrdersIdRouteWithChildren
+  '/customers/$id/edit': typeof CustomersIdEditRoute
   '/orders/$id/payment': typeof OrdersIdPaymentRoute
 }
 export interface FileRoutesById {
@@ -199,7 +223,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/business-memory': typeof BusinessMemoryRoute
   '/business-setup': typeof BusinessSetupRoute
-  '/customers': typeof CustomersRoute
+  '/customers': typeof CustomersRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/inventory': typeof InventoryRoute
   '/notifications': typeof NotificationsRoute
@@ -213,7 +237,10 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/conversations/$id': typeof ConversationsIdRoute
   '/conversations/new': typeof ConversationsNewRoute
+  '/customers/$id': typeof CustomersIdRouteWithChildren
+  '/customers/new': typeof CustomersNewRoute
   '/orders/$id': typeof OrdersIdRouteWithChildren
+  '/customers/$id/edit': typeof CustomersIdEditRoute
   '/orders/$id/payment': typeof OrdersIdPaymentRoute
 }
 export interface FileRouteTypes {
@@ -239,7 +266,10 @@ export interface FileRouteTypes {
     | '/signup'
     | '/conversations/$id'
     | '/conversations/new'
+    | '/customers/$id'
+    | '/customers/new'
     | '/orders/$id'
+    | '/customers/$id/edit'
     | '/orders/$id/payment'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -263,7 +293,10 @@ export interface FileRouteTypes {
     | '/signup'
     | '/conversations/$id'
     | '/conversations/new'
+    | '/customers/$id'
+    | '/customers/new'
     | '/orders/$id'
+    | '/customers/$id/edit'
     | '/orders/$id/payment'
   id:
     | '__root__'
@@ -287,7 +320,10 @@ export interface FileRouteTypes {
     | '/signup'
     | '/conversations/$id'
     | '/conversations/new'
+    | '/customers/$id'
+    | '/customers/new'
     | '/orders/$id'
+    | '/customers/$id/edit'
     | '/orders/$id/payment'
   fileRoutesById: FileRoutesById
 }
@@ -298,7 +334,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BusinessMemoryRoute: typeof BusinessMemoryRoute
   BusinessSetupRoute: typeof BusinessSetupRoute
-  CustomersRoute: typeof CustomersRoute
+  CustomersRoute: typeof CustomersRouteWithChildren
   DashboardRoute: typeof DashboardRoute
   InventoryRoute: typeof InventoryRoute
   NotificationsRoute: typeof NotificationsRoute
@@ -449,6 +485,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrdersIdRouteImport
       parentRoute: typeof OrdersRoute
     }
+    '/customers/new': {
+      id: '/customers/new'
+      path: '/new'
+      fullPath: '/customers/new'
+      preLoaderRoute: typeof CustomersNewRouteImport
+      parentRoute: typeof CustomersRoute
+    }
+    '/customers/$id': {
+      id: '/customers/$id'
+      path: '/$id'
+      fullPath: '/customers/$id'
+      preLoaderRoute: typeof CustomersIdRouteImport
+      parentRoute: typeof CustomersRoute
+    }
     '/conversations/new': {
       id: '/conversations/new'
       path: '/conversations/new'
@@ -470,8 +520,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrdersIdPaymentRouteImport
       parentRoute: typeof OrdersIdRoute
     }
+    '/customers/$id/edit': {
+      id: '/customers/$id/edit'
+      path: '/edit'
+      fullPath: '/customers/$id/edit'
+      preLoaderRoute: typeof CustomersIdEditRouteImport
+      parentRoute: typeof CustomersIdRoute
+    }
   }
 }
+
+interface CustomersIdRouteChildren {
+  CustomersIdEditRoute: typeof CustomersIdEditRoute
+}
+
+const CustomersIdRouteChildren: CustomersIdRouteChildren = {
+  CustomersIdEditRoute: CustomersIdEditRoute,
+}
+
+const CustomersIdRouteWithChildren = CustomersIdRoute._addFileChildren(
+  CustomersIdRouteChildren,
+)
+
+interface CustomersRouteChildren {
+  CustomersIdRoute: typeof CustomersIdRouteWithChildren
+  CustomersNewRoute: typeof CustomersNewRoute
+}
+
+const CustomersRouteChildren: CustomersRouteChildren = {
+  CustomersIdRoute: CustomersIdRouteWithChildren,
+  CustomersNewRoute: CustomersNewRoute,
+}
+
+const CustomersRouteWithChildren = CustomersRoute._addFileChildren(
+  CustomersRouteChildren,
+)
 
 interface OrdersIdRouteChildren {
   OrdersIdPaymentRoute: typeof OrdersIdPaymentRoute
@@ -503,7 +586,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BusinessMemoryRoute: BusinessMemoryRoute,
   BusinessSetupRoute: BusinessSetupRoute,
-  CustomersRoute: CustomersRoute,
+  CustomersRoute: CustomersRouteWithChildren,
   DashboardRoute: DashboardRoute,
   InventoryRoute: InventoryRoute,
   NotificationsRoute: NotificationsRoute,

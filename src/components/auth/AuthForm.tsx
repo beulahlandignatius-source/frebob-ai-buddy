@@ -294,9 +294,6 @@ function VerifyStep({
         </button>
       </form>
 
-      <p className="mt-5 text-center text-xs text-muted-foreground">
-        Demo mode — any input works. No real {channel === "email" ? "email" : "SMS"} is sent.
-      </p>
     </>
   );
 }

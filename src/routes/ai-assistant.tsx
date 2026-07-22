@@ -6,7 +6,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { History, Plus, Sparkles } from "lucide-react";
+import { History, Plus } from "lucide-react";
+import { BobAvatar } from "@/components/copilot/BobAvatar";
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
 import { PageCanvas, SurfaceHeader } from "@/components/dash";
@@ -243,9 +244,7 @@ function AIAssistantPage() {
           {/* Header strip */}
           <div className="glass-card px-5 py-3 border-b border-secondary/70">
             <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-xl brand-gradient text-primary-foreground flex items-center justify-center">
-                <Sparkles className="h-4 w-4" />
-              </div>
+              <BobAvatar size="md" />
               <div className="min-w-0">
                 <p className="font-display font-bold text-sm text-primary">Bob</p>
                 <p className="text-[11px] text-muted-foreground truncate">Grounded on Business Memory · never invents data</p>

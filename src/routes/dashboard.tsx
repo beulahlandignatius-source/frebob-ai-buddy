@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   Bell,
-  Sparkles,
   Check,
   Clock,
   CreditCard,
@@ -10,6 +9,7 @@ import {
   Wrench,
   ArrowUpRight,
 } from "lucide-react";
+import { BobAvatar } from "@/components/copilot/BobAvatar";
 
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/nav/AppShell";
@@ -132,9 +132,7 @@ function Dashboard() {
           <div className="pointer-events-none absolute -right-6 -top-6 h-32 w-32 rounded-full bg-accent/20 blur-3xl" />
           <div className="pointer-events-none absolute -left-10 bottom-0 h-24 w-24 rounded-full bg-primary/15 blur-3xl" />
           <div className="relative flex items-start gap-3">
-            <div className="mt-1 h-8 w-8 rounded-xl brand-gradient text-primary-foreground flex items-center justify-center shrink-0 shadow-soft">
-              <Sparkles className="h-4 w-4" />
-            </div>
+            <BobAvatar size="sm" className="mt-1" />
             <div className="min-w-0">
               <div className="flex items-center gap-2">
                 <h3 className="font-display text-sm font-bold text-primary">Today at a Glance</h3>

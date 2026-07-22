@@ -42,6 +42,8 @@ import { blobToWavBase64 } from "@/lib/audio-wav";
 import type { LanguageCode } from "@/i18n/languages";
 import { DemoHint } from "@/components/demo/DemoHint";
 import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
+import { useCurrentBusiness } from "@/hooks/use-current-business";
+import { useDemo } from "@/lib/demo/context";
 
 const COPILOT_TO_LANG: Record<CopilotLanguage, LanguageCode> = {
   english: "en",

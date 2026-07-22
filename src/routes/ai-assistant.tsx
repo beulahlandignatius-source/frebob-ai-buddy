@@ -35,9 +35,9 @@ import { listApprovedRecords } from "@/lib/records-store";
 export const Route = createFileRoute("/ai-assistant")({
   head: () => ({
     meta: [
-      { title: "AI Copilot — FreBob" },
-      { name: "description", content: "Ask FreBob about your sales, stock, customers and money. Grounded on approved records." },
-      { property: "og:title", content: "AI Copilot — FreBob" },
+      { title: "Bob — FreBob AI Assistant" },
+      { name: "description", content: "Chat with Bob about your sales, stock, customers and money. Grounded on approved records." },
+      { property: "og:title", content: "Chat with Bob — FreBob" },
       { property: "og:description", content: "Your smart business assistant, grounded on real approved records." },
     ],
   }),

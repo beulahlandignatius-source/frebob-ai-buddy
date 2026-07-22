@@ -20,6 +20,7 @@ import {
 } from "@/lib/reporting/period";
 import { DemoHint } from "@/components/demo/DemoHint";
 import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
+import { useCloudSync } from "@/lib/cloud-sync";
 
 const TAB_VALUES = ["overview", "sales", "expenses", "profit", "payments", "orders", "inventory", "customers", "ai"] as const;
 

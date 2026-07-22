@@ -156,7 +156,7 @@ function BusinessMemory() {
           <>
             <SectionLabel>Approved records</SectionLabel>
             {state === "loading" ? <LoadingSkeleton rows={4} /> :
-              state === "error" ? <ErrorState onRetry={() => setState("ready")} /> :
+              state === "error" ? <ErrorState message={errorMsg ?? "Could not load Business Memory."} onRetry={load} /> :
               filteredRecords.length === 0 ? (
                 <IntelligentEmptyState
                   icon={MessageSquare}

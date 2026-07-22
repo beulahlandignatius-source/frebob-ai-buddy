@@ -33,16 +33,20 @@ export const Route = createFileRoute("/inventory")({
 type FilterKey = "all" | "in" | "low" | "out";
 
 function Inventory() {
+  const { active: demoActive } = useDemo();
   const [filter, setFilter] = useState<FilterKey>("all");
   const [query, setQuery] = useState("");
   const [state, setState] = useState<"ready" | "loading" | "error">("ready");
-  const [success, setSuccess] = useState<string | null>("Stock updated for Oraimo Power Bank (+20 units).");
+  const [success, setSuccess] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
   const [userProducts, setUserProducts] = useState<UserProduct[]>(() => listUserProducts());
 
   useEffect(() => subscribeUserProducts(() => setUserProducts(listUserProducts())), []);
 
-  const combined = useMemo(() => [...userProducts, ...demoInventory], [userProducts]);
+  const combined = useMemo(
+    () => (demoActive ? [...userProducts, ...demoInventory] : userProducts),
+    [userProducts, demoActive],
+  );
 
   const rows = useMemo(() => {
     return combined.filter((p) => {

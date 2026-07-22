@@ -6,7 +6,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { History, Plus } from "lucide-react";
+import { History, Plus, Sparkles } from "lucide-react";
 import { BobAvatar } from "@/components/copilot/BobAvatar";
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
@@ -35,6 +35,7 @@ import { listApprovedRecords } from "@/lib/records-store";
 import { ListenButton } from "@/components/audio/ListenButton";
 import type { LanguageCode } from "@/i18n/languages";
 import { DemoHint } from "@/components/demo/DemoHint";
+import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
 
 const COPILOT_TO_LANG: Record<CopilotLanguage, LanguageCode> = {
   english: "en",
@@ -271,7 +272,17 @@ function AIAssistantPage() {
           {/* Messages */}
           <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 bg-[var(--surface-tinted)]/40">
             {messages.length === 0 ? (
-              <EmptyChatState />
+              snapshot.totalApproved === 0 ? (
+                <IntelligentEmptyState
+                  icon={Sparkles}
+                  title="I'm ready to help"
+                  description="Record your first conversation, scan a receipt or explore the demo business so I can answer questions about your business."
+                  primary={{ label: "Record Conversation", icon: Plus, to: "/add-record" }}
+                  secondary={[{ label: "Scan Receipt", to: "/scanner" }]}
+                />
+              ) : (
+                <EmptyChatState />
+              )
             ) : (
               messages.map((m) => (
                 <div key={m.id} className="space-y-1.5">

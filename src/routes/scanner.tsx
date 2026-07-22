@@ -8,6 +8,7 @@ import { CaptureOptionCard, ScanHistoryCard } from "@/components/scanner";
 import { listScans, type DocumentScan } from "@/lib/scanner-store";
 import { cn } from "@/lib/utils";
 import { DemoHint } from "@/components/demo/DemoHint";
+import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
 
 export const Route = createFileRoute("/scanner")({
   head: () => ({
@@ -85,11 +86,12 @@ function ScannerDashboard() {
           </Link>
         </div>
         {recent.length === 0 ? (
-          <EmptyState
+          <IntelligentEmptyState
             icon={ScanLine}
-            title="No scanned documents yet"
-            description="Scan a receipt, invoice or business document to create your first reviewed record."
-            action={<Button size="sm" onClick={() => go("camera")}>Scan document</Button>}
+            title="No scanned documents"
+            description="Scan receipts, invoices and business documents to create approved records."
+            primary={{ label: "Scan Document", icon: Camera, onClick: () => go("camera") }}
+            secondary={[{ label: "Try Demo Scan", icon: Sparkles, onClick: () => go("demo") }]}
           />
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">

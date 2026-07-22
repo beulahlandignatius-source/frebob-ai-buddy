@@ -5,7 +5,9 @@ import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { AppShell } from "@/components/nav/AppShell";
 import { SurfaceHeader, PageCanvas } from "@/components/dash";
 import { Button } from "@/components/fb/Button";
-import { Download } from "lucide-react";
+import { Download, LineChart } from "lucide-react";
+import { listOrders } from "@/lib/orders-store";
+import { listApprovedRecords } from "@/lib/records-store";
 import { toast } from "sonner";
 import { DateRangeBar } from "@/components/reports/DateRangeBar";
 import { TabsBar } from "@/components/reports/primitives";
@@ -16,6 +18,7 @@ import {
   resolvePreset, resolveCompare, type PresetKey, type CompareKey,
 } from "@/lib/reporting/period";
 import { DemoHint } from "@/components/demo/DemoHint";
+import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
 
 const TAB_VALUES = ["overview", "sales", "payments", "orders", "inventory", "customers", "ai"] as const;
 type TabKey = typeof TAB_VALUES[number];
@@ -59,6 +62,10 @@ function Reports() {
   const setPreset = (p: PresetKey) => navigate({ search: (s: Search) => ({ ...s, preset: p }) });
   const setCompare = (c: CompareKey) => navigate({ search: (s: Search) => ({ ...s, compare: c }) });
   const refresh = () => { setRefreshKey((k) => k + 1); setUpdatedAt(new Date().toISOString()); };
+  const hasAnyData = useMemo(
+    () => listOrders().length > 0 || listApprovedRecords().length > 0,
+    [refreshKey],
+  );
 
   const tabs: { value: TabKey; label: string }[] = [
     { value: "overview", label: "Overview" },
@@ -85,6 +92,17 @@ function Reports() {
           }
         />
 
+        {!hasAnyData ? (
+          <IntelligentEmptyState
+            icon={LineChart}
+            title="No reports yet"
+            description="Reports build automatically from your orders, payments and inventory. Add your first records to see sales trends and AI insights."
+            primary={{ label: "Add Record", to: "/add-record" }}
+            secondary={[{ label: "Scan Document", to: "/scanner" }]}
+          />
+        ) : (
+          <>
+
         <DateRangeBar
           preset={safePreset}
           compare={safeCompare}
@@ -104,6 +122,8 @@ function Reports() {
         {safeTab === "inventory" && <InventoryTab range={range} compareRange={compareRange} refreshKey={refreshKey} />}
         {safeTab === "customers" && <CustomersTab range={range} compareRange={compareRange} refreshKey={refreshKey} />}
         {safeTab === "ai" && <AIInsightsTab range={range} compareRange={compareRange} refreshKey={refreshKey} />}
+          </>
+        )}
       </PageCanvas>
     </AppShell>
   );

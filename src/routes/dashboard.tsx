@@ -8,7 +8,11 @@ import {
   Package,
   Wrench,
   ArrowUpRight,
+  Plus,
+  Sparkles,
 } from "lucide-react";
+import { listApprovedRecords } from "@/lib/records-store";
+import { listOrders } from "@/lib/orders-store";
 import { BobAvatar } from "@/components/copilot/BobAvatar";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -28,6 +32,7 @@ import {
 } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 import { DemoHint } from "@/components/demo/DemoHint";
+import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -84,6 +89,8 @@ function Dashboard() {
   const today = new Date().toLocaleDateString("en-NG", {
     weekday: "long", day: "numeric", month: "long",
   });
+  const hasActivity = listApprovedRecords().length > 0 || listOrders().length > 0;
+
 
   useEffect(() => {
     (async () => {
@@ -141,30 +148,42 @@ function Dashboard() {
           </div>
         </header>
 
-        {/* Today at a Glance — AI glass panel */}
-        <section className="relative overflow-hidden rounded-[24px] p-5 sm:p-6 glass-card mb-6">
-          <div className="pointer-events-none absolute -right-6 -top-6 h-32 w-32 rounded-full bg-accent/20 blur-3xl" />
-          <div className="pointer-events-none absolute -left-10 bottom-0 h-24 w-24 rounded-full bg-primary/15 blur-3xl" />
-          <div className="relative flex items-start gap-3">
-            <BobAvatar size="sm" className="mt-1" />
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <h3 className="font-display text-sm font-bold text-primary">Today at a Glance</h3>
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-subtle-foreground">
-                  Bob's recap
-                </span>
+        {hasActivity ? (
+          /* Today at a Glance — AI glass panel */
+          <section className="relative overflow-hidden rounded-[24px] p-5 sm:p-6 glass-card mb-6">
+            <div className="pointer-events-none absolute -right-6 -top-6 h-32 w-32 rounded-full bg-accent/20 blur-3xl" />
+            <div className="pointer-events-none absolute -left-10 bottom-0 h-24 w-24 rounded-full bg-primary/15 blur-3xl" />
+            <div className="relative flex items-start gap-3">
+              <BobAvatar size="sm" className="mt-1" />
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-display text-sm font-bold text-primary">Today at a Glance</h3>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-subtle-foreground">
+                    Bob's recap
+                  </span>
+                </div>
+                <p className="mt-1.5 text-[15px] leading-relaxed text-foreground/85">
+                  You've had <strong className="text-primary">8 orders</strong> today — sales up{" "}
+                  <strong className="text-[var(--success)]">+12%</strong> from yesterday.{" "}
+                  <Link to="/notifications" className="text-accent font-semibold underline underline-offset-2">
+                    2 stock alerts
+                  </Link>{" "}
+                  need your attention.
+                </p>
               </div>
-              <p className="mt-1.5 text-[15px] leading-relaxed text-foreground/85">
-                You've had <strong className="text-primary">8 orders</strong> today — sales up{" "}
-                <strong className="text-[var(--success)]">+12%</strong> from yesterday.{" "}
-                <Link to="/notifications" className="text-accent font-semibold underline underline-offset-2">
-                  2 stock alerts
-                </Link>{" "}
-                need your attention.
-              </p>
             </div>
+          </section>
+        ) : (
+          <div className="mb-6">
+            <IntelligentEmptyState
+              icon={Sparkles}
+              title={`👋 Welcome to FreBob, ${firstName}`}
+              description="You're ready to start managing your business. You haven't recorded any business activity yet — add your first record and Bob will start summarising your day."
+              primary={{ label: "Add Business Record", icon: Plus, to: "/add-record" }}
+              secondary={[{ label: "Scan Document", to: "/scanner" }]}
+            />
           </div>
-        </section>
+        )}
 
         {/* Metrics */}
         <section data-tour="dashboard-metrics" className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-8">

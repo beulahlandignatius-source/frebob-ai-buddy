@@ -17,6 +17,7 @@ import {
   type Customer, type CustomerMetrics, type CustomerStatus,
 } from "@/lib/customers-store";
 import { DemoHint } from "@/components/demo/DemoHint";
+import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
 
 export const Route = createFileRoute("/customers")({
   head: () => ({
@@ -202,11 +203,12 @@ function CustomersPage() {
         ) : state === "error" ? (
           <ErrorState onRetry={() => setState("ready")} message="FreBob could not load your customers. Please try again." />
         ) : rows.length === 0 ? (
-          <EmptyState
+          <IntelligentEmptyState
             icon={Users}
             title="No customers yet"
-            description="Add your first customer or approve a customer record to start building your customer list."
-            action={<Link to="/customers/new"><Button size="sm"><UserPlus className="h-4 w-4 mr-1" /> Add customer</Button></Link>}
+            description="Customers will appear here after you approve conversations or create orders."
+            primary={{ label: "Add Customer", icon: UserPlus, to: "/customers/new" }}
+            secondary={[{ label: "Record a Conversation", to: "/add-record" }]}
           />
         ) : filtered.length === 0 ? (
           <EmptyState

@@ -139,7 +139,7 @@ function Dashboard() {
       <section className="mt-8">
         <h2 className="text-lg font-semibold mb-3">Quick actions</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          <QuickActionCard icon={Plus} label="Add Business Record" hint="Sale, payment, expense" onClick={() => toast("Coming in a later batch")} />
+          <QuickActionCard icon={Plus} label="Add Business Record" hint="Sale, payment, expense" primary onClick={() => toast("Coming in a later batch")} />
           <QuickActionCard icon={Boxes} label="View Inventory" hint="Stock & prices" onClick={() => toast("Coming in a later batch")} />
           <QuickActionCard icon={ShoppingCart} label="View Orders" hint="Open & completed" onClick={() => toast("Coming in a later batch")} />
           <QuickActionCard icon={ScanLine} label="Open Scanner" hint="Scan receipt or product" onClick={() => toast("Coming in a later batch")} />

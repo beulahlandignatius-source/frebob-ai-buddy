@@ -22,7 +22,7 @@ import {
   type SupportedLanguage, type SupportedCurrency, type DateFormat,
   type NumberFormat, type AIResponseStyle, type DefaultOrderStatus,
 } from "@/lib/business-settings-store";
-import { BUSINESS_CATEGORIES, LANGUAGES } from "@/lib/constants";
+import { BUSINESS_CATEGORIES, LANGUAGES, APP_VERSION } from "@/lib/constants";
 import { getSettings as getNotifSettings, setSettings as setNotifSettings, type NotifSettings } from "@/lib/notifications-store";
 import { NotificationSettings } from "@/components/notifications";
 import { listOrders } from "@/lib/orders-store";

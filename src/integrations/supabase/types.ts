@@ -14,7 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      businesses: {
+        Row: {
+          address: string | null
+          category: string | null
+          created_at: string
+          currency: string
+          id: string
+          initial_inventory: string | null
+          initial_products: string | null
+          name: string
+          owner_id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          category?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          initial_inventory?: string | null
+          initial_products?: string | null
+          name: string
+          owner_id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          category?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          initial_inventory?: string | null
+          initial_products?: string | null
+          name?: string
+          owner_id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          business_category: string | null
+          business_setup_completed: boolean
+          created_at: string
+          full_name: string | null
+          id: string
+          onboarding_completed: boolean
+          phone: string | null
+          preferred_language: string | null
+          updated_at: string
+        }
+        Insert: {
+          business_category?: string | null
+          business_setup_completed?: boolean
+          created_at?: string
+          full_name?: string | null
+          id: string
+          onboarding_completed?: boolean
+          phone?: string | null
+          preferred_language?: string | null
+          updated_at?: string
+        }
+        Update: {
+          business_category?: string | null
+          business_setup_completed?: boolean
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          onboarding_completed?: boolean
+          phone?: string | null
+          preferred_language?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

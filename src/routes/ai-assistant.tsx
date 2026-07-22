@@ -105,6 +105,9 @@ function relTime(ts: number) {
 function AIAssistantPage() {
   const ask = useServerFn(askCopilot);
   const transcribe = useServerFn(transcribeAudio);
+  const { context: bizCtx } = useCurrentBusiness();
+  const demo = useDemo();
+  const businessId = !demo.active && bizCtx?.id ? bizCtx.id : null;
   const [threads, setThreads] = useState<Thread[]>(() => loadThreads());
   const [activeId, setActiveId] = useState<string>(() => {
     const existing = loadThreads();

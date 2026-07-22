@@ -1,62 +1,75 @@
+Two parallel tracks, shipped as separate batches. Track A goes first (bigger blast radius), Track B follows immediately after.
 
-# FreBob Design System — Phased Plan
+## Track A — Multi-business data architecture
 
-Rolling the full spec out in 5 reviewable phases. Each phase ships independently so you can check the preview and course-correct before the next batch. I'll start **Phase 1** immediately after you approve.
+Goal: every user has one or more private business workspaces; Demo is fully sandboxed; no cross-business bleed anywhere (DB, stores, AI, dashboard).
 
-## Phase 1 — Design Tokens (this batch)
+### A1. Schema — memberships & business scoping
+- Add `business_members(user_id, business_id, role)` with unique `(user_id, business_id)`; `role` is `owner|admin|member`.
+- Backfill existing `businesses.owner_id` rows into `business_members` as `owner`.
+- New security-definer helpers: `is_business_member(_business_id)`, `current_business_id()` (reads a per-request GUC or falls back to the user's first membership).
+- Rewrite every RLS policy on `approved_records`, `conversations`, `customers`, `products`, `orders`, `payments`, `notifications`, `inventory_events`, `scans`, `scan_conversions`, `duplicate_reviews`, `order_status_overrides`, `audio_cache`, `settings_audit` to filter by `is_business_member(business_id)` instead of owner-only checks.
+- Add missing `business_id` FKs on any table that stores per-business rows but currently keys off `user_id` only.
+- Preserve existing GRANTs; keep `service_role` grants intact.
 
-Formalize every reusable value in `src/styles.css` so the rest of the phases have a single source of truth.
+### A2. Client business context
+- Refactor `useCurrentBusiness`:
+  - Load all memberships for the signed-in user.
+  - Persist `activeBusinessId` in `localStorage` (`frebob.activeBusinessId`), fallback to first membership.
+  - Expose `businesses[]`, `switch(businessId)`, `create(businessInput)`.
+- New `<BusinessSwitcher />` in the app shell header (compact chip → dropdown).
+- Business Setup now calls a `createBusinessWorkspace` server fn that inserts the row + membership atomically and sets it active.
 
-- **Spacing**: 8-point scale tokens `--space-1..--space-24` (4, 8, 12, 16, 24, 32, 40, 48, 64, 96).
-- **Type scale**: `--text-display`, `--text-h1..h4`, `--text-body-lg`, `--text-body`, `--text-small`, `--text-caption` with matching line-heights; max measure 75ch utility.
-- **Radii**: keep existing `--radius-*`, add `--radius-pill`.
-- **Shadows / elevation**: `--shadow-xs..--shadow-xl` (existing elegant/card/soft folded in).
-- **Motion**: `--duration-fast/base/slow`, `--ease-standard/emphasized`, `@media (prefers-reduced-motion)` global override.
-- **Semantic status**: confirm success/warning/error/info tokens + `-foreground` pairs pass WCAG AA on white and on tinted surfaces.
-- **Breakpoints**: document 320 → 2560 as CSS custom media; Tailwind v4 handles the utilities.
-- **Focus ring**: single `--ring` treatment (2px + 2px offset) as a `@utility focus-ring`.
+### A3. Store isolation (Demo vs real)
+- Namespace every `frebob.*` localStorage key by active business id: `frebob.<businessId>.<key>`. Demo uses reserved id `demo`.
+- Update all 15+ stores (`orders-store`, `customers-store`, `expenses-store`, `notifications-store`, `inventory-events-store`, `scan-conversions-store`, `duplicates-store`, `order-extras-store`, `scanner-store`, `records-store`, `user-products-store`, `business-settings-store`, `demo-conversations`, `copilot-context`, `reporting/service`) to derive the storage key from the active business.
+- Rework `lib/demo/mode.ts`: entering demo switches active business to `demo` and seeds only that namespace; exiting switches back to the previous real business. No more `frebob-real-backup:` copy — real data stays untouched under its own namespace.
+- Demo edits are session-only: on exit, `demo` namespace is wiped and re-seeded on next entry.
 
-## Phase 2 — Core Components + States
+### A4. AI + dashboard scoping
+- `copilot-context` and `copilot.functions` receive `businessId` from the client and filter every query/read by it. Server fns using `requireSupabaseAuth` verify membership before responding.
+- `assessBusinessHealth`, reporting service, and Business Memory reads switch to the active-business namespace/rows.
+- Dashboard: remove any mock preloads for empty real businesses; render `IntelligentEmptyState` CTAs (Add customer / Create order / Add inventory / Scan / Chat with Bob) when the active business has zero rows.
 
-Standardize every primitive with the full state matrix (default / hover / active / focus-visible / disabled / loading / error).
+### A5. Verification
+- Sign-in as User A, create biz → sign-in as User B → confirm zero visibility.
+- Enter Demo → make edits → exit → real workspace untouched; re-enter → seed reset.
+- Create second business for one user → switcher swaps dashboard, memory, Bob context.
+- `supabase--linter` + targeted `read_query` policy checks.
 
-- Button, Input, Select, Textarea, Field (already partial) → all states, min 44×44 tap target.
-- Card, Badge, Alert, Tooltip, Toast, Dialog, Drawer, Tabs, Accordion.
-- New primitives: `Skeleton`, `EmptyState` (unify with existing `IntelligentEmptyState`), `LoadingState`, `ErrorState` with retry + support link.
-- Icon-only buttons: enforce `aria-label` via a lint pass.
+## Track B — Form validation sweep (RHF + Zod)
 
-## Phase 3 — Accessibility + Responsive Sweep (WCAG 2.2 AA)
+Goal: every user-facing form uses `react-hook-form` + `zod`, with inline red errors and a green success hint per field once valid.
 
-- Contrast audit against new tokens; fix any subtle text on white.
-- Keyboard nav + visible focus on every interactive element.
-- Skip-to-content link in `AppShell`.
-- Tap targets ≥ 44×44 on mobile bottom nav, chips, icon buttons.
-- Sweep all routes at 320, 375, 414, 768, 1024, 1440, 1920 — no horizontal scroll, no clipped text, use `grid-cols-[minmax(0,1fr)_auto]` + `min-w-0` pattern for header rows.
-- `prefers-reduced-motion` respected by tour, carousel, frustration reel.
-- Semantic landmarks: one `<main>`, proper heading order per route.
+### B1. Shared primitives
+- `bun add react-hook-form @hookform/resolvers zod` (zod already present in some places — confirm).
+- New `src/components/fb/Field.tsx`: label, description, control slot, `FormMessage` (error) and `FormHint` (green check + text when `isDirty && !error`).
+- New `src/lib/validation/schemas.ts`: shared zod schemas (phone NG, email, currency amount, non-empty trimmed string, sku, url, quantity ≥ 0, etc.).
 
-## Phase 4 — Per-Screen Polish
+### B2. Forms migrated (all switch to RHF + Zod + Field)
+- Auth: `signin`, `signup`, `auth` (OTP)
+- Business setup (all 3 steps) + `settings.business`
+- Customers: `customers.new`, `customers.$id.edit`
+- Records: `records.manual`, `conversations.new`, `add-record` voice metadata
+- Orders: order-item editor on `orders.$id`, `orders.$id.payment` (amount/kind/proof)
+- Inventory: add-product form (`components/inventory/*` and `user-products-store` inputs)
+- Expenses: expense form
+- Scanner: metadata capture on `scanner.new`
+- Profile + Settings
 
-Applied in priority order (I'll ask you to confirm/reorder before starting):
-Dashboard → Bob chat → Add Record + voice → Orders detail (tabs) → Reports (Sales/Expenses/Profit/Inventory/Customer) → Inventory → Customers → Scanner → Business Memory → Settings/Profile → Auth/Onboarding → Landing.
+### B3. UX rules
+- Validate on blur, revalidate on change after first submit attempt.
+- Error text uses `text-destructive`; success uses green success token from Phase 1 tokens with a small check icon.
+- Submit button `aria-busy` while pending; disabled only when `!isValid` after first submit.
 
-Each screen gets: empty state, skeleton loader, error state with retry, real-time form validation with preserved input, evidence/confidence surfacing where AI is involved.
+## Delivery order
 
-## Phase 5 — QA + Release Checklist
+1. Track A migration (needs approval) → wait → land A2–A5 code.
+2. Track B in the next batch: shared primitives → forms in the order above.
 
-- Automated: typecheck, lint, build.
-- Manual: responsive matrix, keyboard-only pass, screen-reader spot-check (VoiceOver), Lighthouse a11y ≥ 95 on key routes.
-- Living checklist committed to `docs/DESIGN-QA.md`.
-- Offline UX: queued action banner + retry (uses existing stores).
+## Notes / trade-offs
 
-## Out of scope (call out explicitly)
+- Namespacing localStorage by business is invasive but avoids a schema-per-store rewrite; real DB tables already have `business_id`. Existing users' local caches will be re-seeded on next load (no data loss — canonical data lives in Supabase).
+- Full multi-business is scoped to owner + member roles only for now; admin UI for invites is out of scope for this batch (schema supports it).
 
-- Dark mode (spec says "future") — tokens will be dark-mode-ready but no theme shipped.
-- Biometrics, device management — flagged future.
-- Backend/business-logic changes — none; this is presentation only.
-
-## Deliverable for Phase 1
-
-One PR-sized change to `src/styles.css` plus a short `docs/DESIGN-TOKENS.md` reference. No component rewrites yet, no visual regressions expected — existing utilities (`brand-gradient`, `glass-card`, `shadow-elegant`, `shadow-card`) keep working.
-
-Approve and I'll ship Phase 1 now.
+Reply "go" to start with Track A's migration.

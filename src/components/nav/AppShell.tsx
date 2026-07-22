@@ -11,6 +11,7 @@ import { DemoModeBanner } from "@/components/demo/DemoModeBanner";
 import { useTour } from "@/components/tour/GuidedTour";
 import { EnterDemoButton } from "@/components/demo/EnterDemoButton";
 import { useDemo } from "@/lib/demo/context";
+import { BusinessSwitcher } from "@/components/nav/BusinessSwitcher";
 
 type NavItem = { to: string; label: string; icon: typeof Home; tour?: string };
 
@@ -76,6 +77,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           <Logo size={32} />
           <span className="font-bold text-lg tracking-tight">FreBob</span>
         </div>
+        <div className="px-3 pt-3">
+          <BusinessSwitcher className="w-full" />
+        </div>
         <nav className="flex-1 overflow-y-auto p-3 space-y-1">
           {desktopNav.map((item) => {
             const Icon = item.icon;
@@ -119,6 +123,9 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <main id="main-content" tabIndex={-1} className="lg:pl-64 pb-24 lg:pb-8 min-h-dvh focus:outline-none">
         <DemoModeBanner />
+        <div className="lg:hidden px-4 pt-4">
+          <BusinessSwitcher />
+        </div>
         <div className="mx-auto max-w-6xl px-4 lg:px-8 py-6 lg:py-10">{children}</div>
 
       </main>

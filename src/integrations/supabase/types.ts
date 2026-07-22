@@ -127,6 +127,41 @@ export type Database = {
           },
         ]
       }
+      business_members: {
+        Row: {
+          business_id: string
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["business_member_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["business_member_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["business_member_role"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_members_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       businesses: {
         Row: {
           address: string | null
@@ -884,10 +919,12 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_business_member: { Args: { _business_id: string }; Returns: boolean }
       is_business_owner: { Args: { _business_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "user"
+      business_member_role: "owner" | "admin" | "member"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1016,6 +1053,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      business_member_role: ["owner", "admin", "member"],
     },
   },
 } as const

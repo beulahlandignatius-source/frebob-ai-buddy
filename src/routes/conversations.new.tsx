@@ -145,13 +145,13 @@ function NewConversation() {
   const start = async (sourceType: SourceType, textIn: string, fileName?: string) => {
     setBusy(true);
     const conv = createConversation({ text: textIn.trim(), language, sourceType, fileName });
-    // Best-effort: mirror this entry into the new source_inputs pipeline so
-    // future review/approval flows can read it. Legacy conversation review
-    // still works from localStorage — no blocking on DB errors.
+    // Mirror into the Cloud pipeline. When the user is signed in and not in
+    // demo mode we persist the returned source_input id on the local
+    // conversation so the review screen can call server extraction/approval.
     try {
       const ctx = await getCurrentBusiness();
       if (ctx?.businessId && !ctx.isDemo) {
-        await createSourceInput({
+        const { id } = await createSourceInput({
           data: {
             businessId: ctx.businessId,
             sourceType,
@@ -160,6 +160,8 @@ function NewConversation() {
             meta: fileName ? { fileName } : {},
           },
         });
+        const { saveConversation } = await import("@/lib/records-store");
+        saveConversation({ ...conv, sourceInputId: id });
       }
     } catch (err) {
       console.warn("[add-record] source_inputs mirror failed", err);

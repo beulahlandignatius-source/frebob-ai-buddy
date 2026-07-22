@@ -14,6 +14,7 @@ import {
   saveConversation, type ConversationRecord, type Extraction, type ExtractionItem,
 } from "@/lib/records-store";
 import { extractConversation } from "@/lib/extraction.functions";
+import { extractBusinessRecord, approveExtraction, rejectExtraction } from "@/lib/source-inputs.functions";
 import { toast } from "sonner";
 import { fmt } from "@/lib/mock-data";
 
@@ -35,6 +36,9 @@ function ConversationReview() {
   const { id } = useParams({ from: "/conversations/$id" });
   const navigate = useNavigate();
   const extract = useServerFn(extractConversation);
+  const extractServer = useServerFn(extractBusinessRecord);
+  const approveServer = useServerFn(approveExtraction);
+  const rejectServer = useServerFn(rejectExtraction);
 
   const [conv, setConv] = useState<ConversationRecord | undefined>(() => getConversation(id));
   const [phase, setPhase] = useState<Phase>(conv?.status === "approved" ? "approved" : "processing");
@@ -45,7 +49,7 @@ function ConversationReview() {
   const [errMsg, setErrMsg] = useState<string | null>(null);
   const [runId, setRunId] = useState(0);
   const [approved, setApproved] = useState<{ reference: string; id: string } | null>(
-    conv?.approvedRecordId ? { reference: "", id: conv.approvedRecordId } : null,
+    conv?.approvedRecordId ? { reference: conv.approvedReference ?? "", id: conv.approvedRecordId } : null,
   );
 
   // Auto-advance stepper visual
@@ -65,13 +69,28 @@ function ConversationReview() {
     setStep(0);
     (async () => {
       try {
-        const res = await extract({ data: { text: conv.text, language: conv.language } });
+        let ex: Extraction;
+        let m: "ai" | "mock" = "ai";
+        let n: string | null = null;
+        let extractionId: string | undefined;
+        if (conv.sourceInputId) {
+          const res = await extractServer({ data: { sourceInputId: conv.sourceInputId } });
+          ex = JSON.parse(res.payloadJson) as Extraction;
+          m = res.mode;
+          n = res.note;
+          extractionId = res.extractionId;
+        } else {
+          const res = await extract({ data: { text: conv.text, language: conv.language } });
+          ex = res.extraction;
+          m = res.mode;
+          n = res.note ?? null;
+        }
         if (cancelled) return;
-        const withBalance = computeBalance(res.extraction);
+        const withBalance = computeBalance(ex);
         setExtraction(withBalance);
-        setMode(res.mode);
-        setNote(res.note ?? null);
-        const next = { ...conv, draft: withBalance, edited: withBalance, processingMode: res.mode };
+        setMode(m);
+        setNote(n);
+        const next = { ...conv, draft: withBalance, edited: withBalance, processingMode: m, extractionId: extractionId ?? conv.extractionId };
         saveConversation(next);
         setConv(next);
         setStep(4);
@@ -149,14 +168,35 @@ function ConversationReview() {
         setExtraction(withBalance);
         saveConversation({ ...conv, edited: withBalance });
       }}
-      onApprove={() => {
-        const rec = approveConversation(conv, extraction);
-        setApproved({ reference: rec.reference, id: rec.id });
+      onApprove={async () => {
+        // Always keep the local record in sync for legacy screens.
+        const localRec = approveConversation(conv, extraction);
+        let reference = localRec.reference;
+        let recordId = localRec.id;
+        if (conv.extractionId) {
+          try {
+            const res = await approveServer({
+              data: { extractionId: conv.extractionId, payloadJson: JSON.stringify(extraction) },
+            });
+            reference = res.reference;
+            recordId = res.approvedRecordId;
+            saveConversation({ ...conv, edited: extraction, status: "approved", approvedRecordId: recordId, approvedReference: reference });
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : "Cloud approval failed.";
+            toast.error(`Saved locally, but Cloud sync failed: ${msg}`);
+          }
+        }
+        setApproved({ reference, id: recordId });
         setPhase("approved");
         toast.success("Approved and added to Business Memory.");
       }}
-      onReject={() => {
+      onReject={async () => {
         rejectConversation(conv);
+        if (conv.extractionId) {
+          try { await rejectServer({ data: { extractionId: conv.extractionId } }); } catch (err) {
+            console.warn("[review] cloud reject failed", err);
+          }
+        }
         toast("This draft was rejected and was not added to Business Memory.");
         navigate({ to: "/business-memory" });
       }}

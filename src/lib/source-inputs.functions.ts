@@ -50,7 +50,7 @@ export const createSourceInput = createServerFn({ method: "POST" })
         file_path: data.filePath,
         file_mime: data.fileMime,
         duration_ms: data.durationMs,
-        meta: data.meta,
+        meta: data.meta as never,
         status: "queued",
       })
       .select("id")
@@ -192,7 +192,7 @@ export const extractBusinessRecord = createServerFn({ method: "POST" })
       .insert({
         business_id: src.business_id,
         source_input_id: src.id,
-        payload: payload as unknown as object,
+        payload: payload as never,
         confidence,
         needs_review: needsReview,
         missing_fields: missingFields,
@@ -206,5 +206,5 @@ export const extractBusinessRecord = createServerFn({ method: "POST" })
 
     await supabase.from("source_inputs").update({ status: "extracted" }).eq("id", src.id);
 
-    return { extractionId: ext.id as string, mode, note, payload };
+    return { extractionId: ext.id as string, mode, note, payload: payload as unknown };
   });

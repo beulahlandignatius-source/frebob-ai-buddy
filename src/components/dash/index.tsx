@@ -336,7 +336,6 @@ export function PeriodTabs<T extends string>({
 
 /* ---------- EmptyState ---------- */
 export function EmptyState({
-  icon: Icon = Bell,
   title,
   description,
   action,
@@ -348,15 +347,13 @@ export function EmptyState({
 }) {
   return (
     <div className="rounded-2xl border border-dashed border-border bg-card p-8 text-center">
-      <div className="mx-auto h-12 w-12 rounded-2xl bg-secondary text-primary flex items-center justify-center">
-        <Icon className="h-6 w-6" />
-      </div>
-      <h3 className="mt-4 font-semibold">{title}</h3>
+      <h3 className="font-semibold">{title}</h3>
       {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
       {action && <div className="mt-4">{action}</div>}
     </div>
   );
 }
+
 
 /* ---------- LoadingSkeleton ---------- */
 export function LoadingSkeleton({ rows = 3, className }: { rows?: number; className?: string }) {

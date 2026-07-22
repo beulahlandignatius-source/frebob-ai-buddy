@@ -38,7 +38,7 @@ export function BusinessSwitcher({ className }: { className?: string }) {
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="inline-flex max-w-[220px] items-center gap-2 rounded-full border border-border/60 bg-card px-3 py-1.5 text-sm text-foreground shadow-card hover:shadow-soft transition focus-ring"
+        className="inline-flex max-w-[220px] items-center gap-2 rounded-full liquid-glass px-3 py-1.5 text-sm text-foreground liquid-press focus-ring"
       >
         <Building2 className="h-4 w-4 text-primary shrink-0" />
         <span className="truncate font-medium">{context.businessName}</span>
@@ -48,7 +48,7 @@ export function BusinessSwitcher({ className }: { className?: string }) {
       {open && (
         <div
           role="menu"
-          className="absolute z-50 mt-2 w-64 rounded-2xl border border-border/70 bg-white shadow-elegant p-2"
+          className="absolute z-50 mt-2 w-64 rounded-2xl liquid-glass-strong p-2"
         >
           <p className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-bold text-muted-foreground">
             {multi ? "Switch business" : "Your business"}

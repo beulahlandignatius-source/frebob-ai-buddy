@@ -6,16 +6,18 @@ import type { ConfidenceLabel, Extraction, OrderStatus, PaymentStatus } from "@/
 
 /* Record source card */
 export function RecordSourceCard({
-  title, description, status, icon: Icon, to, onClick,
+  title, description, status, icon: Icon, to, search, onClick,
 }: {
   title: string;
   description: string;
   status: "Available" | "Coming soon";
   icon: React.ComponentType<{ className?: string }>;
   to?: string;
+  search?: Record<string, string>;
   onClick?: () => void;
 }) {
   const disabled = status === "Coming soon";
+  void Icon;
   const inner = (
     <div className={cn(
       "group relative bg-card border border-secondary rounded-[20px] p-5 transition h-full flex flex-col text-left",
@@ -35,9 +37,10 @@ export function RecordSourceCard({
   );
 
   if (disabled) return <div>{inner}</div>;
-  if (to) return <Link to={to} className="block h-full">{inner}</Link>;
+  if (to) return <Link to={to} search={search as never} className="block h-full">{inner}</Link>;
   return <button type="button" onClick={onClick} className="block h-full w-full">{inner}</button>;
 }
+
 
 /* AI processing stepper (glassmorphic) */
 export function AIProcessingStepper({ activeStep }: { activeStep: number }) {

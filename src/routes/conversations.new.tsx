@@ -12,7 +12,16 @@ import { blobToWavBase64, startMicRecorder, type MicRecorder } from "@/lib/audio
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
+import { z } from "zod";
+import { fallback, zodValidator } from "@tanstack/zod-adapter";
+
+const tabSchema = z.enum(["paste", "voice", "whatsapp", "upload", "demo"]);
+const searchSchema = z.object({
+  tab: fallback(tabSchema, "paste").default("paste"),
+});
+
 export const Route = createFileRoute("/conversations/new")({
+  validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
       { title: "Import Business Conversation — FreBob" },
@@ -23,6 +32,7 @@ export const Route = createFileRoute("/conversations/new")({
   }),
   component: NewConversation,
 });
+
 
 type Tab = "paste" | "voice" | "whatsapp" | "upload" | "demo";
 const LANGS: { value: Language; label: string }[] = [
@@ -44,8 +54,10 @@ const STT_LANG: Partial<Record<Language, string>> = {
 
 function NewConversation() {
   const navigate = useNavigate();
+  const { tab: initialTab } = Route.useSearch();
   const transcribe = useServerFn(transcribeAudio);
-  const [tab, setTab] = useState<Tab>("paste");
+  const [tab, setTab] = useState<Tab>(initialTab as Tab);
+
   const [text, setText] = useState("");
   const [file, setFile] = useState<{ name: string; size: number; text: string } | null>(null);
   const [language, setLanguage] = useState<Language>("auto");

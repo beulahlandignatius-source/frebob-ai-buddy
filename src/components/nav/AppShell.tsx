@@ -117,9 +117,10 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </aside>
 
-      <main className="lg:pl-64 pb-24 lg:pb-8 min-h-screen">
+      <main id="main-content" tabIndex={-1} className="lg:pl-64 pb-24 lg:pb-8 min-h-screen focus:outline-none">
         <DemoModeBanner />
         <div className="mx-auto max-w-6xl px-4 lg:px-8 py-6 lg:py-10">{children}</div>
+
       </main>
 
       <nav

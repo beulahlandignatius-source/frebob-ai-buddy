@@ -1,46 +1,72 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import {
-  Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, PieChart, Pie, Cell, Legend,
-} from "recharts";
-import { ChevronLeft, ChevronRight, CalendarDays, Download } from "lucide-react";
+import { z } from "zod";
+import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { AppShell } from "@/components/nav/AppShell";
+import { SurfaceHeader, PageCanvas } from "@/components/dash";
 import { Button } from "@/components/fb/Button";
-import {
-  PageCanvas, SurfaceHeader, SectionLabel, PeriodTabs, ReportSummaryCard, ResponsiveReportTable,
-  LoadingSkeleton, ErrorState, EmptyState,
-} from "@/components/dash";
-import {
-  dailyReport, weeklyReport, monthlyReport, reportSummary, topProducts, ordersByStatus, fmt,
-} from "@/lib/mock-data";
+import { Download } from "lucide-react";
 import { toast } from "sonner";
+import { DateRangeBar } from "@/components/reports/DateRangeBar";
+import { TabsBar } from "@/components/reports/primitives";
+import {
+  OverviewTab, SalesTab, PaymentsTab, OrdersTab, InventoryTab, CustomersTab, AIInsightsTab,
+} from "@/components/reports/tabs";
+import {
+  resolvePreset, resolveCompare, type PresetKey, type CompareKey,
+} from "@/lib/reporting/period";
+
+const TAB_VALUES = ["overview", "sales", "payments", "orders", "inventory", "customers", "ai"] as const;
+type TabKey = typeof TAB_VALUES[number];
+
+const searchSchema = z.object({
+  tab: fallback(z.string(), "overview").default("overview"),
+  preset: fallback(z.string(), "this_week").default("this_week"),
+  compare: fallback(z.string(), "previous").default("previous"),
+});
 
 export const Route = createFileRoute("/reports")({
+  validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
       { title: "Reports — FreBob" },
-      { name: "description", content: "Track sales, payments and top products across daily, weekly and monthly periods." },
+      { name: "description", content: "Understand your sales, payments, orders, customers and stock — grounded in approved business records." },
       { property: "og:title", content: "Reports — FreBob" },
-      { property: "og:description", content: "Calm, mobile-first reports for Nigerian SMEs." },
+      { property: "og:description", content: "Calm, mobile-first business reports for Nigerian SMEs." },
     ],
   }),
   component: Reports,
 });
 
-type Period = "daily" | "weekly" | "monthly";
-const PIE_COLORS = ["#4b1fa6", "#f7931e", "#5a2abf", "#e5484d"];
-
 function Reports() {
-  const [period, setPeriod] = useState<Period>("daily");
-  const [offset, setOffset] = useState(0);
-  const [state, setState] = useState<"ready" | "loading" | "error">("ready");
+  const { tab, preset, compare } = Route.useSearch();
+  const navigate = useNavigate({ from: "/reports" });
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const rows = useMemo(() => (period === "daily" ? dailyReport : period === "weekly" ? weeklyReport : monthlyReport), [period]);
-  const summary = reportSummary[period];
-  const periodLabel = period === "daily" ? "This week" : period === "weekly" ? "This month" : "This year";
-  const shownLabel = offset === 0 ? periodLabel : offset < 0 ? `${Math.abs(offset)} back` : `${offset} ahead`;
+  const safeTab: TabKey = (TAB_VALUES as readonly string[]).includes(tab) ? (tab as TabKey) : "overview";
+  const safePreset: PresetKey = (["today","yesterday","this_week","last_week","this_month","last_month","last_30","custom"] as const)
+    .includes(preset as PresetKey) ? (preset as PresetKey) : "this_week";
+  const safeCompare: CompareKey = (["previous","previous_week","previous_month","none"] as const)
+    .includes(compare as CompareKey) ? (compare as CompareKey) : "previous";
 
-  const soon = () => toast("Export coming in a later batch");
+  const range = useMemo(() => resolvePreset(safePreset), [safePreset, refreshKey]);
+  const compareRange = useMemo(() => resolveCompare(range, safeCompare), [range, safeCompare]);
+  const [updatedAt, setUpdatedAt] = useState<string>(() => new Date().toISOString());
+
+  const setTab = (v: TabKey) => navigate({ search: (p) => ({ ...p, tab: v }) });
+  const setPreset = (p: PresetKey) => navigate({ search: (s) => ({ ...s, preset: p }) });
+  const setCompare = (c: CompareKey) => navigate({ search: (s) => ({ ...s, compare: c }) });
+  const refresh = () => { setRefreshKey((k) => k + 1); setUpdatedAt(new Date().toISOString()); };
+
+  const tabs: { value: TabKey; label: string }[] = [
+    { value: "overview", label: "Overview" },
+    { value: "sales", label: "Sales" },
+    { value: "payments", label: "Payments" },
+    { value: "orders", label: "Orders" },
+    { value: "inventory", label: "Inventory" },
+    { value: "customers", label: "Customers" },
+    { value: "ai", label: "AI Insights" },
+  ];
 
   return (
     <AppShell>
@@ -48,129 +74,34 @@ function Reports() {
         <SurfaceHeader
           eyebrow="Reports"
           title="Business performance"
-          subtitle="Demo figures for prototype review"
+          subtitle="Understand your sales, payments, orders, customers and stock"
           action={
-            <div className="hidden sm:flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={soon}><Download className="h-4 w-4 mr-1" /> PDF</Button>
-              <Button variant="outline" size="sm" onClick={soon}><Download className="h-4 w-4 mr-1" /> CSV</Button>
-            </div>
+            <Button variant="outline" size="sm" onClick={() => toast("Export coming in Batch 8B")}>
+              <Download className="h-4 w-4 mr-1" /> Export
+            </Button>
           }
         />
 
-        <div className="flex flex-wrap items-center gap-3 mb-6">
-          <PeriodTabs
-            value={period}
-            onChange={(v) => { setPeriod(v); setOffset(0); }}
-            options={[{ value: "daily", label: "Daily" }, { value: "weekly", label: "Weekly" }, { value: "monthly", label: "Monthly" }]}
-          />
-          <div className="inline-flex items-center gap-1 rounded-full border border-secondary bg-card p-1">
-            <button type="button" onClick={() => setOffset((o) => o - 1)} className="h-8 w-8 rounded-full hover:bg-muted flex items-center justify-center" aria-label="Previous period">
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            <span className="px-2 text-sm text-muted-foreground inline-flex items-center gap-1">
-              <CalendarDays className="h-3.5 w-3.5" /> {shownLabel}
-            </span>
-            <button type="button" onClick={() => setOffset((o) => o + 1)} className="h-8 w-8 rounded-full hover:bg-muted flex items-center justify-center" aria-label="Next period">
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
-          {offset !== 0 && <Button variant="ghost" size="sm" onClick={() => setOffset(0)}>Today</Button>}
-          <div className="ml-auto flex gap-2">
-            <Button size="sm" variant="ghost" onClick={() => { setState("loading"); setTimeout(() => setState("ready"), 900); }}>Simulate loading</Button>
-            <Button size="sm" variant="ghost" onClick={() => setState(state === "error" ? "ready" : "error")}>Toggle error</Button>
-          </div>
-        </div>
+        <DateRangeBar
+          preset={safePreset}
+          compare={safeCompare}
+          range={range}
+          onPresetChange={setPreset}
+          onCompareChange={setCompare}
+          onRefresh={refresh}
+          updatedAt={updatedAt}
+        />
 
-        {state === "loading" ? (
-          <LoadingSkeleton rows={4} />
-        ) : state === "error" ? (
-          <ErrorState onRetry={() => setState("ready")} />
-        ) : rows.length === 0 ? (
-          <EmptyState title="No records yet" description="Once you log sales they'll appear here." />
-        ) : (
-          <>
-            <SectionLabel>Summary</SectionLabel>
-            <section className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-              <ReportSummaryCard label="Sales value" value={summary.sales} />
-              <ReportSummaryCard label="Money received" value={summary.received} />
-              <ReportSummaryCard label="Outstanding" value={summary.outstanding} />
-              <ReportSummaryCard label="Orders" value={summary.orders} isCurrency={false} />
-              <ReportSummaryCard label="Avg. order value" value={summary.avg} />
-              <ReportSummaryCard label="Best seller" value={summary.top} isCurrency={false} />
-            </section>
+        <TabsBar value={safeTab} onChange={setTab} options={tabs} />
 
-            <div className="mt-8">
-              <SectionLabel>Charts</SectionLabel>
-              <section className="grid gap-4 lg:grid-cols-2">
-                <ChartCard title="Sales over time">
-                  <ResponsiveContainer width="100%" height={220}>
-                    <AreaChart data={rows}>
-                      <defs>
-                        <linearGradient id="gSales" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#4b1fa6" stopOpacity={0.4} />
-                          <stop offset="100%" stopColor="#4b1fa6" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#ececef" />
-                      <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-                      <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${Math.round(v / 1000)}k`} />
-                      <Tooltip formatter={(v: number) => fmt(v)} />
-                      <Area type="monotone" dataKey="sales" stroke="#4b1fa6" strokeWidth={2} fill="url(#gSales)" />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </ChartCard>
-                <ChartCard title="Money received">
-                  <ResponsiveContainer width="100%" height={220}>
-                    <BarChart data={rows}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#ececef" />
-                      <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-                      <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${Math.round(v / 1000)}k`} />
-                      <Tooltip formatter={(v: number) => fmt(v)} />
-                      <Bar dataKey="received" fill="#f7931e" radius={[6, 6, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartCard>
-                <ChartCard title="Orders by status">
-                  <ResponsiveContainer width="100%" height={220}>
-                    <PieChart>
-                      <Pie data={ordersByStatus} dataKey="value" nameKey="name" innerRadius={45} outerRadius={80} paddingAngle={2}>
-                        {ordersByStatus.map((_, i) => (<Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />))}
-                      </Pie>
-                      <Legend wrapperStyle={{ fontSize: 12 }} />
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </ChartCard>
-                <ChartCard title="Top-selling products">
-                  <ResponsiveContainer width="100%" height={220}>
-                    <BarChart data={topProducts} layout="vertical" margin={{ left: 20 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#ececef" />
-                      <XAxis type="number" tick={{ fontSize: 12 }} />
-                      <YAxis type="category" dataKey="name" tick={{ fontSize: 12 }} width={110} />
-                      <Tooltip />
-                      <Bar dataKey="sold" fill="#4b1fa6" radius={[0, 6, 6, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartCard>
-              </section>
-            </div>
-
-            <div className="mt-8">
-              <SectionLabel>Detailed breakdown</SectionLabel>
-              <ResponsiveReportTable rows={rows} />
-            </div>
-          </>
-        )}
+        {safeTab === "overview" && <OverviewTab range={range} compareRange={compareRange} refreshKey={refreshKey} />}
+        {safeTab === "sales" && <SalesTab range={range} compareRange={compareRange} refreshKey={refreshKey} />}
+        {safeTab === "payments" && <PaymentsTab range={range} compareRange={compareRange} refreshKey={refreshKey} />}
+        {safeTab === "orders" && <OrdersTab range={range} compareRange={compareRange} refreshKey={refreshKey} />}
+        {safeTab === "inventory" && <InventoryTab range={range} compareRange={compareRange} refreshKey={refreshKey} />}
+        {safeTab === "customers" && <CustomersTab range={range} compareRange={compareRange} refreshKey={refreshKey} />}
+        {safeTab === "ai" && <AIInsightsTab range={range} compareRange={compareRange} refreshKey={refreshKey} />}
       </PageCanvas>
     </AppShell>
-  );
-}
-
-function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-2xl border border-secondary bg-card p-4 shadow-card">
-      <p className="text-sm font-semibold mb-3">{title}</p>
-      {children}
-    </div>
   );
 }

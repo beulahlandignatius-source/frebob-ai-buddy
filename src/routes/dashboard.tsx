@@ -10,7 +10,10 @@ import {
   Wrench,
   ArrowUpRight,
   Plus,
-  Sparkles,
+  MessageCircle,
+  ScanLine,
+  PlayCircle,
+  ArrowRight,
 } from "lucide-react";
 import { listApprovedRecords } from "@/lib/records-store";
 import { listOrders, summariseOrders } from "@/lib/orders-store";
@@ -36,6 +39,8 @@ import { cn } from "@/lib/utils";
 import { DemoHint } from "@/components/demo/DemoHint";
 import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
 import { useDemo } from "@/lib/demo/context";
+import { EnterDemoButton } from "@/components/demo/EnterDemoButton";
+import { useTour } from "@/components/tour/GuidedTour";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -212,15 +217,7 @@ function Dashboard() {
             </div>
           </section>
         ) : !hasActivity ? (
-          <div className="mb-6">
-            <IntelligentEmptyState
-              icon={Sparkles}
-              title={`👋 Welcome to FreBob, ${firstName}`}
-              description="You're ready to start managing your business. You haven't recorded any business activity yet — add your first record and Bob will start summarising your day."
-              primary={{ label: "Add Business Record", icon: Plus, to: "/add-record" }}
-              secondary={[{ label: "Scan Document", to: "/scanner" }, { label: "Explore Demo", to: "/profile" }]}
-            />
-          </div>
+          <GettingStarted firstName={firstName} businessName={businessName} />
         ) : null}
 
         {/* Metrics */}
@@ -354,5 +351,80 @@ function Dashboard() {
         </section>
       </div>
     </AppShell>
+  );
+}
+
+function GettingStarted({ firstName, businessName }: { firstName: string; businessName: string }) {
+  const { start } = useTour();
+  const steps: {
+    key: string;
+    title: string;
+    desc: string;
+    icon: typeof Plus;
+    to?: string;
+    onClick?: () => void;
+    cta: string;
+  }[] = [
+    { key: "record", title: "Add your first business record", desc: "Log a sale, purchase or expense — Bob starts learning your business.", icon: Plus, to: "/add-record", cta: "Add record" },
+    { key: "scan", title: "Scan a receipt or invoice", desc: "Snap a document, we'll pull out the line items for you.", icon: ScanLine, to: "/scanner", cta: "Open scanner" },
+    { key: "chat", title: "Chat with Bob", desc: "Ask how your business is doing, in English, Pidgin, Yoruba, Hausa or Igbo.", icon: MessageCircle, to: "/ai-assistant", cta: "Open chat" },
+    { key: "tour", title: "Take the 60-second tour", desc: "See how every part of FreBob fits together.", icon: PlayCircle, onClick: () => start(), cta: "Start tour" },
+  ];
+  return (
+    <section aria-label="Getting started" className="mb-6">
+      <div className="relative overflow-hidden rounded-[24px] p-5 sm:p-6 glass-card">
+        <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-accent/20 blur-3xl" />
+        <div className="pointer-events-none absolute -left-10 bottom-0 h-24 w-24 rounded-full bg-primary/15 blur-3xl" />
+        <div className="relative">
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary/60">Getting started</p>
+          <h2 className="mt-1 font-display text-[22px] sm:text-[26px] font-extrabold text-primary tracking-tight">
+            Welcome, {firstName} 👋
+          </h2>
+          <p className="mt-1 text-sm text-foreground/75">
+            {businessName} is ready. Finish these quick steps to fill your dashboard with real numbers.
+          </p>
+
+          <ol className="mt-5 space-y-2.5">
+            {steps.map((s, i) => {
+              const Icon = s.icon;
+              const inner = (
+                <>
+                  <div className="h-10 w-10 rounded-2xl brand-gradient text-primary-foreground flex items-center justify-center shrink-0 shadow-soft">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[13px] font-semibold text-foreground truncate">
+                      <span className="text-primary/50 mr-1.5">{String(i + 1).padStart(2, "0")}</span>
+                      {s.title}
+                    </p>
+                    <p className="text-[12px] text-muted-foreground truncate">{s.desc}</p>
+                  </div>
+                  <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-primary shrink-0">
+                    {s.cta} <ArrowRight className="h-3.5 w-3.5" />
+                  </span>
+                </>
+              );
+              const cls = "group w-full flex items-center gap-3 rounded-[16px] bg-white/70 hover:bg-white p-3 sm:p-3.5 border border-white/60 hover:border-primary/25 transition focus-ring text-left";
+              return (
+                <li key={s.key}>
+                  {s.to ? (
+                    <Link to={s.to} className={cls}>{inner}</Link>
+                  ) : (
+                    <button type="button" onClick={s.onClick} className={cls}>{inner}</button>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+
+          <div className="mt-5 flex flex-wrap items-center gap-2 rounded-[16px] border border-primary/15 bg-white/60 p-3">
+            <p className="text-xs text-foreground/80 flex-1 min-w-0">
+              Prefer to explore first? Try the demo workspace — your real business stays untouched.
+            </p>
+            <EnterDemoButton variant="inline" className="rounded-full bg-primary text-primary-foreground hover:opacity-90 px-3 py-1.5 text-xs font-semibold" />
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }

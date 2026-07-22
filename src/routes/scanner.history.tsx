@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Search, Plus, ChevronLeft } from "lucide-react";
+import { Search, Plus, ChevronLeft, ScanLine } from "lucide-react";
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
-import { PageCanvas, SurfaceHeader, SectionLabel, EmptyState } from "@/components/dash";
+import { PageCanvas, SurfaceHeader, SectionLabel, EmptyState, LoadingSkeleton, ErrorState } from "@/components/dash";
+import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
 import { ScanHistoryCard, DOCUMENT_TYPES } from "@/components/scanner";
 import { listScans, type DocumentScan, type DocumentType, type ScanStatus } from "@/lib/scanner-store";
 import { cn } from "@/lib/utils";

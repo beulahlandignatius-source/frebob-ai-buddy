@@ -1,7 +1,7 @@
 // First-use contextual hint for demo mode.
 // Only renders in demo mode, once per hint key (dismissed persistently).
 import { useEffect, useState } from "react";
-import { Lightbulb, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useDemo } from "@/lib/demo/context";
 import { isHintDismissed, dismissHint } from "@/lib/demo/mode";
 import { cn } from "@/lib/utils";

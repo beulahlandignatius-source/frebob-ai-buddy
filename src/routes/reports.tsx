@@ -116,6 +116,8 @@ function Reports() {
         {safeTab === "inventory" && <InventoryTab range={range} compareRange={compareRange} refreshKey={refreshKey} />}
         {safeTab === "customers" && <CustomersTab range={range} compareRange={compareRange} refreshKey={refreshKey} />}
         {safeTab === "ai" && <AIInsightsTab range={range} compareRange={compareRange} refreshKey={refreshKey} />}
+          </>
+        )}
       </PageCanvas>
     </AppShell>
   );

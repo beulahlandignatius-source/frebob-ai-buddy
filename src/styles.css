@@ -11,8 +11,14 @@
   --radius-xl: calc(var(--radius) + 4px);
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Manrope", "Inter", ui-sans-serif, system-ui, sans-serif;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-warm: var(--surface-warm);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
@@ -26,8 +32,12 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  --color-subtle-foreground: var(--subtle-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -42,91 +52,104 @@
 }
 
 :root {
-  --radius: 0.875rem;
+  --radius: 1rem;
 
-  /* FreBob brand */
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.18 0.03 285);
+  /* Surfaces */
+  --background: #ffffff;
+  --surface: #f7f7f8;
+  --surface-warm: #faf8f6;
+  --foreground: #1d1d1f;
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.03 285);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.03 285);
+  --card: #ffffff;
+  --card-foreground: #1d1d1f;
+  --popover: #ffffff;
+  --popover-foreground: #1d1d1f;
 
   /* Deep purple */
-  --primary: oklch(0.32 0.17 295);
-  --primary-foreground: oklch(0.99 0 0);
-  --primary-glow: oklch(0.55 0.22 300);
+  --primary: #4b1fa6;
+  --primary-foreground: #ffffff;
+  --primary-glow: #5a2abf;
 
   /* Orange accent */
-  --accent: oklch(0.74 0.19 55);
-  --accent-foreground: oklch(0.2 0.03 285);
+  --accent: #f7931e;
+  --accent-foreground: #1d1d1f;
 
-  --secondary: oklch(0.97 0.01 290);
-  --secondary-foreground: oklch(0.25 0.08 295);
+  --secondary: #f2eefb;
+  --secondary-foreground: #3a1a80;
 
-  --muted: oklch(0.97 0.005 285);
-  --muted-foreground: oklch(0.48 0.02 285);
+  --muted: #f7f7f8;
+  --muted-foreground: #6e6e73;
+  --subtle-foreground: #8e8e93;
 
-  --destructive: oklch(0.6 0.24 27);
-  --destructive-foreground: oklch(0.99 0 0);
+  --destructive: #e5484d;
+  --destructive-foreground: #ffffff;
+  --success: #2f9e6d;
+  --warning: #f7931e;
+  --info: #3b82f6;
 
-  --border: oklch(0.92 0.01 290);
-  --input: oklch(0.94 0.01 290);
-  --ring: oklch(0.32 0.17 295);
+  --border: #ececef;
+  --input: #ececef;
+  --ring: #4b1fa6;
 
   /* Gradients & effects */
-  --gradient-brand: linear-gradient(135deg, oklch(0.28 0.17 295), oklch(0.5 0.22 300));
+  --gradient-brand: linear-gradient(135deg, #4b1fa6, #5a2abf);
   --gradient-brand-soft: linear-gradient(
     135deg,
-    color-mix(in oklab, oklch(0.32 0.17 295) 8%, transparent),
-    color-mix(in oklab, oklch(0.74 0.19 55) 6%, transparent)
+    color-mix(in oklab, #4b1fa6 8%, transparent),
+    color-mix(in oklab, #f7931e 6%, transparent)
   );
   --gradient-hero: radial-gradient(
       1200px 500px at 10% -10%,
-      color-mix(in oklab, oklch(0.55 0.22 300) 25%, transparent),
+      color-mix(in oklab, #5a2abf 18%, transparent),
       transparent
     ),
     radial-gradient(
       900px 500px at 110% 10%,
-      color-mix(in oklab, oklch(0.74 0.19 55) 18%, transparent),
+      color-mix(in oklab, #f7931e 12%, transparent),
       transparent
     );
-  --shadow-elegant: 0 20px 60px -30px color-mix(in oklab, oklch(0.32 0.17 295) 55%, transparent);
-  --shadow-soft: 0 4px 24px -12px color-mix(in oklab, oklch(0.32 0.17 295) 25%, transparent);
-  --glass-bg: color-mix(in oklab, white 65%, transparent);
-  --glass-border: color-mix(in oklab, oklch(0.32 0.17 295) 12%, transparent);
+  --shadow-elegant: 0 20px 60px -30px color-mix(in oklab, #4b1fa6 40%, transparent);
+  --shadow-soft: 0 4px 20px -14px color-mix(in oklab, #1d1d1f 30%, transparent);
+  --shadow-card: 0 1px 2px rgba(29, 29, 31, 0.04), 0 6px 24px -18px rgba(29, 29, 31, 0.18);
+  --glass-bg: color-mix(in oklab, #ffffff 80%, transparent);
+  --glass-border: color-mix(in oklab, #4b1fa6 12%, transparent);
 
-  --sidebar: oklch(0.99 0.003 290);
-  --sidebar-foreground: oklch(0.2 0.03 285);
-  --sidebar-primary: oklch(0.32 0.17 295);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.96 0.02 290);
-  --sidebar-accent-foreground: oklch(0.28 0.12 295);
-  --sidebar-border: oklch(0.92 0.01 290);
-  --sidebar-ring: oklch(0.32 0.17 295);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1d1d1f;
+  --sidebar-primary: #4b1fa6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f2eefb;
+  --sidebar-accent-foreground: #3a1a80;
+  --sidebar-border: #ececef;
+  --sidebar-ring: #4b1fa6;
 }
 
 @layer base {
   * {
     border-color: var(--color-border);
   }
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family:
-      "Inter",
-      ui-sans-serif,
-      system-ui,
-      -apple-system,
-      sans-serif;
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
   h1,
   h2,
   h3,
   h4 {
+    font-family: var(--font-display);
     letter-spacing: -0.02em;
+    color: var(--color-foreground);
+  }
+  h1 {
+    font-weight: 700;
   }
 }
 
@@ -144,11 +167,13 @@
 }
 @utility glass-card {
   background-color: var(--glass-bg);
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(20px) saturate(140%);
   border: 1px solid var(--glass-border);
   box-shadow: var(--shadow-soft);
 }
 @utility shadow-elegant {
   box-shadow: var(--shadow-elegant);
+}
+@utility shadow-card {
+  box-shadow: var(--shadow-card);
 }

@@ -6,9 +6,9 @@ import { Logo } from "@/components/brand/Logo";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "FreBob — Your AI Operations Assistant" },
+      { title: "FreBob — Your Smart Business Assistant for Every SME" },
       { name: "description", content: "FreBob turns your everyday business conversations into organised records, inventory and insights — built for Nigerian SMEs." },
-      { property: "og:title", content: "FreBob — Your AI Operations Assistant" },
+      { property: "og:title", content: "FreBob — Your Smart Business Assistant for Every SME" },
       { property: "og:description", content: "Generative AI operations assistant for Nigerian SMEs." },
     ],
   }),
@@ -55,7 +55,7 @@ function Splash() {
             <span className="text-accent">bob</span>
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Your AI Operations Assistant
+            Your Smart Business Assistant for Every SME
           </p>
         </div>
         <div className="mt-4 h-1 w-32 rounded-full bg-muted overflow-hidden">

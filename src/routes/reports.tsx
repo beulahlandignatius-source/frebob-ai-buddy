@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { AppShell } from "@/components/nav/AppShell";
@@ -20,6 +20,7 @@ import {
 } from "@/lib/reporting/period";
 import { DemoHint } from "@/components/demo/DemoHint";
 import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
+import { useCloudSync } from "@/lib/cloud-sync";
 
 const TAB_VALUES = ["overview", "sales", "expenses", "profit", "payments", "orders", "inventory", "customers", "ai"] as const;
 
@@ -48,6 +49,8 @@ function Reports() {
   const { tab, preset, compare } = Route.useSearch();
   const navigate = useNavigate({ from: "/reports" });
   const [refreshKey, setRefreshKey] = useState(0);
+  const { tick: cloudTick } = useCloudSync();
+  useEffect(() => { if (cloudTick) setRefreshKey((k) => k + 1); }, [cloudTick]);
 
   const safeTab: TabKey = (TAB_VALUES as readonly string[]).includes(tab) ? (tab as TabKey) : "overview";
   const safePreset: PresetKey = (["today","yesterday","this_week","last_week","this_month","last_month","last_30","custom"] as const)

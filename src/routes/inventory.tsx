@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { DemoHint } from "@/components/demo/DemoHint";
 import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
 import { useDemo } from "@/lib/demo/context";
+import { useCloudSync } from "@/lib/cloud-sync";
 
 export const Route = createFileRoute("/inventory")({
   head: () => ({
@@ -34,6 +35,7 @@ type FilterKey = "all" | "in" | "low" | "out";
 
 function Inventory() {
   const { active: demoActive } = useDemo();
+  const { tick: cloudTick } = useCloudSync();
   const [filter, setFilter] = useState<FilterKey>("all");
   const [query, setQuery] = useState("");
   const [state, setState] = useState<"ready" | "loading" | "error">("ready");
@@ -42,6 +44,7 @@ function Inventory() {
   const [userProducts, setUserProducts] = useState<UserProduct[]>(() => listUserProducts());
 
   useEffect(() => subscribeUserProducts(() => setUserProducts(listUserProducts())), []);
+  useEffect(() => { setUserProducts(listUserProducts()); }, [cloudTick]);
 
   const combined = useMemo(
     () => (demoActive ? [...userProducts, ...demoInventory] : userProducts),

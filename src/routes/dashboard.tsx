@@ -41,6 +41,7 @@ import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState"
 import { useDemo } from "@/lib/demo/context";
 import { EnterDemoButton } from "@/components/demo/EnterDemoButton";
 import { useTour } from "@/components/tour/GuidedTour";
+import { useCloudSync } from "@/lib/cloud-sync";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -84,6 +85,7 @@ const activityStyle: Record<
 
 function Dashboard() {
   const { active: demoActive } = useDemo();
+  const { tick: cloudTick } = useCloudSync();
   const [firstName, setFirstName] = useState<string>(demoActive ? DEMO_USER.firstName : "there");
   const [businessName, setBusinessName] = useState<string>(demoActive ? DEMO_USER.businessName : "Your business");
   const [notifTick, setNotifTick] = useState(0);
@@ -95,6 +97,7 @@ function Dashboard() {
     return () => { unsub(); };
   }, []);
   void notifTick;
+  void cloudTick;
   const unread = mounted ? unreadCount() : 0;
   const critical = mounted ? criticalUnread()[0] : undefined;
   const today = new Date().toLocaleDateString("en-NG", {

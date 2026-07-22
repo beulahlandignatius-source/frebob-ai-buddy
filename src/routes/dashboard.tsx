@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   Bell,
-  Sparkles,
   Check,
   Clock,
   CreditCard,
@@ -10,6 +9,7 @@ import {
   Wrench,
   ArrowUpRight,
 } from "lucide-react";
+import { BobAvatar } from "@/components/copilot/BobAvatar";
 
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/nav/AppShell";

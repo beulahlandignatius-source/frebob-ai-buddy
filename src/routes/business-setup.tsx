@@ -33,10 +33,7 @@ function BusinessSetup() {
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
-      if (!data.user) {
-        navigate({ to: "/auth" });
-        return;
-      }
+      if (!data.user) return;
       setUserId(data.user.id);
       const { data: profile } = await supabase
         .from("profiles")
@@ -45,36 +42,37 @@ function BusinessSetup() {
         .maybeSingle();
       if (profile?.business_category) setCategory(profile.business_category);
     });
-  }, [navigate]);
+  }, []);
 
   const save = async () => {
-    if (!userId) return;
     if (!name.trim()) {
       toast.error("Please enter your business name");
       return;
     }
     setSaving(true);
-    const { error } = await supabase.from("businesses").insert({
-      owner_id: userId,
-      name: name.trim(),
-      category,
-      address: address.trim() || null,
-      phone: phone.trim() || null,
-      currency,
-      initial_products: products.trim() || null,
-      initial_inventory: inventory.trim() || null,
-    });
+    if (userId) {
+      const { error } = await supabase.from("businesses").insert({
+        owner_id: userId,
+        name: name.trim(),
+        category,
+        address: address.trim() || null,
+        phone: phone.trim() || null,
+        currency,
+        initial_products: products.trim() || null,
+        initial_inventory: inventory.trim() || null,
+      });
 
-    if (error) {
-      setSaving(false);
-      toast.error(error.message);
-      return;
+      if (error) {
+        setSaving(false);
+        toast.error(error.message);
+        return;
+      }
+
+      await supabase
+        .from("profiles")
+        .update({ business_setup_completed: true })
+        .eq("id", userId);
     }
-
-    await supabase
-      .from("profiles")
-      .update({ business_setup_completed: true })
-      .eq("id", userId);
 
     setSaving(false);
     toast.success("Business created 🎉");

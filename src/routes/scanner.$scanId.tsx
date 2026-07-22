@@ -375,27 +375,8 @@ function ReviewScan() {
                   </div>
                 )}
 
-                {/* Approved next steps */}
-                {phase === "approved" && (
-                  <div className="rounded-[20px] border border-[color-mix(in_oklab,var(--success)_35%,transparent)] bg-[color-mix(in_oklab,var(--success)_8%,transparent)] p-5 space-y-3">
-                    <p className="font-display font-bold">What next?</p>
-                    <p className="text-sm text-muted-foreground">
-                      Suggested actions based on this document. Nothing runs automatically.
-                    </p>
-                    <div className="grid gap-2 sm:grid-cols-2">
-                      {(reviewed.documentType === "customer_order" || reviewed.documentType === "sales_receipt") && (
-                        <Link to="/orders"><Button variant="outline" className="w-full">Create an order from this scan <ArrowRight className="h-4 w-4 ml-1" /></Button></Link>
-                      )}
-                      {(reviewed.documentType === "transfer_confirmation" || reviewed.documentType === "pos_receipt") && (
-                        <Link to="/orders"><Button variant="outline" className="w-full">Record this as a payment <ArrowRight className="h-4 w-4 ml-1" /></Button></Link>
-                      )}
-                      {(reviewed.documentType === "stock_list" || reviewed.documentType === "supplier_invoice") && (
-                        <Link to="/inventory"><Button variant="outline" className="w-full">Review inventory changes <ArrowRight className="h-4 w-4 ml-1" /></Button></Link>
-                      )}
-                      <Link to="/business-memory"><Button variant="outline" className="w-full">Open in Business Memory <ArrowRight className="h-4 w-4 ml-1" /></Button></Link>
-                    </div>
-                  </div>
-                )}
+                {/* Approved: Action Centre */}
+                {phase === "approved" && <ScanActionCentre scan={scan} reviewed={reviewed} />}
 
                 {/* Timeline */}
                 <div className="rounded-[20px] border border-secondary bg-card p-5">

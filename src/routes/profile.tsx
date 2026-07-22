@@ -32,17 +32,25 @@ export const Route = createFileRoute("/profile")({
 
 function Profile() {
   const navigate = useNavigate();
+  const { active: demoActive } = useDemo();
   const { start: startTour } = useTour();
   const [saved, setSaved] = useState<string | null>(null);
-  const [displayName, setDisplayName] = useState<string>(DEMO_USER.firstName);
+  const [displayName, setDisplayName] = useState<string>(demoActive ? DEMO_USER.firstName : "You");
+  const [email, setEmail] = useState<string>("");
 
   useEffect(() => {
     try {
       const n = window.localStorage.getItem("frebob.userName");
       if (n && n.trim()) setDisplayName(n.trim());
     } catch { /* ignore */ }
+    (async () => {
+      const { data } = await supabase.auth.getUser();
+      if (data.user?.email) setEmail(data.user.email);
+    })();
   }, []);
 
+  const orders = demoActive ? demoOrders : [];
+  const customers = demoActive ? demoCustomers : [];
   const totalSales = orders.reduce((s, o) => s + o.total, 0);
   const initials = displayName.slice(0, 1).toUpperCase();
 

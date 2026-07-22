@@ -36,7 +36,7 @@ function IndexRedirect() {
   return (
     <div
       className="relative flex min-h-dvh items-center justify-center overflow-hidden"
-      style={{ background: "hsl(var(--primary))" }}
+      style={{ background: "var(--primary)" }}
     >
       {/* soft glow */}
       <div
@@ -44,7 +44,7 @@ function IndexRedirect() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse at center, hsl(var(--primary-glow) / 0.55), transparent 60%)",
+            "radial-gradient(ellipse at center, color-mix(in oklab, var(--primary-glow) 55%, transparent), transparent 60%)",
         }}
       />
       <div className="relative flex flex-col items-center gap-6">

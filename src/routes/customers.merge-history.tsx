@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, RotateCcw, ShieldCheck } from "lucide-react";
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
-import { PageCanvas, SurfaceHeader, SectionLabel, StatusBadge, EmptyState } from "@/components/dash";
+import { PageCanvas, SurfaceHeader, SectionLabel, StatusBadge, EmptyState, LoadingSkeleton, ErrorState } from "@/components/dash";
 import { MatchReasonList, MergeSuccessBanner, MergeWarningBanner } from "@/components/customers/duplicates";
 import {
   listMergeEvents, canUndoMerge, undoMerge,

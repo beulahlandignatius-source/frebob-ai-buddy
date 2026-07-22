@@ -1,6 +1,10 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Mail, Phone, MapPin, Award, LogOut, Camera, Globe2 } from "lucide-react";
+import {
+  Mail, Phone, MapPin, Award, LogOut, Camera, Globe2,
+  PlayCircle, HelpCircle, Bell, Settings as SettingsIcon,
+  ShoppingCart, Users, ScanLine, Brain,
+} from "lucide-react";
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
 import { PageCanvas, SurfaceHeader, SectionLabel, SuccessBanner, StatusBadge } from "@/components/dash";
@@ -9,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { EnterDemoButton } from "@/components/demo/EnterDemoButton";
 import { LanguageSelector } from "@/components/i18n/LanguageSelector";
+import { useTour } from "@/components/tour/GuidedTour";
 
 
 
@@ -26,6 +31,7 @@ export const Route = createFileRoute("/profile")({
 
 function Profile() {
   const navigate = useNavigate();
+  const { start: startTour } = useTour();
   const [saved, setSaved] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState<string>(DEMO_USER.firstName);
 
@@ -117,6 +123,62 @@ function Profile() {
         <div className="mt-2">
           <EnterDemoButton variant="ghost" label="Explore Demo Business" subtitle="See FreBob populated with a sample Nigerian SME" />
         </div>
+
+        <SectionLabel>Quick access</SectionLabel>
+        <section className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+          {[
+            { to: "/orders", label: "Orders", icon: ShoppingCart },
+            { to: "/customers", label: "Customers", icon: Users },
+            { to: "/scanner", label: "Scanner", icon: ScanLine },
+            { to: "/business-memory", label: "Business Memory", icon: Brain },
+            { to: "/notifications", label: "Notifications", icon: Bell },
+            { to: "/settings", label: "Settings", icon: SettingsIcon },
+          ].map(({ to, label, icon: Icon }) => (
+            <Link
+              key={to}
+              to={to}
+              className="flex flex-col items-start gap-2 rounded-[18px] border border-secondary bg-card p-4 hover:border-primary/25 transition focus-ring min-h-[88px]"
+            >
+              <span className="h-9 w-9 rounded-xl brand-gradient text-primary-foreground flex items-center justify-center shadow-soft">
+                <Icon className="h-4 w-4" />
+              </span>
+              <span className="text-sm font-semibold text-foreground">{label}</span>
+            </Link>
+          ))}
+        </section>
+
+        <SectionLabel>Help</SectionLabel>
+        <section className="rounded-[20px] border border-secondary bg-card divide-y divide-secondary/70 mb-6">
+          <button
+            type="button"
+            onClick={() => startTour()}
+            className="w-full flex items-center gap-3 p-4 text-left hover:bg-secondary/40 transition"
+          >
+            <span className="h-10 w-10 rounded-2xl brand-gradient text-primary-foreground flex items-center justify-center shrink-0">
+              <PlayCircle className="h-5 w-5" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-semibold text-foreground">Start Product Tour</span>
+              <span className="block text-xs text-muted-foreground">
+                A guided walkthrough of every FreBob screen.
+              </span>
+            </span>
+          </button>
+          <a
+            href="mailto:support@frebob.app"
+            className="flex items-center gap-3 p-4 hover:bg-secondary/40 transition"
+          >
+            <span className="h-10 w-10 rounded-2xl bg-secondary text-primary flex items-center justify-center shrink-0">
+              <HelpCircle className="h-5 w-5" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-semibold text-foreground">Help Centre</span>
+              <span className="block text-xs text-muted-foreground">
+                Reach out to support@frebob.app for questions or feedback.
+              </span>
+            </span>
+          </a>
+        </section>
 
         <div className="mt-8 flex justify-between items-center">
           <p className="text-xs text-muted-foreground">FreBob · your smart business assistant</p>

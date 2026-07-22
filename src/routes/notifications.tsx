@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { Bell, CheckCheck, RefreshCcw, Search, Settings2, Trash2 } from "lucide-react";
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
@@ -23,6 +24,9 @@ import {
   getSettings, setSettings,
   type Notification, type GroupKey,
 } from "@/lib/notifications-store";
+import { pushNotifications, markCloudNotificationRead } from "@/lib/notifications.functions";
+import { useCurrentBusiness } from "@/hooks/use-current-business";
+import { useDemo } from "@/lib/demo/context";
 import { toast } from "sonner";
 import { DemoHint } from "@/components/demo/DemoHint";
 import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";

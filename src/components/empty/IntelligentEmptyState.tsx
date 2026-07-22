@@ -3,7 +3,6 @@
 // Design: brand purple / orange, generous spacing, no glassmorphism.
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
-import { Rocket } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/fb/Button";
 import { useDemo } from "@/lib/demo/context";
@@ -50,7 +49,6 @@ export function IntelligentEmptyState({
         className="w-full sm:w-auto min-h-[48px]"
         onClick={a.onClick}
       >
-        {a.icon ? <a.icon className="h-4 w-4" /> : null}
         {a.label}
       </Button>
     );
@@ -77,22 +75,13 @@ export function IntelligentEmptyState({
       )}
     >
       <div className="mx-auto flex flex-col items-center max-w-xl">
-        <div
-          aria-hidden="true"
-          className="relative h-20 w-20 rounded-3xl brand-gradient text-primary-foreground shadow-elegant flex items-center justify-center"
-        >
-          <Icon className="h-9 w-9" />
-          <span className="absolute -bottom-1.5 -right-1.5 h-6 w-6 rounded-full bg-accent text-accent-foreground text-[11px] font-bold flex items-center justify-center shadow-soft">
-            ✦
-          </span>
-        </div>
-
-        <h2 className="mt-6 font-display text-xl sm:text-2xl font-extrabold text-primary tracking-tight">
+        <h2 className="font-display text-xl sm:text-2xl font-extrabold text-primary tracking-tight">
           {title}
         </h2>
         <p className="mt-2 text-sm sm:text-[15px] text-foreground/75 leading-relaxed">
           {description}
         </p>
+
 
         {(primary || secondary.length > 0 || showDemo) && (
           <div className="mt-7 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2.5 w-full sm:w-auto">
@@ -102,7 +91,6 @@ export function IntelligentEmptyState({
               renderAction(
                 {
                   label: "Explore Demo Business",
-                  icon: Rocket,
                   onClick: () => {
                     (demoOnEnter ?? enter)();
                   },
@@ -110,6 +98,7 @@ export function IntelligentEmptyState({
                 "demo",
                 "ghost",
               )}
+
           </div>
         )}
 

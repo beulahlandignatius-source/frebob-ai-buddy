@@ -21,24 +21,19 @@ export function RecordSourceCard({
       "group relative bg-card border border-secondary rounded-[20px] p-5 transition h-full flex flex-col text-left",
       disabled ? "opacity-60 cursor-not-allowed" : "hover:-translate-y-0.5 hover:border-primary/25 shadow-card",
     )}>
-      <div className="flex items-start gap-3">
-        <div className="h-11 w-11 rounded-2xl bg-secondary text-primary flex items-center justify-center shrink-0">
-          <Icon className="h-5 w-5" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="font-display font-bold text-[15px] leading-tight">{title}</p>
-          <p className="mt-1 text-sm text-muted-foreground leading-relaxed">{description}</p>
-        </div>
+      <div className="min-w-0 flex-1">
+        <p className="font-display font-bold text-[15px] leading-tight">{title}</p>
+        <p className="mt-1 text-sm text-muted-foreground leading-relaxed">{description}</p>
       </div>
       <div className="mt-4 flex items-center justify-between">
         <span className={cn(
           "text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full",
           disabled ? "bg-secondary text-muted-foreground" : "bg-[color-mix(in_oklab,var(--success)_14%,transparent)] text-[var(--success)]",
         )}>{status}</span>
-        {!disabled && <ArrowRight className="h-4 w-4 text-primary opacity-0 group-hover:opacity-100 transition" />}
       </div>
     </div>
   );
+
   if (disabled) return <div>{inner}</div>;
   if (to) return <Link to={to} className="block h-full">{inner}</Link>;
   return <button type="button" onClick={onClick} className="block h-full w-full">{inner}</button>;

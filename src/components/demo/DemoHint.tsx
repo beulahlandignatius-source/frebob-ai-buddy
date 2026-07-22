@@ -1,7 +1,7 @@
 // First-use contextual hint for demo mode.
 // Only renders in demo mode, once per hint key (dismissed persistently).
 import { useEffect, useState } from "react";
-import { Lightbulb, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useDemo } from "@/lib/demo/context";
 import { isHintDismissed, dismissHint } from "@/lib/demo/mode";
 import { cn } from "@/lib/utils";
@@ -32,9 +32,6 @@ export function DemoHint({ hintKey, title, children, className }: Props) {
         className,
       )}
     >
-      <div className="mt-0.5 h-8 w-8 shrink-0 rounded-full bg-accent/20 text-accent flex items-center justify-center">
-        <Lightbulb className="h-4 w-4" />
-      </div>
       <div className="min-w-0 flex-1">
         <p className="text-[11px] font-bold uppercase tracking-wider text-accent">
           Demo tip · {title}

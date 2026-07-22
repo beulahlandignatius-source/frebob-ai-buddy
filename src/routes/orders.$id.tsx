@@ -34,6 +34,8 @@ function OrderDetail() {
   const [tick, setTick] = useState(0);
   const order = useMemo(() => getOrder(id), [id, tick]);
   const timeline = useMemo(() => (order ? buildTimeline(order) : []), [order]);
+  const sourceScanIds = useMemo(() => findSourceScanIds("order", id), [id, tick]);
+
 
   if (!order) {
     return (

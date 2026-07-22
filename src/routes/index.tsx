@@ -14,10 +14,10 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "FreBob — AI Business Operating System for African SMEs" },
-      { name: "description", content: "Run your business, let AI handle the complexity. FreBob turns conversations, receipts and documents into trusted business records for African SMEs." },
-      { property: "og:title", content: "FreBob — AI Business Operating System for African SMEs" },
-      { property: "og:description", content: "Turn everyday conversations, receipts and documents into organised business records, inventory, orders and reports." },
+      { title: "FreBob — Your Smart Business Assistant for African SMEs" },
+      { name: "description", content: "FreBob helps African business owners organise conversations, customers, orders, inventory and business records in one trusted place." },
+      { property: "og:title", content: "FreBob — Your Smart Business Assistant for African SMEs" },
+      { property: "og:description", content: "Run your business with a smarter assistant. Built for African SMEs — starting in Nigeria." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://frebob-ai-buddy.lovable.app/" },
       { name: "twitter:card", content: "summary_large_image" },

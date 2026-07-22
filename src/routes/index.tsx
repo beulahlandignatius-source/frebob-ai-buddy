@@ -878,7 +878,7 @@ function Footer() {
         {groups.map((g) => (
           <div key={g.title}>
             <div className="text-xs uppercase tracking-widest text-muted-foreground">{g.title}</div>
-            <ul className="mt-4 space-y-2 text-sm">
+            <ul className="mt-4 space-y-2 text-sm [overflow-wrap:anywhere]">
               {g.links.map(([label, href]) => (
                 <li key={label}><a href={href} className="text-foreground/80 hover:text-primary">{label}</a></li>
               ))}

@@ -12,6 +12,11 @@ import {
 import { BobAvatar } from "@/components/copilot/BobAvatar";
 
 import { supabase } from "@/integrations/supabase/client";
+import {
+  generateNotifications, unreadCount, criticalUnread,
+  subscribe as subscribeNotif,
+} from "@/lib/notifications-store";
+import { NotificationBadge } from "@/components/notifications";
 import { AppShell } from "@/components/nav/AppShell";
 import {
   dashboardMetrics,
@@ -66,7 +71,15 @@ const activityStyle: Record<
 function Dashboard() {
   const [firstName, setFirstName] = useState<string>(DEMO_USER.firstName);
   const [businessName, setBusinessName] = useState<string>(DEMO_USER.businessName);
-  const unread = 3;
+  const [notifTick, setNotifTick] = useState(0);
+  useEffect(() => {
+    generateNotifications();
+    const unsub = subscribeNotif(() => setNotifTick((t) => t + 1));
+    return () => { unsub(); };
+  }, []);
+  void notifTick;
+  const unread = unreadCount();
+  const critical = criticalUnread()[0];
   const today = new Date().toLocaleDateString("en-NG", {
     weekday: "long", day: "numeric", month: "long",
   });
@@ -110,12 +123,11 @@ function Dashboard() {
             <Link
               to="/notifications"
               className="relative h-10 w-10 rounded-full bg-card shadow-card flex items-center justify-center text-primary hover:shadow-soft transition"
-              aria-label="Notifications"
+              aria-label={`Notifications${unread > 0 ? `, ${unread} unread` : ""}`}
+              title={critical ? `${critical.title}` : undefined}
             >
               <Bell className="h-[18px] w-[18px]" />
-              {unread > 0 && (
-                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-accent ring-2 ring-card" />
-              )}
+              <NotificationBadge count={unread} />
             </Link>
             <Link
               to="/profile"

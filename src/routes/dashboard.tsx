@@ -294,46 +294,63 @@ function Dashboard() {
           >
             Recent Activity
           </SectionLabel>
-          <div className="space-y-2.5">
-            {recentActivities.slice(0, 5).map((a) => {
-              const s = activityStyle[a.type];
-              const Icon = s.icon;
-              const isMoneyIn = a.type === "payment" || a.type === "sale";
-              return (
-                <div
-                  key={a.id}
-                  className="flex items-center gap-3 bg-card/80 hover:bg-card p-3.5 rounded-[16px] border border-transparent hover:border-secondary transition"
-                >
+          {activities.length === 0 ? (
+            <div className="rounded-[20px] border border-dashed border-secondary bg-card/60 p-6 text-center">
+              <p className="text-sm font-semibold text-foreground">No activity yet</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Once you add records or orders, they'll show up here.
+              </p>
+              <div className="mt-3 flex flex-wrap justify-center gap-2">
+                <Link to="/add-record" className="inline-flex items-center gap-1 rounded-full brand-gradient text-primary-foreground px-3 py-1.5 text-xs font-semibold">
+                  <Plus className="h-3.5 w-3.5" /> Add Record
+                </Link>
+                <Link to="/scanner" className="inline-flex items-center gap-1 rounded-full border border-secondary bg-card px-3 py-1.5 text-xs font-semibold text-primary">
+                  Scan Document
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-2.5">
+              {activities.slice(0, 5).map((a) => {
+                const s = activityStyle[a.type];
+                const Icon = s.icon;
+                const isMoneyIn = a.type === "payment" || a.type === "sale";
+                return (
                   <div
-                    className={cn(
-                      "h-10 w-10 rounded-full flex items-center justify-center shrink-0",
-                      s.bg,
-                      s.fg,
-                    )}
+                    key={a.id}
+                    className="flex items-center gap-3 bg-card/80 hover:bg-card p-3.5 rounded-[16px] border border-transparent hover:border-secondary transition"
                   >
-                    <Icon className="h-4 w-4" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[13px] font-semibold text-foreground truncate">
-                      {a.description}
-                    </p>
-                    <p className="text-[11px] text-subtle-foreground mt-0.5">{a.time}</p>
-                  </div>
-                  {typeof a.amount === "number" && (
-                    <p
+                    <div
                       className={cn(
-                        "font-display text-sm font-extrabold shrink-0",
-                        isMoneyIn ? "text-[var(--success)]" : "text-accent",
+                        "h-10 w-10 rounded-full flex items-center justify-center shrink-0",
+                        s.bg,
+                        s.fg,
                       )}
                     >
-                      {isMoneyIn ? "+" : ""}
-                      {fmt(a.amount)}
-                    </p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+                      <Icon className="h-4 w-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[13px] font-semibold text-foreground truncate">
+                        {a.description}
+                      </p>
+                      <p className="text-[11px] text-subtle-foreground mt-0.5">{a.time}</p>
+                    </div>
+                    {typeof a.amount === "number" && (
+                      <p
+                        className={cn(
+                          "font-display text-sm font-extrabold shrink-0",
+                          isMoneyIn ? "text-[var(--success)]" : "text-accent",
+                        )}
+                      >
+                        {isMoneyIn ? "+" : ""}
+                        {fmt(a.amount)}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </section>
       </div>
     </AppShell>

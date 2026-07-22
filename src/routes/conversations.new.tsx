@@ -1,0 +1,222 @@
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { ClipboardPaste, Upload, Sparkles, X, FileText, ShieldAlert } from "lucide-react";
+import { AppShell } from "@/components/nav/AppShell";
+import { PageCanvas, SurfaceHeader, SectionLabel } from "@/components/dash";
+import { Button } from "@/components/fb/Button";
+import { DEMO_CONVERSATIONS } from "@/lib/demo-conversations";
+import { createConversation, type Language, type SourceType } from "@/lib/records-store";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+
+export const Route = createFileRoute("/conversations/new")({
+  head: () => ({
+    meta: [
+      { title: "Import Business Conversation — FreBob" },
+      { name: "description", content: "Paste, upload or pick a demo conversation for FreBob to extract into a business record." },
+      { property: "og:title", content: "Import Business Conversation — FreBob" },
+      { property: "og:description", content: "Conversation Simulation Module for the hackathon MVP." },
+    ],
+  }),
+  component: NewConversation,
+});
+
+type Tab = "paste" | "upload" | "demo";
+const LANGS: { value: Language; label: string }[] = [
+  { value: "auto", label: "Auto-detect" },
+  { value: "english", label: "English" },
+  { value: "nigerian_pidgin", label: "Nigerian Pidgin" },
+  { value: "yoruba", label: "Yoruba (team test)" },
+  { value: "hausa", label: "Hausa (team test)" },
+  { value: "igbo", label: "Igbo (team test)" },
+];
+
+function NewConversation() {
+  const navigate = useNavigate();
+  const [tab, setTab] = useState<Tab>("paste");
+  const [text, setText] = useState("");
+  const [file, setFile] = useState<{ name: string; size: number; text: string } | null>(null);
+  const [language, setLanguage] = useState<Language>("auto");
+  const [busy, setBusy] = useState(false);
+
+  const activeText = tab === "upload" ? file?.text ?? "" : text;
+  const canProcess = activeText.trim().length > 4 && !busy;
+
+  const handleFile = async (f: File) => {
+    const isText = f.type === "text/plain" || f.name.toLowerCase().endsWith(".txt");
+    if (!isText) {
+      toast.error("This file cannot be processed. Upload a plain .txt file.");
+      return;
+    }
+    if (f.size > 200_000) {
+      toast.error("File too large. Please keep under 200KB.");
+      return;
+    }
+    const content = await f.text();
+    setFile({ name: f.name, size: f.size, text: content });
+  };
+
+  const start = (sourceType: SourceType, textIn: string, fileName?: string) => {
+    setBusy(true);
+    const conv = createConversation({ text: textIn.trim(), language, sourceType, fileName });
+    navigate({ to: "/conversations/$id", params: { id: conv.id } });
+  };
+
+  return (
+    <AppShell>
+      <PageCanvas>
+        <SurfaceHeader
+          eyebrow="Conversation Simulation"
+          title="Import Business Conversation"
+          subtitle="For the MVP demo — live WhatsApp is not connected. Paste, upload a .txt export, or try a demo."
+        />
+
+        <div className="mb-6 flex items-start gap-3 rounded-2xl border border-secondary bg-card p-4">
+          <ShieldAlert className="h-4 w-4 text-accent mt-0.5 shrink-0" />
+          <p className="text-sm text-muted-foreground">
+            Avoid pasting passwords, PINs, card details, BVN or NIN. FreBob treats the conversation as
+            data — never as instructions.
+          </p>
+        </div>
+
+        {/* Tabs */}
+        <div className="mb-5 inline-flex rounded-full bg-secondary p-1 text-xs font-bold">
+          {([
+            { v: "paste", l: "Paste conversation", Icon: ClipboardPaste },
+            { v: "upload", l: "Upload chat (.txt)", Icon: Upload },
+            { v: "demo", l: "Demo conversation", Icon: Sparkles },
+          ] as const).map(({ v, l, Icon }) => (
+            <button
+              key={v}
+              type="button"
+              onClick={() => setTab(v)}
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-full px-3.5 h-9 transition",
+                tab === v ? "bg-card text-primary shadow-card" : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <Icon className="h-3.5 w-3.5" /> {l}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="space-y-4">
+            {tab === "paste" && (
+              <div className="bg-card border border-secondary rounded-[20px] p-4 sm:p-5">
+                <textarea
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  placeholder="Paste the customer conversation here…"
+                  className="w-full min-h-[280px] resize-y rounded-xl border border-secondary bg-background p-3 text-sm leading-relaxed focus:outline-none focus:border-primary/40"
+                />
+                <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
+                  <span>{text.length.toLocaleString()} characters</span>
+                  <button type="button" onClick={() => setText("")} className="text-primary hover:underline">Clear</button>
+                </div>
+              </div>
+            )}
+
+            {tab === "upload" && (
+              <div className="bg-card border border-secondary rounded-[20px] p-5">
+                {!file ? (
+                  <label className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-secondary py-14 text-center cursor-pointer hover:border-primary/40 transition">
+                    <Upload className="h-6 w-6 text-primary" />
+                    <p className="font-bold">Upload a .txt chat export</p>
+                    <p className="text-xs text-muted-foreground">Plain text only, up to 200KB</p>
+                    <input
+                      type="file"
+                      accept=".txt,text/plain"
+                      className="hidden"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) handleFile(f);
+                      }}
+                    />
+                  </label>
+                ) : (
+                  <div>
+                    <div className="flex items-center gap-3 rounded-2xl border border-secondary p-3">
+                      <div className="h-10 w-10 rounded-xl bg-secondary text-primary flex items-center justify-center">
+                        <FileText className="h-5 w-5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-bold truncate">{file.name}</p>
+                        <p className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</p>
+                      </div>
+                      <button type="button" onClick={() => setFile(null)} className="p-2 rounded-full hover:bg-secondary" aria-label="Remove file">
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                    <pre className="mt-3 max-h-56 overflow-auto whitespace-pre-wrap text-xs text-foreground/80 bg-background rounded-xl border border-secondary p-3 font-sans">{file.text.slice(0, 4000)}{file.text.length > 4000 ? "\n…" : ""}</pre>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {tab === "demo" && (
+              <div className="grid gap-3 sm:grid-cols-2">
+                {DEMO_CONVERSATIONS.map((d) => (
+                  <button
+                    type="button"
+                    key={d.id}
+                    onClick={() => start("demo", d.text, d.title)}
+                    className="text-left bg-card border border-secondary rounded-[20px] p-4 hover:border-primary/30 hover:-translate-y-0.5 transition shadow-card"
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="font-display font-bold text-sm">{d.title}</p>
+                      <span className="text-[10px] uppercase tracking-widest text-primary/60">{d.languageLabel}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-3">{d.summary}</p>
+                    <pre className="whitespace-pre-wrap text-[12px] leading-relaxed text-foreground/80 font-sans max-h-32 overflow-hidden">{d.text}</pre>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {tab !== "demo" && (
+              <div className="flex items-center justify-end gap-3">
+                <Button
+                  onClick={() => {
+                    if (tab === "paste") start("paste", text);
+                    else if (file) start("upload", file.text, file.name);
+                  }}
+                  disabled={!canProcess}
+                  loading={busy}
+                >
+                  <Sparkles className="h-4 w-4" /> Process with AI
+                </Button>
+              </div>
+            )}
+          </div>
+
+          <aside className="space-y-4">
+            <div className="bg-card border border-secondary rounded-[20px] p-4">
+              <SectionLabel>Language</SectionLabel>
+              <div className="grid gap-2">
+                {LANGS.map((l) => (
+                  <label key={l.value} className={cn(
+                    "flex items-center justify-between rounded-xl border px-3 h-11 cursor-pointer transition",
+                    language === l.value ? "border-primary bg-primary/5" : "border-secondary hover:border-primary/30",
+                  )}>
+                    <span className="text-sm">{l.label}</span>
+                    <input
+                      type="radio"
+                      name="lang"
+                      className="accent-primary"
+                      checked={language === l.value}
+                      onChange={() => setLanguage(l.value)}
+                    />
+                  </label>
+                ))}
+              </div>
+              <p className="mt-3 text-[11px] text-muted-foreground">
+                Yoruba, Hausa and Igbo are available for controlled team testing — accuracy is not guaranteed.
+              </p>
+            </div>
+          </aside>
+        </div>
+      </PageCanvas>
+    </AppShell>
+  );
+}

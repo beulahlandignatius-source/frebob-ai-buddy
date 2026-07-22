@@ -202,7 +202,7 @@ function Dashboard() {
           <SectionLabel>Quick Actions</SectionLabel>
           <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-7 gap-3">
             <Link
-              to="/scanner"
+              to="/add-record"
               className="col-span-3 sm:col-span-1 lg:col-span-2 flex flex-col justify-center gap-2 p-5 brand-gradient text-primary-foreground rounded-[20px] shadow-elegant hover:opacity-95 active:scale-[0.98] transition text-left"
             >
               <div className="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center">

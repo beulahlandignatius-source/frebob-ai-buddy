@@ -1,0 +1,69 @@
+{
+  "_meta": { "status": "draft", "language": "Hausa", "notes": "Draft translation. Needs native-speaker review." },
+  "common": {
+    "loading": "Ana lodi…", "save": "Ajiye", "cancel": "Soke", "retry": "Sake gwadawa",
+    "close": "Rufe", "search": "Nema", "add": "Kara", "edit": "Gyara", "remove": "Cire",
+    "delete": "Share", "back": "Koma", "next": "Ci gaba", "done": "An gama",
+    "yes": "Ee", "no": "A'a", "signIn": "Shiga", "signOut": "Fita",
+    "optional": "Zabi", "required": "Dole"
+  },
+  "nav": {
+    "home": "Gida", "dashboard": "Allo", "ai": "Bob", "add": "Kara",
+    "inventory": "Kaya", "reports": "Rahoto", "businessMemory": "Tunanin Kasuwanci",
+    "orders": "Oda", "customers": "Abokan Ciniki", "scanner": "Skanar",
+    "notifications": "Sanarwa", "settings": "Saituna", "profile": "Bayanai"
+  },
+  "dashboard": {
+    "greeting": { "morning": "Ina kwana", "afternoon": "Ina wuni", "evening": "Barka da yamma" }
+  },
+  "ai": {
+    "title": "Yi magana da Bob", "eyebrow": "AI Assistant",
+    "onlineStatus": "Yana kan layi",
+    "grounded": "Bob yana amfani da Tunanin Kasuwancin da aka amince kadai",
+    "responseLanguage": "Amsa da", "empty": "Ka tambayi Bob komai game da kasuwancinka.",
+    "thinking": "Bob yana tunani…",
+    "listen": "Saurara", "listenGenerating": "Ana shirya sauti", "listenAgain": "Sake kunna"
+  },
+  "audio": {
+    "play": "Kunna", "pause": "Dakata", "stop": "Tsaya", "replay": "Sake kunna",
+    "listen": "Saurara", "generating": "Ana shirya sauti", "ready": "Sauti a shirye yake",
+    "playing": "Yana kunne", "paused": "Ya tsaya", "completed": "Ya gama",
+    "speed": "Sauri", "voice": "Murya",
+    "notConfigured": "Sauti bai shirya ba tukuna.",
+    "unsupportedPidgin": "Sautin Nigerian Pidgin ba a samu ba tukuna. Za ka iya ci gaba da karanta rubutun.",
+    "unsupportedLanguage": "Sauti bai samu ga wannan harshe ba tukuna.",
+    "generationFailed": "FreBob ba zai iya samar da sauti ba yanzu.",
+    "networkError": "Sauti bai dorewa ba. Duba haɗin kai.",
+    "voiceUnavailable": "Muryar nan ba ta samu yanzu. Zaɓi wata.",
+    "textTooLong": "Wannan doguwa ce, za a kunna cikin sassa.",
+    "noText": "Babu rubutu da za a karanta.",
+    "disclosure": "Ana samar da sauti ta YarnGPT. Rubutun da aka zaɓa kadai ne ake aikawa."
+  },
+  "language": {
+    "select": "Zaɓi harshe", "changeSaved": "An canza harshe",
+    "audioAvailable": "Sauti yana samuwa", "textOnly": "Rubutu kaɗai",
+    "fallbackNotice": "Wannan rubutu bai samu ba tukuna a harshenka. Ana nuna shi da Turanci."
+  },
+  "status": {
+    "pending": "Yana jira", "completed": "An gama", "cancelled": "An soke",
+    "paid": "An biya", "partially_paid": "An biya wani", "unpaid": "Ba a biya ba",
+    "in_stock": "Yana nan", "low_stock": "Ya karanta", "out_of_stock": "Ya kare",
+    "approved": "An amince", "needs_review": "Duba", "rejected": "An ki"
+  },
+  "inventory": {
+    "title": "Kayanka",
+    "addProduct": "Kara samfuri",
+    "search": "Nemo samfuri ko SKU",
+    "empty": { "title": "Babu samfuri", "description": "Share bincike ko kara sabon samfuri." },
+    "filters": { "all": "Duk", "in": "Akwai", "low": "Kadan", "out": "Ya kare" }
+  },
+  "settings": {
+    "audioSection": "Sauti da Murya",
+    "enableAudio": "Kunna sauti",
+    "preferredVoice": "Muryar da ka fi so",
+    "playbackSpeed": "Saurin kunnawa",
+    "responseLanguage": "Harshen amsa na AI",
+    "interfaceLanguage": "Harshen app"
+  },
+  "errors": { "network": "Akwai matsala. Duba haɗin kai.", "generic": "Bai yi aiki ba. Sake gwadawa." }
+}

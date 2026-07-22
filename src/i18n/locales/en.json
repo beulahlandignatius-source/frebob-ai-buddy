@@ -1,0 +1,124 @@
+{
+  "_meta": { "status": "reviewed", "language": "English" },
+  "common": {
+    "loading": "Loading…",
+    "save": "Save",
+    "cancel": "Cancel",
+    "retry": "Try again",
+    "close": "Close",
+    "search": "Search",
+    "add": "Add",
+    "edit": "Edit",
+    "remove": "Remove",
+    "delete": "Delete",
+    "back": "Back",
+    "next": "Next",
+    "done": "Done",
+    "yes": "Yes",
+    "no": "No",
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "optional": "Optional",
+    "required": "Required"
+  },
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "ai": "AI Assistant",
+    "add": "Add",
+    "inventory": "Inventory",
+    "reports": "Reports",
+    "businessMemory": "Business Memory",
+    "orders": "Orders",
+    "customers": "Customers",
+    "scanner": "Scanner",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "profile": "Profile"
+  },
+  "dashboard": {
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    }
+  },
+  "ai": {
+    "title": "Chat with Bob",
+    "eyebrow": "AI Assistant",
+    "onlineStatus": "Online",
+    "grounded": "Grounded on Business Memory · never invents data",
+    "responseLanguage": "Reply in",
+    "empty": "Ask Bob anything about your business — approved records only.",
+    "thinking": "Bob is thinking…",
+    "listen": "Listen",
+    "listenGenerating": "Generating audio",
+    "listenAgain": "Play again"
+  },
+  "audio": {
+    "play": "Play",
+    "pause": "Pause",
+    "stop": "Stop",
+    "replay": "Replay",
+    "listen": "Listen",
+    "generating": "Generating audio",
+    "ready": "Audio ready",
+    "playing": "Playing",
+    "paused": "Paused",
+    "completed": "Finished",
+    "speed": "Speed",
+    "voice": "Voice",
+    "notConfigured": "Audio is not configured yet. Please try again later.",
+    "unsupportedPidgin": "Audio for Nigerian Pidgin is not available yet. You can continue reading the text response.",
+    "unsupportedLanguage": "Audio is not available for this language yet.",
+    "generationFailed": "FreBob could not create the audio right now. You can continue reading the text.",
+    "networkError": "Audio could not be loaded. Check your connection and try again.",
+    "voiceUnavailable": "This voice is temporarily unavailable. Choose another voice or try again.",
+    "textTooLong": "This content will be played in separate parts.",
+    "noText": "There is no text available to read aloud.",
+    "disclosure": "Audio is generated using YarnGPT. The text selected for playback is securely sent to the audio service to create speech."
+  },
+  "language": {
+    "select": "Select language",
+    "changeSaved": "Language updated",
+    "audioAvailable": "Audio available",
+    "textOnly": "Text only",
+    "fallbackNotice": "This text is not yet available in your selected language. The English version is shown instead."
+  },
+  "status": {
+    "pending": "Pending",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "paid": "Paid",
+    "partially_paid": "Partially paid",
+    "unpaid": "Unpaid",
+    "in_stock": "In stock",
+    "low_stock": "Low stock",
+    "out_of_stock": "Out of stock",
+    "approved": "Approved",
+    "needs_review": "Needs review",
+    "rejected": "Rejected"
+  },
+  "inventory": {
+    "title": "Your stock",
+    "addProduct": "Add product",
+    "search": "Search products or SKU",
+    "empty": {
+      "title": "No products match",
+      "description": "Try clearing your search or filter, or add a new product."
+    },
+    "filters": { "all": "All", "in": "In stock", "low": "Low", "out": "Out" }
+  },
+  "settings": {
+    "audioSection": "Audio & voice",
+    "enableAudio": "Enable audio features",
+    "preferredVoice": "Preferred voice",
+    "playbackSpeed": "Default playback speed",
+    "responseLanguage": "AI response language",
+    "interfaceLanguage": "Interface language"
+  },
+  "errors": {
+    "network": "Something went wrong. Check your connection and try again.",
+    "generic": "Something didn't work. Please try again."
+  }
+}

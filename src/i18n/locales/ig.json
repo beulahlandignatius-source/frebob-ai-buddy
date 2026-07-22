@@ -1,0 +1,69 @@
+{
+  "_meta": { "status": "draft", "language": "Igbo", "notes": "Draft translation. Needs native-speaker review." },
+  "common": {
+    "loading": "Na-ebugo…", "save": "Chekwaa", "cancel": "Kagbuo", "retry": "Nwaa ọzọ",
+    "close": "Mechie", "search": "Chọọ", "add": "Tinye", "edit": "Dezie", "remove": "Wepụ",
+    "delete": "Hichapụ", "back": "Laghachi", "next": "Ọzọ", "done": "Emechara",
+    "yes": "Ee", "no": "Mba", "signIn": "Banye", "signOut": "Pụọ",
+    "optional": "Nhọrọ", "required": "Achọrọ"
+  },
+  "nav": {
+    "home": "Ụlọ", "dashboard": "Dashboard", "ai": "Bob", "add": "Tinye",
+    "inventory": "Ngwaahịa", "reports": "Akụkọ", "businessMemory": "Ncheta Azụmahịa",
+    "orders": "Iwu", "customers": "Ndị Ahịa", "scanner": "Scanner",
+    "notifications": "Ọkwa", "settings": "Ntọala", "profile": "Profaịlụ"
+  },
+  "dashboard": {
+    "greeting": { "morning": "Ụtụtụ ọma", "afternoon": "Ehihie ọma", "evening": "Mgbede ọma" }
+  },
+  "ai": {
+    "title": "Kwurịta Bob okwu", "eyebrow": "AI Assistant",
+    "onlineStatus": "Ọ nọ",
+    "grounded": "Bob na-eji naanị Ncheta Azụmahịa akwadoro",
+    "responseLanguage": "Zaghachi na", "empty": "Jụọ Bob ihe ọ bụla gbasara azụmahịa gị.",
+    "thinking": "Bob na-eche…",
+    "listen": "Gee ntị", "listenGenerating": "Na-akwado ọdịyo", "listenAgain": "Kpọọ ọzọ"
+  },
+  "audio": {
+    "play": "Kpọọ", "pause": "Kwụsị nwa", "stop": "Kwụsị", "replay": "Kpọọ ọzọ",
+    "listen": "Gee ntị", "generating": "Na-akwado ọdịyo", "ready": "Ọdịyo dị njikere",
+    "playing": "Na-akpọ", "paused": "Ọ kwụsịrị", "completed": "Emechara",
+    "speed": "Ọsọ", "voice": "Olu",
+    "notConfigured": "Ọdịyo edobebeghị. Nwaa ọzọ ma emesịa.",
+    "unsupportedPidgin": "Ọdịyo maka Nigerian Pidgin adịbeghị. Ị nwere ike ịga n'ihu ịgụ ederede.",
+    "unsupportedLanguage": "Ọdịyo adịghị maka asụsụ a ugbu a.",
+    "generationFailed": "FreBob enweghị ike ịmepụta ọdịyo ugbu a.",
+    "networkError": "Ọdịyo abụghị ibudata. Lelee njikọ gị.",
+    "voiceUnavailable": "Olu a adịghị ugbu a. Họrọ ọzọ.",
+    "textTooLong": "Nke a dị ogologo — a ga-akpọ ya n'akụkụ.",
+    "noText": "Enweghị ederede ị ga-agụ.",
+    "disclosure": "A na-eji YarnGPT emepụta ọdịyo. Naanị ederede ị họọrọ ka a na-eziga."
+  },
+  "language": {
+    "select": "Họrọ asụsụ", "changeSaved": "Asụsụ agbanweela",
+    "audioAvailable": "Ọdịyo dị", "textOnly": "Ederede naanị",
+    "fallbackNotice": "Ederede a adịbeghị n'asụsụ gị. Anyị na-egosi ya n'asụsụ Bekee."
+  },
+  "status": {
+    "pending": "Na-eche", "completed": "Emechara", "cancelled": "Akagbuola",
+    "paid": "Akwụọla ụgwọ", "partially_paid": "Akwụọla ụfọdụ", "unpaid": "Akwụghị",
+    "in_stock": "Ọ dị", "low_stock": "Ọ na-agwụ", "out_of_stock": "Agwụla",
+    "approved": "Akwadoro", "needs_review": "Nyochaa", "rejected": "Ajụrụ"
+  },
+  "inventory": {
+    "title": "Ngwaahịa gị",
+    "addProduct": "Tinye ngwaahịa",
+    "search": "Chọọ ngwaahịa ma ọ bụ SKU",
+    "empty": { "title": "Enweghị ngwaahịa", "description": "Kwụsị nchọ ma ọ bụ tinye ọhụrụ." },
+    "filters": { "all": "Niile", "in": "Ọ dị", "low": "Ọ na-agwụ", "out": "Agwụla" }
+  },
+  "settings": {
+    "audioSection": "Ọdịyo na Olu",
+    "enableAudio": "Kwado ọdịyo",
+    "preferredVoice": "Olu ị masịrị",
+    "playbackSpeed": "Ọsọ egwuregwu",
+    "responseLanguage": "Asụsụ nzaghachi AI",
+    "interfaceLanguage": "Asụsụ ngwa"
+  },
+  "errors": { "network": "Enwere nsogbu. Lelee njikọ.", "generic": "Ọ rụghị ọrụ. Nwaa ọzọ." }
+}

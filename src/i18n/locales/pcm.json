@@ -1,0 +1,124 @@
+{
+  "_meta": { "status": "draft", "language": "Nigerian Pidgin", "notes": "Draft translation. Needs native-speaker review." },
+  "common": {
+    "loading": "E dey load…",
+    "save": "Save am",
+    "cancel": "Cancel",
+    "retry": "Try again",
+    "close": "Close",
+    "search": "Find",
+    "add": "Add",
+    "edit": "Edit",
+    "remove": "Comot",
+    "delete": "Delete",
+    "back": "Go back",
+    "next": "Next",
+    "done": "Finish",
+    "yes": "Yes",
+    "no": "No",
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "optional": "You fit skip",
+    "required": "You must fill am"
+  },
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "ai": "Bob",
+    "add": "Add",
+    "inventory": "Stock",
+    "reports": "Report",
+    "businessMemory": "Business Memory",
+    "orders": "Order",
+    "customers": "Customer",
+    "scanner": "Scan",
+    "notifications": "Alert",
+    "settings": "Setting",
+    "profile": "Profile"
+  },
+  "dashboard": {
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    }
+  },
+  "ai": {
+    "title": "Talk to Bob",
+    "eyebrow": "AI Assistant",
+    "onlineStatus": "Online",
+    "grounded": "Bob dey use only your approved Business Memory",
+    "responseLanguage": "Reply in",
+    "empty": "Ask Bob anything about your business — na only approved records e go use.",
+    "thinking": "Bob dey think…",
+    "listen": "Listen",
+    "listenGenerating": "Audio dey ready",
+    "listenAgain": "Play again"
+  },
+  "audio": {
+    "play": "Play",
+    "pause": "Pause",
+    "stop": "Stop",
+    "replay": "Replay",
+    "listen": "Listen",
+    "generating": "Audio dey ready",
+    "ready": "Audio don ready",
+    "playing": "E dey play",
+    "paused": "E pause",
+    "completed": "E don finish",
+    "speed": "Speed",
+    "voice": "Voice",
+    "notConfigured": "Audio never ready. Try again small time.",
+    "unsupportedPidgin": "Audio for Nigerian Pidgin never ready. You fit continue read the text.",
+    "unsupportedLanguage": "Audio no dey for this language yet.",
+    "generationFailed": "FreBob no fit make the audio now. You fit continue read the text.",
+    "networkError": "Audio no load. Check your network make you try again.",
+    "voiceUnavailable": "This voice no dey work now. Pick another voice or try again.",
+    "textTooLong": "This one long, we go play am for parts.",
+    "noText": "No text dey to read.",
+    "disclosure": "Audio dey generated with YarnGPT. Only the text wey you pick dey go audio service."
+  },
+  "language": {
+    "select": "Choose language",
+    "changeSaved": "Language don change",
+    "audioAvailable": "Audio dey",
+    "textOnly": "Text only",
+    "fallbackNotice": "This text never ready for your language. We dey show am for English."
+  },
+  "status": {
+    "pending": "Dey wait",
+    "completed": "Don finish",
+    "cancelled": "Cancel",
+    "paid": "E don pay",
+    "partially_paid": "Payment never complete",
+    "unpaid": "No pay",
+    "in_stock": "Stock dey",
+    "low_stock": "Stock don low",
+    "out_of_stock": "Stock don finish",
+    "approved": "Approve",
+    "needs_review": "Check am",
+    "rejected": "Reject"
+  },
+  "inventory": {
+    "title": "Your stock",
+    "addProduct": "Add product",
+    "search": "Find product or SKU",
+    "empty": {
+      "title": "No product match",
+      "description": "Clear your search or add new product."
+    },
+    "filters": { "all": "All", "in": "In stock", "low": "Low", "out": "Out" }
+  },
+  "settings": {
+    "audioSection": "Audio & voice",
+    "enableAudio": "On audio",
+    "preferredVoice": "Voice wey you prefer",
+    "playbackSpeed": "Play speed",
+    "responseLanguage": "Language wey AI go reply",
+    "interfaceLanguage": "App language"
+  },
+  "errors": {
+    "network": "Wahala dey. Check your network and try again.",
+    "generic": "E no work. Try again."
+  }
+}

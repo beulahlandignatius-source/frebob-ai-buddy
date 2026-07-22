@@ -28,7 +28,7 @@ function Dashboard() {
     (async () => {
       const { data } = await supabase.auth.getUser();
       if (!data.user) {
-        navigate({ to: "/auth" });
+        setName("there");
         return;
       }
       setName(data.user.email?.split("@")[0] ?? "there");

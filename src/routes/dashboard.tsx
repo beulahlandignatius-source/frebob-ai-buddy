@@ -225,7 +225,7 @@ function Dashboard() {
 
         {/* Metrics */}
         <section data-tour="dashboard-metrics" className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-8">
-          {dashboardMetrics.map((m) => (
+          {metrics.map((m) => (
             <Link
               key={m.key}
               to={m.linkTo}

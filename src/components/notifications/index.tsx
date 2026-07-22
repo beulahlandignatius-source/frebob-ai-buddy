@@ -193,11 +193,13 @@ export function NotificationCard({
         <div className="mt-3 flex items-center justify-between gap-2 flex-wrap">
           <div>
             {item.action && (
-              <Button asChild size="sm" variant="outline">
-                <Link to={item.action.href} onClick={() => onRead?.(item.id)}>
-                  {item.action.label}
-                </Link>
-              </Button>
+              <Link
+                to={item.action.href}
+                onClick={() => onRead?.(item.id)}
+                className="inline-flex items-center rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold text-primary hover:bg-secondary/40 transition"
+              >
+                {item.action.label}
+              </Link>
             )}
           </div>
           <div className="flex items-center gap-1">

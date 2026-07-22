@@ -355,12 +355,12 @@ export function generateNotifications(): { created: number; total: number } {
     const customers = listCustomers();
     for (const c of customers) {
       const m = computeMetrics(c.id);
-      if (m.balance > 0) {
+      if (m.outstanding > 0) {
         upsert({
           category: "customer",
-          priority: m.balance > 200000 ? "high" : "medium",
+          priority: m.outstanding > 200000 ? "high" : "medium",
           title: "Customer has balance",
-          description: `${c.name} owes ₦${m.balance.toLocaleString("en-NG")}.`,
+          description: `${c.name} owes ₦${m.outstanding.toLocaleString("en-NG")}.`,
           relatedModule: "customers",
           relatedRecordId: c.id,
           actionUrl: `/customers/${c.id}`,
@@ -370,12 +370,12 @@ export function generateNotifications(): { created: number; total: number } {
       }
     }
     const dup = summariseDuplicates();
-    if (dup.pendingGroups > 0) {
+    if (dup.unreviewed > 0) {
       upsert({
         category: "customer",
         priority: "high",
         title: "Duplicate customers detected",
-        description: `${dup.pendingGroups} customer${dup.pendingGroups === 1 ? "" : "s"} may be duplicated. Review before merging.`,
+        description: `${dup.unreviewed} customer${dup.unreviewed === 1 ? "" : "s"} may be duplicated. Review before merging.`,
         relatedModule: "customers",
         relatedRecordId: null,
         actionUrl: "/customers/duplicates",

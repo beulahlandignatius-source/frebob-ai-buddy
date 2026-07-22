@@ -8,12 +8,13 @@ import {
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
 import { PageCanvas, SurfaceHeader, SectionLabel, SuccessBanner, StatusBadge } from "@/components/dash";
-import { DEMO_USER, fmt, orders, customers } from "@/lib/mock-data";
+import { DEMO_USER, fmt, orders as demoOrders, customers as demoCustomers } from "@/lib/mock-data";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { EnterDemoButton } from "@/components/demo/EnterDemoButton";
 import { LanguageSelector } from "@/components/i18n/LanguageSelector";
 import { useTour } from "@/components/tour/GuidedTour";
+import { useDemo } from "@/lib/demo/context";
 
 
 

@@ -32,6 +32,8 @@ type Tab = "records" | "notes";
 type Cat = "all" | MemoryNote["category"];
 
 function BusinessMemory() {
+  const { active: demoActive } = useDemo();
+  const memoryNotes = demoActive ? demoMemoryNotes : [];
   const [tab, setTab] = useState<Tab>("records");
   const [cat, setCat] = useState<Cat>("all");
   const [query, setQuery] = useState("");

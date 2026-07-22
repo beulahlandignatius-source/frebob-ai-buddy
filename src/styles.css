@@ -226,6 +226,54 @@
   box-shadow: var(--shadow-card);
 }
 
+/* ── Liquid Glass system (2026) ──────────────────────────── */
+/*
+ * Reserved for control-layer surfaces only: bottom nav, sidebars/toolbars,
+ * floating action sheets, chat controls, AI surfaces, search, modal controls,
+ * hero feature cards. Never on forms, tables, records, or long content.
+ */
+@utility liquid-glass {
+  background-color: color-mix(in oklab, #ffffff 62%, transparent);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid color-mix(in oklab, #ffffff 55%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, #ffffff 70%, transparent),
+    inset 0 -1px 0 color-mix(in oklab, #1d1d1f 6%, transparent),
+    0 12px 40px -18px color-mix(in oklab, #1d1d1f 26%, transparent);
+}
+@utility liquid-glass-strong {
+  background-color: color-mix(in oklab, #ffffff 78%, transparent);
+  backdrop-filter: blur(36px) saturate(200%);
+  -webkit-backdrop-filter: blur(36px) saturate(200%);
+  border: 1px solid color-mix(in oklab, #ffffff 60%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, #ffffff 80%, transparent),
+    0 24px 60px -24px color-mix(in oklab, #1d1d1f 30%, transparent);
+}
+@utility liquid-glass-tinted {
+  background-color: color-mix(in oklab, var(--primary) 10%, color-mix(in oklab, #ffffff 68%, transparent));
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border: 1px solid color-mix(in oklab, var(--primary) 18%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, #ffffff 60%, transparent),
+    0 16px 44px -22px color-mix(in oklab, var(--primary) 30%, transparent);
+}
+@utility liquid-press {
+  transition:
+    transform var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-base) var(--ease-standard);
+  &:active {
+    transform: scale(0.96);
+  }
+}
+@utility liquid-rise {
+  transition:
+    transform var(--duration-base) var(--ease-emphasized),
+    box-shadow var(--duration-base) var(--ease-emphasized);
+}
+
 /* ── Reusable utilities from the token layer ─────────────── */
 @utility focus-ring {
   outline: none;
@@ -251,7 +299,49 @@
 @utility shadow-lg { box-shadow: var(--shadow-lg); }
 @utility shadow-xl { box-shadow: var(--shadow-xl); }
 
-/* Global reduced-motion respect */
+/* ── Accessibility & performance fallbacks for glass ─────── */
+
+/* Devices/browsers without backdrop-filter get a solid surface. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .liquid-glass,
+  .liquid-glass-strong,
+  .liquid-glass-tinted,
+  .glass-card {
+    background-color: #ffffff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-color: var(--border);
+  }
+}
+
+/* Reduce Transparency (system preference) — solidify surfaces. */
+@media (prefers-reduced-transparency: reduce) {
+  .liquid-glass,
+  .liquid-glass-strong,
+  .liquid-glass-tinted,
+  .glass-card {
+    background-color: #ffffff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-color: var(--border);
+  }
+}
+
+/* Increased Contrast — stronger borders, opaque backgrounds. */
+@media (prefers-contrast: more) {
+  .liquid-glass,
+  .liquid-glass-strong,
+  .liquid-glass-tinted,
+  .glass-card {
+    background-color: #ffffff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1.5px solid var(--foreground);
+    box-shadow: none;
+  }
+}
+
+/* Global reduced-motion respect (also disables liquid-press scale). */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -261,5 +351,9 @@
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+  .liquid-press:active {
+    transform: none !important;
+  }
 }
+
 

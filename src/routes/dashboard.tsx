@@ -1,13 +1,8 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   Bell,
-  Plus,
-  Boxes,
-  ShoppingCart,
-  ScanLine,
   Sparkles,
-  BarChart3,
   Check,
   Clock,
   CreditCard,
@@ -20,7 +15,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/nav/AppShell";
 import {
   dashboardMetrics,
-  lowStock,
   recentActivities,
   greeting,
   fmt,
@@ -28,13 +22,12 @@ import {
   type Activity,
 } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
       { title: "Dashboard — FreBob" },
-      { name: "description", content: "Track today's sales, payments, orders and stock at a glance." },
+      { name: "description", content: "Track today's sales, payments and orders at a glance." },
       { property: "og:title", content: "Dashboard — FreBob" },
       { property: "og:description", content: "Your calm command centre for daily business operations." },
     ],
@@ -71,7 +64,6 @@ const activityStyle: Record<
 };
 
 function Dashboard() {
-  const navigate = useNavigate();
   const [firstName, setFirstName] = useState<string>(DEMO_USER.firstName);
   const [businessName, setBusinessName] = useState<string>(DEMO_USER.businessName);
   const unread = 3;
@@ -125,17 +117,18 @@ function Dashboard() {
                 <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-accent ring-2 ring-card" />
               )}
             </Link>
-            <div
+            <Link
+              to="/profile"
               className="h-10 w-10 rounded-full brand-gradient text-primary-foreground font-bold flex items-center justify-center ring-2 ring-white shadow-soft"
               aria-label="Profile"
             >
               {firstName.slice(0, 1)}
-            </div>
+            </Link>
           </div>
         </header>
 
         {/* Today at a Glance — AI glass panel */}
-        <section className="relative overflow-hidden rounded-[24px] p-5 sm:p-6 glass-card mb-8">
+        <section className="relative overflow-hidden rounded-[24px] p-5 sm:p-6 glass-card mb-6">
           <div className="pointer-events-none absolute -right-6 -top-6 h-32 w-32 rounded-full bg-accent/20 blur-3xl" />
           <div className="pointer-events-none absolute -left-10 bottom-0 h-24 w-24 rounded-full bg-primary/15 blur-3xl" />
           <div className="relative flex items-start gap-3">
@@ -146,14 +139,16 @@ function Dashboard() {
               <div className="flex items-center gap-2">
                 <h3 className="font-display text-sm font-bold text-primary">Today at a Glance</h3>
                 <span className="text-[10px] font-semibold uppercase tracking-wider text-subtle-foreground">
-                  AI recap
+                  Bob's recap
                 </span>
               </div>
               <p className="mt-1.5 text-[15px] leading-relaxed text-foreground/85">
                 You've had <strong className="text-primary">8 orders</strong> today — sales up{" "}
                 <strong className="text-[var(--success)]">+12%</strong> from yesterday.{" "}
-                <span className="text-accent font-semibold">Samsung A15</span> is moving fast — only
-                3 units left in stock.
+                <Link to="/notifications" className="text-accent font-semibold underline underline-offset-2">
+                  2 stock alerts
+                </Link>{" "}
+                need your attention.
               </p>
             </div>
           </div>
@@ -197,166 +192,61 @@ function Dashboard() {
           ))}
         </section>
 
-        {/* Quick actions */}
-        <section className="mb-8">
-          <SectionLabel>Quick Actions</SectionLabel>
-          <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-7 gap-3">
-            <Link
-              to="/add-record"
-              className="col-span-3 sm:col-span-1 lg:col-span-2 flex flex-col justify-center gap-2 p-5 brand-gradient text-primary-foreground rounded-[20px] shadow-elegant hover:opacity-95 active:scale-[0.98] transition text-left"
-            >
-              <div className="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center">
-                <Plus className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="font-display text-sm font-extrabold leading-tight">Add Business Record</p>
-                <p className="text-[11px] text-white/70 mt-0.5">Sale, payment or expense</p>
-              </div>
-            </Link>
-
-            {[
-              { icon: Boxes, label: "Inventory", tint: "bg-accent/10 text-accent", to: "/inventory" as const },
-              { icon: ShoppingCart, label: "Orders", tint: "bg-secondary text-primary", to: "/orders" as const },
-              { icon: ScanLine, label: "Scanner", tint: "bg-secondary text-primary", to: "/scanner" as const },
-              { icon: Sparkles, label: "Ask FreBob", tint: "bg-secondary text-primary", to: "/ai-assistant" as const },
-              { icon: BarChart3, label: "Reports", tint: "bg-secondary text-primary", to: "/reports" as const },
-            ].map((a, i) => {
-              const Icon = a.icon;
+        {/* Activity */}
+        <section>
+          <SectionLabel
+            right={
+              <Link
+                to="/reports"
+                className="text-[10px] font-bold text-primary uppercase tracking-wider hover:underline"
+              >
+                See all
+              </Link>
+            }
+          >
+            Recent Activity
+          </SectionLabel>
+          <div className="space-y-2.5">
+            {recentActivities.slice(0, 5).map((a) => {
+              const s = activityStyle[a.type];
+              const Icon = s.icon;
+              const isMoneyIn = a.type === "payment" || a.type === "sale";
               return (
-                <Link
-                  key={i}
-                  to={a.to}
-                  className="flex flex-col items-center justify-center gap-2 p-4 bg-card rounded-[20px] border border-secondary hover:border-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition"
+                <div
+                  key={a.id}
+                  className="flex items-center gap-3 bg-card/80 hover:bg-card p-3.5 rounded-[16px] border border-transparent hover:border-secondary transition"
                 >
-                  <div className={cn("h-9 w-9 rounded-xl flex items-center justify-center", a.tint)}>
+                  <div
+                    className={cn(
+                      "h-10 w-10 rounded-full flex items-center justify-center shrink-0",
+                      s.bg,
+                      s.fg,
+                    )}
+                  >
                     <Icon className="h-4 w-4" />
                   </div>
-                  <span className="text-[11px] font-bold text-foreground">{a.label}</span>
-                </Link>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[13px] font-semibold text-foreground truncate">
+                      {a.description}
+                    </p>
+                    <p className="text-[11px] text-subtle-foreground mt-0.5">{a.time}</p>
+                  </div>
+                  {typeof a.amount === "number" && (
+                    <p
+                      className={cn(
+                        "font-display text-sm font-extrabold shrink-0",
+                        isMoneyIn ? "text-[var(--success)]" : "text-accent",
+                      )}
+                    >
+                      {isMoneyIn ? "+" : ""}
+                      {fmt(a.amount)}
+                    </p>
+                  )}
+                </div>
               );
             })}
           </div>
         </section>
-
-
-        {/* Stock + Activity */}
-        <section className="grid gap-6 lg:grid-cols-5 mb-8">
-          <div className="lg:col-span-2">
-            <SectionLabel
-              right={
-                <span className="text-[10px] font-bold text-accent uppercase tracking-wider">
-                  {lowStock.length} items low
-                </span>
-              }
-            >
-              Stock Alerts
-            </SectionLabel>
-            <div className="bg-card rounded-[24px] border border-secondary overflow-hidden">
-              {lowStock.map((item, i) => {
-                const out = item.status === "out";
-                return (
-                  <div
-                    key={item.id}
-                    className={cn(
-                      "flex items-center justify-between p-4",
-                      i !== lowStock.length - 1 && "border-b border-secondary/70",
-                    )}
-                  >
-                    <div className="min-w-0">
-                      <p className="text-sm font-bold text-foreground truncate">{item.name}</p>
-                      <p
-                        className={cn(
-                          "text-[11px] font-medium mt-0.5",
-                          out ? "text-destructive" : "text-accent",
-                        )}
-                      >
-                        {out ? "Out of stock" : `Only ${item.stock} ${item.unit} left`}
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => toast("Coming in a later batch")}
-                      className={cn(
-                        "px-4 py-1.5 text-[11px] font-bold rounded-full transition",
-                        out
-                          ? "bg-accent text-white hover:brightness-105"
-                          : "bg-secondary text-primary hover:bg-primary hover:text-primary-foreground",
-                      )}
-                    >
-                      Restock
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="lg:col-span-3">
-            <SectionLabel
-              right={
-                <Link
-                  to="/reports"
-                  className="text-[10px] font-bold text-primary uppercase tracking-wider hover:underline"
-                >
-                  See all
-                </Link>
-              }
-            >
-              Activity Feed
-            </SectionLabel>
-            <div className="space-y-2.5">
-              {recentActivities.map((a) => {
-                const s = activityStyle[a.type];
-                const Icon = s.icon;
-                const isMoneyIn = a.type === "payment" || a.type === "sale";
-                return (
-                  <div
-                    key={a.id}
-                    className="flex items-center gap-3 bg-card/80 hover:bg-card p-3.5 rounded-[16px] border border-transparent hover:border-secondary transition"
-                  >
-                    <div
-                      className={cn(
-                        "h-10 w-10 rounded-full flex items-center justify-center shrink-0",
-                        s.bg,
-                        s.fg,
-                      )}
-                    >
-                      <Icon className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[13px] font-semibold text-foreground truncate">
-                        {a.description}
-                      </p>
-                      <p className="text-[11px] text-subtle-foreground mt-0.5">{a.time}</p>
-                    </div>
-                    {typeof a.amount === "number" && (
-                      <p
-                        className={cn(
-                          "font-display text-sm font-extrabold shrink-0",
-                          isMoneyIn ? "text-[var(--success)]" : "text-accent",
-                        )}
-                      >
-                        {isMoneyIn ? "+" : ""}
-                        {fmt(a.amount)}
-                      </p>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* Footer sign-out for prototype access */}
-        <div className="text-center">
-          <button
-            type="button"
-            className="text-xs text-subtle-foreground hover:text-foreground"
-            onClick={async () => { await supabase.auth.signOut(); navigate({ to: "/signin" }); }}
-          >
-            Sign out
-          </button>
-        </div>
       </div>
     </AppShell>
   );

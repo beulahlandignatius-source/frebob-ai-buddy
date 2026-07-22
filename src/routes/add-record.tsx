@@ -59,7 +59,7 @@ function AddRecord() {
           <RecordSourceCard
             title="Business Memory"
             description="See every approved record — the source of truth Bob answers from."
-            status="Open"
+            status="Available"
             icon={Brain}
             to="/business-memory"
           />

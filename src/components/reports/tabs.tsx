@@ -15,7 +15,7 @@ import {
   fmtNaira, fmtPct,
   type SalesReport, type PaymentsReport, type OrdersReport, type InventoryReport, type CustomersReport, type Overview,
 } from "@/lib/reporting/service";
-import { listExpenses, summariseExpenses, categoryLabel, type Expense } from "@/lib/expenses-store";
+import { listExpenses, summariseExpenses, categoryLabel } from "@/lib/expenses-store";
 
 import type { DateRange } from "@/lib/reporting/period";
 import { formatRange } from "@/lib/reporting/period";

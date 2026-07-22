@@ -6,7 +6,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { History, Plus } from "lucide-react";
+import { History, Plus, Sparkles } from "lucide-react";
 import { BobAvatar } from "@/components/copilot/BobAvatar";
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";

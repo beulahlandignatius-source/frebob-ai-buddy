@@ -213,3 +213,195 @@ export const extractBusinessRecord = createServerFn({ method: "POST" })
       payloadJson: JSON.stringify(payload),
     };
   });
+
+// ---------------------------------------------------------------------------
+// approveExtraction — writes approved_records + items, optionally an order
+// with order_items + payment, and evidence_links. Marks ai_extractions as
+// approved. Returns the new approved_record reference + id.
+// ---------------------------------------------------------------------------
+
+type ExtractionItem = {
+  product_name: string | null;
+  variant: string | null;
+  quantity: number | null;
+  unit_price: number | null;
+};
+type ExtractionPayload = {
+  event_type: string;
+  language: string;
+  customer: { name: string | null; phone: string | null };
+  items: ExtractionItem[];
+  total_amount: number | null;
+  amount_paid: number | null;
+  balance: number | null;
+  payment_status: string;
+  order_status: string;
+  delivery_or_pickup: string | null;
+  internal_note: string | null;
+  missing_fields: string[];
+  needs_confirmation: boolean;
+  confidence: string;
+};
+
+function makeReference() {
+  return `FB-${Date.now().toString(36).toUpperCase().slice(-6)}`;
+}
+
+export const approveExtraction = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((raw: unknown) => {
+    const d = raw as { extractionId: string; payloadJson: string; approvedByLabel?: string | null };
+    if (!d?.extractionId) throw new Error("extractionId is required");
+    if (!d?.payloadJson) throw new Error("payloadJson is required");
+    return {
+      extractionId: d.extractionId,
+      payload: JSON.parse(d.payloadJson) as ExtractionPayload,
+      approvedByLabel: d.approvedByLabel ?? null,
+    };
+  })
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+
+    const { data: ext, error: extErr } = await supabase
+      .from("ai_extractions")
+      .select("id, business_id, source_input_id, status")
+      .eq("id", data.extractionId)
+      .single();
+    if (extErr || !ext) throw new Error(extErr?.message ?? "Extraction not found");
+    if (ext.status === "approved") throw new Error("This extraction was already approved.");
+
+    const { data: src } = await supabase
+      .from("source_inputs")
+      .select("raw_text, source_type")
+      .eq("id", ext.source_input_id)
+      .single();
+
+    const p = data.payload;
+    const reference = makeReference();
+
+    const { data: rec, error: recErr } = await supabase
+      .from("approved_records")
+      .insert({
+        business_id: ext.business_id,
+        reference,
+        approved_by: userId,
+        approved_by_label: data.approvedByLabel,
+        data: p as never,
+        source_text: src?.raw_text ?? null,
+        source_type: src?.source_type ?? "paste",
+      })
+      .select("id, reference")
+      .single();
+    if (recErr) throw new Error(recErr.message);
+
+    const items = (p.items ?? []).filter((it) => it.product_name && (it.quantity ?? 0) > 0);
+    if (items.length > 0) {
+      const rows = items.map((it) => ({
+        business_id: ext.business_id,
+        approved_record_id: rec.id,
+        product_name: it.product_name!,
+        variant: it.variant,
+        quantity: it.quantity!,
+        unit_price: it.unit_price,
+        line_total: (it.quantity ?? 0) * (it.unit_price ?? 0) || null,
+      }));
+      const { error: itemsErr } = await supabase.from("approved_record_items").insert(rows);
+      if (itemsErr) throw new Error(itemsErr.message);
+    }
+
+    let orderId: string | null = null;
+    const createsOrder = p.event_type === "sale_order" || p.event_type === "reservation";
+    if (createsOrder && items.length > 0) {
+      const total = p.total_amount ?? items.reduce((s, i) => s + (i.quantity ?? 0) * (i.unit_price ?? 0), 0);
+      const paid = p.amount_paid ?? 0;
+      const balance = Math.max((total ?? 0) - paid, 0);
+      const { data: ord, error: ordErr } = await supabase
+        .from("orders")
+        .insert({
+          business_id: ext.business_id,
+          reference,
+          approved_record_id: rec.id,
+          status: p.order_status ?? "pending",
+          total_amount: total,
+          amount_paid: paid,
+          balance,
+          payment_status: p.payment_status ?? "unknown",
+          delivery_mode: p.delivery_or_pickup,
+          notes: p.internal_note,
+          created_by: userId,
+        })
+        .select("id")
+        .single();
+      if (ordErr) throw new Error(ordErr.message);
+      orderId = ord.id as string;
+
+      const oiRows = items.map((it) => ({
+        business_id: ext.business_id,
+        order_id: orderId!,
+        product_name: it.product_name!,
+        variant: it.variant,
+        quantity: it.quantity!,
+        unit_price: it.unit_price ?? 0,
+        line_total: (it.quantity ?? 0) * (it.unit_price ?? 0),
+      }));
+      const { error: oiErr } = await supabase.from("order_items").insert(oiRows);
+      if (oiErr) throw new Error(oiErr.message);
+
+      if ((p.amount_paid ?? 0) > 0) {
+        await supabase.from("payments").insert({
+          business_id: ext.business_id,
+          order_id: orderId,
+          order_reference: reference,
+          amount: p.amount_paid,
+          method: "unknown",
+          recorded_by: userId,
+          recorded_by_label: data.approvedByLabel,
+        });
+      }
+    }
+
+    await supabase
+      .from("ai_extractions")
+      .update({
+        status: "approved",
+        approved_record_id: rec.id,
+        reviewed_by: userId,
+        reviewed_at: new Date().toISOString(),
+      })
+      .eq("id", ext.id);
+
+    await supabase.from("source_inputs").update({ status: "approved" }).eq("id", ext.source_input_id);
+
+    await supabase.from("evidence_links").insert([
+      { business_id: ext.business_id, source_input_id: ext.source_input_id, extraction_id: ext.id, approved_record_id: rec.id, kind: "extracted_from" },
+      ...(orderId ? [{ business_id: ext.business_id, approved_record_id: rec.id, order_id: orderId, kind: "created_order" as const }] : []),
+    ] as never);
+
+    return { approvedRecordId: rec.id as string, reference: rec.reference as string, orderId };
+  });
+
+// ---------------------------------------------------------------------------
+// rejectExtraction — mark extraction + source_input as rejected.
+// ---------------------------------------------------------------------------
+
+export const rejectExtraction = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((raw: unknown) => {
+    const d = raw as { extractionId: string; reason?: string | null };
+    if (!d?.extractionId) throw new Error("extractionId is required");
+    return { extractionId: d.extractionId, reason: d.reason ?? null };
+  })
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { data: ext, error } = await supabase
+      .from("ai_extractions")
+      .update({ status: "rejected", reviewed_by: userId, reviewed_at: new Date().toISOString() })
+      .eq("id", data.extractionId)
+      .select("source_input_id")
+      .single();
+    if (error) throw new Error(error.message);
+    if (ext?.source_input_id) {
+      await supabase.from("source_inputs").update({ status: "rejected" }).eq("id", ext.source_input_id);
+    }
+    return { ok: true };
+  });

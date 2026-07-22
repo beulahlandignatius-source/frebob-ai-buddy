@@ -28,8 +28,16 @@ function ScanHistory() {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [type, setType] = useState<DocumentType | "all">("all");
+  const [ui, setUi] = useState<"loading" | "ready" | "error">("loading");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  useEffect(() => { setScans(listScans()); }, []);
+  const load = () => {
+    setUi("loading");
+    setErrorMsg(null);
+    try { setScans(listScans()); setUi("ready"); }
+    catch (e) { setErrorMsg(e instanceof Error ? e.message : "Could not load scan history."); setUi("error"); }
+  };
+  useEffect(() => { load(); }, []);
 
   const filtered = useMemo(() => scans.filter((s) => {
     if (type !== "all" && s.documentType !== type) return false;

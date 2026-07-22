@@ -17,13 +17,22 @@ type NavItem = { to: string; label: string; icon: typeof Home; tour?: string };
 
 // Centralized mobile bottom navigation. Order and items are locked per spec:
 // Home, Chat, Create, Inventory, Reports. Do not modify without explicit request.
-const mobileNav: NavItem[] = [
+const mobileNav: (NavItem | { center: true })[] = [
   { to: "/dashboard", label: "Home", icon: Home },
   { to: "/ai-assistant", label: "Chat", icon: MessageCircle, tour: "nav-bob" },
-  { to: "/add-record", label: "Create", icon: Plus, highlight: true, tour: "nav-add" },
+  { center: true },
   { to: "/inventory", label: "Inventory", icon: Boxes, tour: "nav-inventory" },
   { to: "/reports", label: "Reports", icon: BarChart3 },
 ];
+
+const createActions: { to: string; label: string; icon: typeof Home }[] = [
+  { to: "/add-record", label: "Add Business Record", icon: FileText },
+  { to: "/orders", label: "Create Order", icon: ShoppingCart },
+  { to: "/inventory", label: "Add Product", icon: Boxes },
+  { to: "/customers/new", label: "Add Customer", icon: UserPlus },
+  { to: "/scanner/new", label: "Scan Document", icon: ScanLine },
+];
+
 
 const desktopNav: NavItem[] = [
   { to: "/dashboard", label: "Home", icon: LayoutDashboard },

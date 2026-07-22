@@ -102,6 +102,7 @@ function relTime(ts: number) {
 
 function AIAssistantPage() {
   const ask = useServerFn(askCopilot);
+  const transcribe = useServerFn(transcribeAudio);
   const [threads, setThreads] = useState<Thread[]>(() => loadThreads());
   const [activeId, setActiveId] = useState<string>(() => {
     const existing = loadThreads();
@@ -110,9 +111,46 @@ function AIAssistantPage() {
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showRecorder, setShowRecorder] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
   const [language, setLanguage] = useState<CopilotLanguage>("english");
   const [snapshot, setSnapshot] = useState<BusinessSnapshot>(() => buildSnapshot([]));
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const STT_LANG: Record<CopilotLanguage, string> = {
+    english: "en", nigerian_pidgin: "en", yoruba: "yo", hausa: "ha", igbo: "ig",
+  };
+
+  const handleVoiceConfirm = useCallback(async (blob: Blob) => {
+    setShowRecorder(false);
+    setTranscribing(true);
+    try {
+      const { base64, size } = await blobToWavBase64(blob);
+      if (size < 2048) {
+        toast.error("That recording was empty — please try again.");
+        return;
+      }
+      const langCode = STT_LANG[language];
+      const shouldTranslate = langCode !== "en";
+      const result = await transcribe({ data: {
+        audioBase64: base64,
+        filename: `chat-voice-${Date.now()}.wav`,
+        language: shouldTranslate ? undefined : langCode,
+        translateToEnglish: shouldTranslate,
+      } });
+      if (result.ok) {
+        setInput((prev) => (prev ? `${prev} ${result.text}` : result.text));
+        toast.success("Voice transcribed. Edit or send to Bob.");
+      } else {
+        toast.error(result.note || "Transcription failed.");
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not transcribe that audio.");
+    } finally {
+      setTranscribing(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language, transcribe]);
 
   // Ensure at least one thread exists (idempotent bootstrap)
   useEffect(() => {

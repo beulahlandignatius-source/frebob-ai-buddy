@@ -316,7 +316,71 @@ function SwipeableCards() {
   );
 }
 
+/* ---------------- Frustration Reel (auto-scrolling videos) ---------------- */
+
+import frustratedAlaba from "@/assets/landing/frustrated-alaba.mp4.asset.json";
+import frustratedWhatsapp from "@/assets/landing/frustrated-whatsapp.mp4.asset.json";
+import frustratedCV from "@/assets/landing/frustrated-computer-village.mp4.asset.json";
+
+const reelClips = [
+  { src: frustratedAlaba.url, label: "Alaba International Market", caption: "Notebooks lost. Customers waiting." },
+  { src: frustratedWhatsapp.url, label: "WhatsApp Vendor", caption: "1,200 chats. Which one paid?" },
+  { src: frustratedCV.url, label: "Computer Village, Ikeja", caption: "Receipts everywhere. Profit unclear." },
+];
+
+function FrustrationReel() {
+  // Duplicate the list so the marquee loops seamlessly.
+  const loop = [...reelClips, ...reelClips];
+  return (
+    <section aria-label="The daily reality for African SMEs" className="py-12 sm:py-16 bg-muted/30 border-y border-border/60 overflow-hidden">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 mb-6 sm:mb-8 text-center">
+        <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-wider text-muted-foreground">
+          <span className="h-1.5 w-1.5 rounded-full bg-destructive" /> The daily reality
+        </div>
+        <h2 className="mt-3 text-2xl sm:text-4xl font-bold text-foreground">
+          Running a business shouldn't feel like this.
+        </h2>
+        <p className="mt-2 text-sm sm:text-base text-muted-foreground max-w-xl mx-auto">
+          From Alaba to Computer Village to WhatsApp DMs — vendors lose hours to scattered notes, missed payments and chaos.
+        </p>
+      </div>
+
+      <div
+        className="relative"
+        style={{ maskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)", WebkitMaskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)" }}
+      >
+        <div className="flex gap-4 sm:gap-6 w-max animate-[reelScroll_40s_linear_infinite] hover:[animation-play-state:paused]">
+          {loop.map((clip, i) => (
+            <figure
+              key={i}
+              className="shrink-0 w-[240px] sm:w-[280px] aspect-[9/16] rounded-2xl overflow-hidden relative shadow-card bg-black"
+            >
+              <video
+                src={clip.src}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+              <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+                <div className="text-[10px] uppercase tracking-wider text-white/70">{clip.label}</div>
+                <div className="text-xs sm:text-sm font-medium text-white mt-0.5">{clip.caption}</div>
+              </div>
+            </figure>
+          ))}
+        </div>
+      </div>
+
+      <style>{`@keyframes reelScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }`}</style>
+    </section>
+  );
+}
+
 /* ---------------- Trusted For ---------------- */
+
+
 
 function TrustedFor() {
   const industries = [

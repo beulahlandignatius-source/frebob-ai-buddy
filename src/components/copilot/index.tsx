@@ -145,6 +145,8 @@ export function ChatInput({
   onVoice,
   onClear,
   disabled,
+  voiceActive,
+  voiceBusy,
   language,
   onLanguageChange,
   languages,
@@ -155,6 +157,8 @@ export function ChatInput({
   onVoice?: () => void;
   onClear?: () => void;
   disabled?: boolean;
+  voiceActive?: boolean;
+  voiceBusy?: boolean;
   language: CopilotLanguage;
   onLanguageChange: (v: CopilotLanguage) => void;
   languages: { value: CopilotLanguage; label: string }[];
@@ -172,17 +176,26 @@ export function ChatInput({
             if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); onSubmit(); }
           }}
           rows={1}
-          placeholder="Ask about sales, stock, customers, orders…"
+          placeholder={voiceBusy ? "Transcribing your voice note…" : "Ask about sales, stock, customers, orders…"}
           className="flex-1 resize-none min-h-[44px] max-h-40 px-4 py-2.5 rounded-2xl border border-secondary bg-background text-sm focus:outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
+          disabled={voiceBusy}
         />
-        <button
-          type="button"
-          onClick={onVoice}
-          title="Voice input (coming soon)"
-          className="h-11 w-11 rounded-2xl border border-secondary bg-background text-muted-foreground hover:text-primary hover:border-primary/30 transition flex items-center justify-center shrink-0"
-        >
-          <Mic className="h-4 w-4" />
-        </button>
+        {onVoice && (
+          <button
+            type="button"
+            onClick={onVoice}
+            title={voiceActive ? "Close recorder" : "Record a voice message"}
+            aria-label={voiceActive ? "Close recorder" : "Record a voice message"}
+            className={cn(
+              "h-11 w-11 rounded-2xl border transition flex items-center justify-center shrink-0",
+              voiceActive
+                ? "border-accent/40 bg-accent/10 text-accent"
+                : "border-secondary bg-background text-muted-foreground hover:text-primary hover:border-primary/30",
+            )}
+          >
+            <Mic className="h-4 w-4" />
+          </button>
+        )}
         <Button type="submit" size="sm" disabled={disabled || !value.trim()} className="h-11 w-11 rounded-2xl p-0">
           <Send className="h-4 w-4" />
         </Button>

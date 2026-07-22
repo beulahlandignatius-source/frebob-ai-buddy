@@ -34,11 +34,23 @@ function BusinessMemory() {
   const [tab, setTab] = useState<Tab>("records");
   const [cat, setCat] = useState<Cat>("all");
   const [query, setQuery] = useState("");
-  const [state, setState] = useState<"ready" | "loading" | "error">("ready");
+  const [state, setState] = useState<"ready" | "loading" | "error">("loading");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
   const [records, setRecords] = useState<ApprovedRecord[]>([]);
 
-  useEffect(() => { setRecords(listApprovedRecords()); }, []);
+  const load = () => {
+    setState("loading");
+    setErrorMsg(null);
+    try {
+      setRecords(listApprovedRecords());
+      setState("ready");
+    } catch (e) {
+      setErrorMsg(e instanceof Error ? e.message : "Could not load Business Memory.");
+      setState("error");
+    }
+  };
+  useEffect(() => { load(); }, []);
 
   const notes = useMemo(() => memoryNotes.filter((n) => {
     if (cat !== "all" && n.category !== cat) return false;

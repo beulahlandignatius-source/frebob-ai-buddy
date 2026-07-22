@@ -89,6 +89,8 @@ function Dashboard() {
   const today = new Date().toLocaleDateString("en-NG", {
     weekday: "long", day: "numeric", month: "long",
   });
+  const hasActivity = listApprovedRecords().length > 0 || listOrders().length > 0;
+
 
   useEffect(() => {
     (async () => {

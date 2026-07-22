@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Search, Plus, ChevronLeft } from "lucide-react";
+import { Search, Plus, ChevronLeft, ScanLine } from "lucide-react";
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
-import { PageCanvas, SurfaceHeader, SectionLabel, EmptyState } from "@/components/dash";
+import { PageCanvas, SurfaceHeader, SectionLabel, EmptyState, LoadingSkeleton, ErrorState } from "@/components/dash";
+import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
 import { ScanHistoryCard, DOCUMENT_TYPES } from "@/components/scanner";
 import { listScans, type DocumentScan, type DocumentType, type ScanStatus } from "@/lib/scanner-store";
 import { cn } from "@/lib/utils";
@@ -27,8 +28,16 @@ function ScanHistory() {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [type, setType] = useState<DocumentType | "all">("all");
+  const [ui, setUi] = useState<"loading" | "ready" | "error">("loading");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  useEffect(() => { setScans(listScans()); }, []);
+  const load = () => {
+    setUi("loading");
+    setErrorMsg(null);
+    try { setScans(listScans()); setUi("ready"); }
+    catch (e) { setErrorMsg(e instanceof Error ? e.message : "Could not load scan history."); setUi("error"); }
+  };
+  useEffect(() => { load(); }, []);
 
   const filtered = useMemo(() => scans.filter((s) => {
     if (type !== "all" && s.documentType !== type) return false;
@@ -104,7 +113,18 @@ function ScanHistory() {
         </div>
 
         <SectionLabel>{filtered.length} scan{filtered.length === 1 ? "" : "s"}</SectionLabel>
-        {filtered.length === 0 ? (
+        {ui === "loading" ? (
+          <LoadingSkeleton rows={4} />
+        ) : ui === "error" ? (
+          <ErrorState message={errorMsg ?? "Could not load scan history."} onRetry={load} />
+        ) : scans.length === 0 ? (
+          <IntelligentEmptyState
+            icon={ScanLine}
+            title="No documents scanned yet"
+            description="Scan receipts, invoices or delivery notes and FreBob will extract line items, customers and totals for review."
+            primary={{ label: "Scan Document", icon: Plus, to: "/scanner/new", }}
+          />
+        ) : filtered.length === 0 ? (
           <EmptyState
             title="No scans match these filters"
             description="Try changing the filter, or scan a new document."

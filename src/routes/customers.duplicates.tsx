@@ -5,7 +5,7 @@ import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
 import { Select } from "@/components/fb/Input";
 import {
-  PageCanvas, SurfaceHeader, SectionLabel, LoadingSkeleton,
+  PageCanvas, SurfaceHeader, SectionLabel, LoadingSkeleton, ErrorState,
 } from "@/components/dash";
 import {
   DuplicateSummaryCard, DuplicateGroupCard, DuplicateEmpty,
@@ -31,7 +31,19 @@ type Sort = "priority" | "confidence" | "recent";
 
 function DuplicatesPage() {
   const [tick, setTick] = useState(0);
-  useEffect(() => { setTick((t) => t + 1); }, []);
+  const [ui, setUi] = useState<"loading" | "ready" | "error">("loading");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  useEffect(() => {
+    setUi("loading");
+    setErrorMsg(null);
+    try {
+      setTick((t) => t + 1);
+      setUi("ready");
+    } catch (e) {
+      setErrorMsg(e instanceof Error ? e.message : "Could not scan for duplicates.");
+      setUi("error");
+    }
+  }, []);
 
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<StatusFilter>("all");
@@ -140,7 +152,11 @@ function DuplicatesPage() {
           Possible duplicate groups
         </SectionLabel>
 
-        {allGroups.length === 0 ? (
+        {ui === "loading" ? (
+          <LoadingSkeleton rows={4} />
+        ) : ui === "error" ? (
+          <ErrorState message={errorMsg ?? "Could not scan for duplicates."} onRetry={() => setTick((t) => t + 1)} />
+        ) : allGroups.length === 0 ? (
           <DuplicateEmpty>
             <p className="font-medium text-foreground mb-1">No possible duplicate customers found.</p>
             <p>FreBob will show records here when customer details appear to match.</p>
@@ -161,12 +177,6 @@ function DuplicatesPage() {
               members.forEach((m) => { metrics[m.customer.id] = m.metrics; });
               return <DuplicateGroupCard key={g.id} group={g} customers={customers} metrics={metrics} />;
             })}
-          </div>
-        )}
-
-        {allGroups.length === 0 && (
-          <div className="mt-6">
-            <LoadingSkeleton rows={0} />
           </div>
         )}
 

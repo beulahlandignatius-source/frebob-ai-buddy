@@ -1,16 +1,17 @@
 // Business Expenses — not linked to customer sales. Lives under Reports > Expenses.
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { ArrowLeft, Plus, Trash2, Upload, X, Receipt } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowLeft, Plus, Trash2, Upload, X, Receipt, Wallet } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
-import { PageCanvas, SurfaceHeader, SectionLabel, EmptyState } from "@/components/dash";
+import { PageCanvas, SurfaceHeader, SectionLabel, LoadingSkeleton, ErrorState } from "@/components/dash";
+import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
 import {
   addExpense, deleteExpense, listExpenses, fmtNaira,
   EXPENSE_CATEGORIES, categoryLabel, summariseExpenses,
-  type ExpenseCategory,
+  type ExpenseCategory, type Expense,
 } from "@/lib/expenses-store";
 import { fileToDataUrl } from "@/lib/order-extras-store";
 
@@ -29,7 +30,23 @@ export const Route = createFileRoute("/expenses")({
 function ExpensesPage() {
   const [tick, setTick] = useState(0);
   const [showForm, setShowForm] = useState(false);
-  const rows = useMemo(() => listExpenses(), [tick]);
+  const [ui, setUi] = useState<"loading" | "ready" | "error">("loading");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [rows, setRows] = useState<Expense[]>([]);
+
+  const load = () => {
+    setUi("loading");
+    setErrorMsg(null);
+    try {
+      setRows(listExpenses());
+      setUi("ready");
+    } catch (e) {
+      setErrorMsg(e instanceof Error ? e.message : "Could not load expenses.");
+      setUi("error");
+    }
+  };
+  useEffect(() => { load(); }, [tick]);
+
   const summary = useMemo(() => summariseExpenses(rows), [rows]);
 
   return (
@@ -59,11 +76,16 @@ function ExpensesPage() {
         {showForm && <ExpenseForm onSaved={() => { setTick((t) => t + 1); setShowForm(false); }} onCancel={() => setShowForm(false)} />}
 
         <SectionLabel>Recent expenses</SectionLabel>
-        {rows.length === 0 ? (
-          <EmptyState
+        {ui === "loading" ? (
+          <LoadingSkeleton rows={4} />
+        ) : ui === "error" ? (
+          <ErrorState message={errorMsg ?? "Could not load expenses."} onRetry={load} />
+        ) : rows.length === 0 ? (
+          <IntelligentEmptyState
+            icon={Wallet}
             title="No expenses recorded yet"
-            description="Log your first business expense to start tracking profit and category spend."
-            action={<Button size="sm" onClick={() => setShowForm(true)}><Plus className="h-4 w-4 mr-1" /> Add expense</Button>}
+            description="Log your first business expense to start tracking profit and category spend. Rent, transport, stock, salaries — anything you spend to run the business."
+            primary={{ label: "Add Expense", icon: Plus, onClick: () => setShowForm(true) }}
           />
         ) : (
           <div className="rounded-[20px] border border-secondary bg-card overflow-hidden">

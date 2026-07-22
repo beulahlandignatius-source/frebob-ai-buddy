@@ -1,11 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Pencil, StickyNote, Plus, Wallet, ShoppingBag } from "lucide-react";
+import { ArrowLeft, Pencil, StickyNote, Plus, Wallet, ShoppingBag, UserX } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
 import { Textarea } from "@/components/fb/Input";
-import { PageCanvas, EmptyState } from "@/components/dash";
+import { PageCanvas, LoadingSkeleton, ErrorState } from "@/components/dash";
+import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
 import { OrderCard, PaymentHistory } from "@/components/orders";
 import {
   CustomerAvatar, CustomerStatusBadge, CustomerContactDetails,
@@ -33,8 +34,21 @@ function CustomerDetailPage() {
   const navigate = useNavigate();
   const [tick, setTick] = useState(0);
   const [noteDraft, setNoteDraft] = useState("");
+  const [ui, setUi] = useState<"loading" | "ready" | "error">("loading");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  useEffect(() => { setTick((t) => t + 1); }, []);
+  useEffect(() => {
+    setUi("loading");
+    setErrorMsg(null);
+    try {
+      // Local sync store — trigger a tick to force memoized reads and mark ready.
+      setTick((t) => t + 1);
+      setUi("ready");
+    } catch (e) {
+      setErrorMsg(e instanceof Error ? e.message : "Could not load this customer.");
+      setUi("error");
+    }
+  }, [id]);
 
   const customer = useMemo(() => { void tick; return getCustomer(id); }, [id, tick]);
   const metrics = useMemo(() => { void tick; return customer ? computeMetrics(id) : null; }, [id, tick, customer]);
@@ -42,11 +56,27 @@ function CustomerDetailPage() {
   const timeline = useMemo(() => { void tick; return customer ? buildTimeline(id) : []; }, [id, tick, customer]);
   const notes = useMemo(() => { void tick; return customer ? listNotes(id) : []; }, [id, tick, customer]);
 
+  if (ui === "loading") {
+    return <AppShell><PageCanvas><LoadingSkeleton rows={5} /></PageCanvas></AppShell>;
+  }
+  if (ui === "error") {
+    return (
+      <AppShell><PageCanvas>
+        <ErrorState message={errorMsg ?? "Could not load this customer."} onRetry={() => setTick((t) => t + 1)} />
+      </PageCanvas></AppShell>
+    );
+  }
   if (!customer || !metrics) {
     return (
       <AppShell>
         <PageCanvas>
-          <EmptyState title="Customer not found" description="This customer profile may have been removed." action={<Link to="/customers"><Button size="sm">Back to customers</Button></Link>} />
+          <IntelligentEmptyState
+            icon={UserX}
+            title="Customer not found"
+            description="This customer profile may have been removed or hasn't synced to this device yet."
+            primary={{ label: "Back to Customers", to: "/customers" }}
+            demoCta={false}
+          />
         </PageCanvas>
       </AppShell>
     );

@@ -150,9 +150,6 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
                 </Button>
               </form>
 
-              <p className="mt-4 text-center text-xs text-muted-foreground">
-                Demo mode — no real message is sent.
-              </p>
             </>
           ) : (
             <VerifyStep
@@ -297,9 +294,6 @@ function VerifyStep({
         </button>
       </form>
 
-      <p className="mt-5 text-center text-xs text-muted-foreground">
-        Demo mode — any input works. No real {channel === "email" ? "email" : "SMS"} is sent.
-      </p>
     </>
   );
 }

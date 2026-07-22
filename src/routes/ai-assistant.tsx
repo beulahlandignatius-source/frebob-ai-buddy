@@ -6,7 +6,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { History, Plus, Sparkles } from "lucide-react";
+import { History, Plus, Sparkles, X } from "lucide-react";
+import { toast } from "sonner";
 import { BobAvatar } from "@/components/copilot/BobAvatar";
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
@@ -35,6 +36,9 @@ import {
 import { askCopilot } from "@/lib/copilot.functions";
 import { listApprovedRecords } from "@/lib/records-store";
 import { ListenButton } from "@/components/audio/ListenButton";
+import { VoiceRecorder } from "@/components/audio/VoiceRecorder";
+import { transcribeAudio } from "@/lib/transcribe.functions";
+import { blobToWavBase64 } from "@/lib/audio-wav";
 import type { LanguageCode } from "@/i18n/languages";
 import { DemoHint } from "@/components/demo/DemoHint";
 import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
@@ -98,6 +102,7 @@ function relTime(ts: number) {
 
 function AIAssistantPage() {
   const ask = useServerFn(askCopilot);
+  const transcribe = useServerFn(transcribeAudio);
   const [threads, setThreads] = useState<Thread[]>(() => loadThreads());
   const [activeId, setActiveId] = useState<string>(() => {
     const existing = loadThreads();
@@ -106,9 +111,46 @@ function AIAssistantPage() {
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showRecorder, setShowRecorder] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
   const [language, setLanguage] = useState<CopilotLanguage>("english");
   const [snapshot, setSnapshot] = useState<BusinessSnapshot>(() => buildSnapshot([]));
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const STT_LANG: Record<CopilotLanguage, string> = {
+    english: "en", nigerian_pidgin: "en", yoruba: "yo", hausa: "ha", igbo: "ig",
+  };
+
+  const handleVoiceConfirm = useCallback(async (blob: Blob) => {
+    setShowRecorder(false);
+    setTranscribing(true);
+    try {
+      const { base64, size } = await blobToWavBase64(blob);
+      if (size < 2048) {
+        toast.error("That recording was empty — please try again.");
+        return;
+      }
+      const langCode = STT_LANG[language];
+      const shouldTranslate = langCode !== "en";
+      const result = await transcribe({ data: {
+        audioBase64: base64,
+        filename: `chat-voice-${Date.now()}.wav`,
+        language: shouldTranslate ? undefined : langCode,
+        translateToEnglish: shouldTranslate,
+      } });
+      if (result.ok) {
+        setInput((prev) => (prev ? `${prev} ${result.text}` : result.text));
+        toast.success("Voice transcribed. Edit or send to Bob.");
+      } else {
+        toast.error(result.note || "Transcription failed.");
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not transcribe that audio.");
+    } finally {
+      setTranscribing(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language, transcribe]);
 
   // Ensure at least one thread exists (idempotent bootstrap)
   useEffect(() => {
@@ -341,12 +383,43 @@ function AIAssistantPage() {
 
         {/* Composer */}
         <div className="shrink-0 border-t border-secondary/70 bg-card">
+          {showRecorder && (
+            <div className="px-3 pt-3">
+              <div className="rounded-2xl border border-primary/20 bg-secondary/40 p-3 space-y-2">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-semibold text-primary">Record a message for Bob</p>
+                  <button
+                    type="button"
+                    onClick={() => setShowRecorder(false)}
+                    className="p-1 rounded-full hover:bg-secondary text-muted-foreground"
+                    aria-label="Close recorder"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+                <VoiceRecorder
+                  compact
+                  autoStart
+                  maxSeconds={120}
+                  confirmLabel="Transcribe & use"
+                  onConfirm={handleVoiceConfirm}
+                  onCancel={() => setShowRecorder(false)}
+                />
+              </div>
+            </div>
+          )}
+          {transcribing && (
+            <div className="px-4 pt-2 text-xs text-muted-foreground">Transcribing your voice…</div>
+          )}
           <ChatInput
             value={input}
             onChange={setInput}
             onSubmit={() => send(input)}
+            onVoice={() => setShowRecorder((s) => !s)}
+            voiceActive={showRecorder}
+            voiceBusy={transcribing}
             onClear={messages.length > 0 ? handleClear : undefined}
-            disabled={thinking}
+            disabled={thinking || transcribing}
             language={language}
             onLanguageChange={setLanguage}
             languages={COPILOT_LANGUAGES}

@@ -1,61 +1,79 @@
+## Batch 12A + Inventory Thumbnails
 
-# Batch 8A — Reports & Business Insights
+### 1. Inventory thumbnails (bundled in)
+- Show product image in the inventory list (small thumbnail) and product detail cards.
+- Use the existing `image` field on `UserProduct` (already stored as data URL). No schema change.
 
-Rebuild `/reports` on top of the real operational stores (orders, payments, customers, products, inventory events, scans) using the principle: **"Operational records calculate the numbers. AI explains the numbers."**
+### 2. Localization foundation
+Install `i18next` + `react-i18next` + `i18next-browser-languagedetector`.
 
-## Scope
+```
+src/i18n/
+  config.ts               // init, fallback=en, namespaces, detection order
+  languages.ts            // { code, label, nativeLabel, audioStatus }
+  locales/
+    en/  common.json, auth.json, nav.json, dashboard.json, ai.json,
+         inventory.json, orders.json, payments.json, customers.json,
+         scanner.json, reports.json, notifications.json, settings.json,
+         errors.json, audio.json, onboarding.json
+    pcm/ … (same namespaces)
+    yo/  … (same namespaces)
+    ha/  … (same namespaces)
+    ig/  … (same namespaces)
+```
+Semantic keys only (`inventory.empty.title`, `orders.status.pending`, …). Statuses stay stable English identifiers in code, translated at render.
 
-Replace the current mock-data reports screen with a tabbed reporting module driven by a single shared analytics service. Keep dashboard, notifications shell, and all other modules untouched except for wiring dashboard tiles into the same service.
+### 3. Language preference
+- Reuse `profiles.preferred_language` (already exists).
+- Add `ai_response_language`, `audio_enabled`, `preferred_voice`, `audio_playback_speed` to `profiles` (single migration).
+- Priority: user profile → business `settings.language` → browser → `en`.
+- Unauthenticated onboarding falls back to localStorage; on sign-in, server value wins.
 
-## New files
+### 4. Shared multilingual/audio components (new)
+`LanguageSelector`, `LanguageOption`, `TranslationFallbackNotice`, `ListenButton`, `YarnAudioPlayer`, `AudioSpeedSelector`, `VoiceSelector`, `VoicePreviewButton`, `AudioUnsupportedNotice`, `AudioGenerationError`, `MultilingualText`, `LocalizedStatusBadge`, `LocalizedCurrency`, `LocalizedDate`, `AIResponseLanguageSelector`. Reuse existing `Button`, `Input`, cards — no duplicates.
 
-- `src/lib/reporting/period.ts` — date-range presets (Today, Yesterday, This/Last week, This/Last month, Last 30 days, Custom) + comparison-period resolver + Africa/Lagos formatting.
-- `src/lib/reporting/service.ts` — the single source of truth. Pure functions over existing stores:
-  - `getSalesReport(range)` — totals, trend series, sales-by-product, sales-by-day.
-  - `getPaymentsReport(range)` — totals, method breakdown, trend, outstanding balances per customer.
-  - `getOrdersReport(range)` — status counts, completion/cancellation rate, orders-by-day, delayed orders.
-  - `getInventoryReport(range)` — stock status counts, top sellers, slow movers, movements from `inventory-events-store`.
-  - `getCustomersReport(range)` — new / repeat / returning, top customers, outstanding, dormant.
-  - `getOverview(range, compare)` — 6 headline metrics + comparison values + direction.
-  - Shared exclusions: cancelled orders excluded from sales, reversed payments excluded, merged-duplicate customers excluded, drafts/rejected scans excluded.
-- `src/lib/reporting/ai-insights.functions.ts` — `createServerFn` that receives already-computed metrics + selected language and asks Lovable AI (Gemini 2.5 flash) to write a plain-language summary. Server fn never touches raw records; if metrics are empty it returns the "not enough approved records" copy without calling the model.
-- `src/components/reports/` — shared UI primitives:
-  - `DateRangeBar.tsx` (range + compare + refresh + last-updated stamp)
-  - `MetricCard.tsx` (label, value, comparison line, direction chip, drill link)
-  - `TrendChart.tsx`, `BarCompareChart.tsx`, `StatusDonut.tsx`, `RankBar.tsx` — thin wrappers over recharts with title, empty/loading/error states, ₦ formatting, accessible text summary.
-  - `ReportTable.tsx` — sortable, paginated, mobile-cards fallback.
-  - `TabsBar.tsx` — horizontally scrollable tabs on mobile.
+### 5. Screens wired to i18n (first pass)
+Nav, dashboard, AI assistant, inventory, orders, payments, customers, scanner, reports, notifications, settings, profile, auth, onboarding — replace visible strings with `t()` calls. Business data (names, prices, refs) stays untouched.
 
-## Route changes
+### 6. AI Assistant multilingual
+- Extend `copilot.functions.ts` to take `responseLanguage`, instruct Gemini to reply in that language, preserve names/numbers verbatim.
+- Add `AIResponseLanguageSelector` in the chat header.
 
-- `src/routes/reports.tsx` — becomes the Reports shell: header, `DateRangeBar`, tabs (Overview / Sales / Payments / Orders / Inventory / Customers / AI Insights). Tab state stored in URL search params (`tab`, `from`, `to`, `preset`, `compare`) via TanStack search validation so drill-downs preserve context.
-- Each tab is a component in `src/components/reports/tabs/` (OverviewTab, SalesTab, PaymentsTab, OrdersTab, InventoryTab, CustomersTab, AIInsightsTab).
-- Drill-downs use `<Link>` to `/orders`, `/customers`, `/inventory`, `/customers/$id`, etc., passing filter query params where those routes already support them; otherwise link to the entity page unchanged.
+### 7. YarnGPT audio integration
+- **Secret**: add `YARNGPT_API_KEY` to the project secrets so the value is empty until you paste it.
+- **Hidden admin page**: `src/routes/_admin.yarngpt.tsx` — not linked from any nav; reachable only by typing `/-admin/yarngpt` (or similar obscure path). Shows key status (configured / not configured), lets you run a preview generation for each voice+language combo, and toggles which combos are marked `tested`. Nothing sensitive is displayed.
+- **Server route**: `src/routes/api/audio/generate.ts` — `createServerFn`-style TSS route. Reads `process.env.YARNGPT_API_KEY` inside the handler, validates auth via `requireSupabaseAuth`, enforces per-user rate limit (in-memory bucket for MVP), validates language/voice against server allowlist, splits >2000-char text on sentence boundaries, calls `POST https://yarngpt.ai/api/v1/tts`, returns base64 MP3 (or signed URL if we cache in storage).
+- **Caching**: `audio_cache` table keyed by `sha256(text|language|voice|format)` → base64 stored inline for MVP (small clips). Private, scoped by `business_id` via RLS. Larger clips can move to Storage later.
+- **Voice mapping (server-side)**: only voices marked `tested=true` are surfaced.
+  - MVP tested list (assumed until you validate in the admin page):
+    - `en` → Idera (default), Emma, Zainab
+    - `yo` → Wura, Femi
+    - `ha` → Zainab, Umar
+    - `ig` → Chinenye, Adaora
+  - Pidgin (`pcm`) → **no audio**, shows `AudioUnsupportedNotice` with the exact copy from the spec.
+- **Player**: reusable `YarnAudioPlayer` with play/pause/stop/replay, speed 0.75/1/1.25/1.5, aria-live status, keyboard accessible, no autoplay, stops on unmount and sign-out.
+- **Listen surfaces**: AI answer bubbles, report AI summary, notification card "Listen" action, business memory approved-record summary. Never auto-plays.
 
-## Dashboard integration
+### 8. Privacy
+- Server strips full phone numbers, emails, bank/card digits from text before sending to YarnGPT (regex scrub → `«redacted»`).
+- Disclosure line rendered in Settings → Audio.
 
-- Update `src/routes/dashboard.tsx` today-tiles (sales / received / outstanding / pending / low-stock / new customers) to call the same `reporting/service.ts` with a `Today` range so numbers cannot diverge from `/reports`. No visual overhaul.
+### 9. Fallback + errors
+- Missing translation key → English + dev-only console warn (never raw key on screen).
+- Audio failure → keep text visible, show `AudioGenerationError` with retry.
 
-## Data rules encoded once
+### 10. Out of scope (per spec)
+No speech-to-text, no voice commands, no autoplay, no downloadable audio, no Pidgin audio claims.
 
-- `valid_sales` = sum of non-cancelled order totals in range.
-- `money_received` = sum of non-reversed payments in range.
-- `outstanding_current` = Σ max(order_total − paid, 0) across all open orders (not range-bound); `outstanding_created_in_period` reported separately and clearly labelled.
-- Percentage change guarded against zero previous — shows "No sales were recorded in the comparison period." No infinite growth.
-- Inventory value hidden with the required message when cost coverage is incomplete.
+### Files summary
+- **New**: 16 translation JSON files (5 langs × ~14 namespaces = ~70 small files, generated with English keys + machine-translated drafts marked `"_status": "draft"`), i18n config, ~15 shared components, admin page, audio server route, migration.
+- **Modified**: nav shell, dashboard, AI assistant, inventory (+ thumbnails), orders, customers, scanner, reports, notifications, settings (audio section), profile, onboarding, auth, copilot function.
+- **DB**: one migration extending `profiles` + creating `audio_cache` with RLS + grants.
 
-## Notifications hook
+### Technical notes for reviewer
+- YarnGPT called only server-side via `process.env.YARNGPT_API_KEY`; never surfaced to client.
+- Translations for pcm/yo/ha/ig will ship as **draft** (marked in JSON); UI works, but the spec's "native-speaker approved" bar is not met — flagged as a known limitation.
+- Voice ↔ language tested map lives in `src/lib/yarngpt-config.server.ts`; the hidden admin page flips `tested` flags stored in a small `yarngpt_voice_status` table so untested combos never reach the user.
+- Rate limit is in-memory per worker (spec's stated no-standard-primitive gap); documented in security memory.
 
-- Add a small helper `src/lib/reporting/alerts.ts` used by the existing notifications page to surface: unusual outstanding, low stock on top sellers, many pending orders, no sales in period, approved records awaiting conversion. No new notification UI — reuses the existing shell.
-
-## Explicitly out of scope (kept for later batches)
-
-- CSV / PDF export (export button remains a "coming soon" placeholder).
-- Saved report views / advanced filter management.
-- Server-side cached summary tables — everything computed client-side from existing stores; documented in `service.ts` header so 8B can add caching without breaking callers.
-
-## Technical notes
-
-- All stores are localStorage-backed; no Supabase schema changes needed for 8A.
-- AI insight route uses existing `LOVABLE_API_KEY` and follows the same server-fn pattern as `copilot.functions.ts` / `extraction.functions.ts`.
-- Multilingual insights reuse the language preference already on `profiles.preferred_language`; the prompt instructs Gemini to preserve ₦ amounts, dates, names, and order numbers verbatim.
+Confirm and I'll build it in this order: migration → i18n scaffold → shared components → screen wiring → AI assistant → YarnGPT server route + admin page → thumbnails polish → verify.

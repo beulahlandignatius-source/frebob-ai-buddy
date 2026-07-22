@@ -136,7 +136,7 @@ function Hero() {
           <span className="inline-flex items-center gap-2 self-start rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
             <Sparkles className="h-3.5 w-3.5" /> Your Business Assistant
           </span>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.05] tracking-tight">
+          <h1 className="text-[2rem] sm:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight break-words">
             Run Your Business with a{" "}
             <span className="brand-gradient-text">Smarter Assistant</span>
           </h1>

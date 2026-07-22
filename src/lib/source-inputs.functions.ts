@@ -210,6 +210,6 @@ export const extractBusinessRecord = createServerFn({ method: "POST" })
       extractionId: ext.id as string,
       mode,
       note: note ?? null,
-      payload: payload as Record<string, unknown>,
+      payloadJson: JSON.stringify(payload),
     };
   });

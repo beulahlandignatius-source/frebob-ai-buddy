@@ -66,7 +66,15 @@ const activityStyle: Record<
 function Dashboard() {
   const [firstName, setFirstName] = useState<string>(DEMO_USER.firstName);
   const [businessName, setBusinessName] = useState<string>(DEMO_USER.businessName);
-  const unread = 3;
+  const [notifTick, setNotifTick] = useState(0);
+  useEffect(() => {
+    generateNotifications();
+    const unsub = subscribeNotif(() => setNotifTick((t) => t + 1));
+    return () => { unsub(); };
+  }, []);
+  void notifTick;
+  const unread = unreadCount();
+  const critical = criticalUnread()[0];
   const today = new Date().toLocaleDateString("en-NG", {
     weekday: "long", day: "numeric", month: "long",
   });

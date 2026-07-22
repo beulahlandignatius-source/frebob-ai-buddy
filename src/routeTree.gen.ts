@@ -25,7 +25,10 @@ import { Route as BusinessSetupRouteImport } from './routes/business-setup'
 import { Route as BusinessMemoryRouteImport } from './routes/business-memory'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AiAssistantRouteImport } from './routes/ai-assistant'
+import { Route as AddRecordRouteImport } from './routes/add-record'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ConversationsNewRouteImport } from './routes/conversations.new'
+import { Route as ConversationsIdRouteImport } from './routes/conversations.$id'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -107,14 +110,30 @@ const AiAssistantRoute = AiAssistantRouteImport.update({
   path: '/ai-assistant',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AddRecordRoute = AddRecordRouteImport.update({
+  id: '/add-record',
+  path: '/add-record',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConversationsNewRoute = ConversationsNewRouteImport.update({
+  id: '/conversations/new',
+  path: '/conversations/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConversationsIdRoute = ConversationsIdRouteImport.update({
+  id: '/conversations/$id',
+  path: '/conversations/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/add-record': typeof AddRecordRoute
   '/ai-assistant': typeof AiAssistantRoute
   '/auth': typeof AuthRoute
   '/business-memory': typeof BusinessMemoryRoute
@@ -131,9 +150,12 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
+  '/conversations/$id': typeof ConversationsIdRoute
+  '/conversations/new': typeof ConversationsNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/add-record': typeof AddRecordRoute
   '/ai-assistant': typeof AiAssistantRoute
   '/auth': typeof AuthRoute
   '/business-memory': typeof BusinessMemoryRoute
@@ -150,10 +172,13 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
+  '/conversations/$id': typeof ConversationsIdRoute
+  '/conversations/new': typeof ConversationsNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/add-record': typeof AddRecordRoute
   '/ai-assistant': typeof AiAssistantRoute
   '/auth': typeof AuthRoute
   '/business-memory': typeof BusinessMemoryRoute
@@ -170,11 +195,14 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
+  '/conversations/$id': typeof ConversationsIdRoute
+  '/conversations/new': typeof ConversationsNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/add-record'
     | '/ai-assistant'
     | '/auth'
     | '/business-memory'
@@ -191,9 +219,12 @@ export interface FileRouteTypes {
     | '/settings'
     | '/signin'
     | '/signup'
+    | '/conversations/$id'
+    | '/conversations/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/add-record'
     | '/ai-assistant'
     | '/auth'
     | '/business-memory'
@@ -210,9 +241,12 @@ export interface FileRouteTypes {
     | '/settings'
     | '/signin'
     | '/signup'
+    | '/conversations/$id'
+    | '/conversations/new'
   id:
     | '__root__'
     | '/'
+    | '/add-record'
     | '/ai-assistant'
     | '/auth'
     | '/business-memory'
@@ -229,10 +263,13 @@ export interface FileRouteTypes {
     | '/settings'
     | '/signin'
     | '/signup'
+    | '/conversations/$id'
+    | '/conversations/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AddRecordRoute: typeof AddRecordRoute
   AiAssistantRoute: typeof AiAssistantRoute
   AuthRoute: typeof AuthRoute
   BusinessMemoryRoute: typeof BusinessMemoryRoute
@@ -249,6 +286,8 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
+  ConversationsIdRoute: typeof ConversationsIdRoute
+  ConversationsNewRoute: typeof ConversationsNewRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -365,6 +404,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AiAssistantRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/add-record': {
+      id: '/add-record'
+      path: '/add-record'
+      fullPath: '/add-record'
+      preLoaderRoute: typeof AddRecordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -372,11 +418,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/conversations/new': {
+      id: '/conversations/new'
+      path: '/conversations/new'
+      fullPath: '/conversations/new'
+      preLoaderRoute: typeof ConversationsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/conversations/$id': {
+      id: '/conversations/$id'
+      path: '/conversations/$id'
+      fullPath: '/conversations/$id'
+      preLoaderRoute: typeof ConversationsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AddRecordRoute: AddRecordRoute,
   AiAssistantRoute: AiAssistantRoute,
   AuthRoute: AuthRoute,
   BusinessMemoryRoute: BusinessMemoryRoute,
@@ -393,6 +454,8 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,
+  ConversationsIdRoute: ConversationsIdRoute,
+  ConversationsNewRoute: ConversationsNewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

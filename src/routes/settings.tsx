@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Bell, Globe, Lock, Store, Palette, HelpCircle, ChevronRight } from "lucide-react";
+import { Bell, Globe, Lock, Store, Palette, HelpCircle, ChevronRight, Settings2 } from "lucide-react";
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
 import { PageCanvas, SurfaceHeader, SectionLabel, SuccessBanner } from "@/components/dash";

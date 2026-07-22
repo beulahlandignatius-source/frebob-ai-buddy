@@ -172,7 +172,7 @@ export function buildSnapshot(records: ApprovedRecord[] = listApprovedRecords())
 
   // Customer issues (duplicates awaiting review + repeat debtors)
   let duplicatesToReview = 0;
-  try { duplicatesToReview = summariseDuplicates().unreviewedGroups ?? 0; } catch { /* store may be empty */ }
+  try { duplicatesToReview = summariseDuplicates().unreviewed ?? 0; } catch { /* store may be empty */ }
   let repeatDebtors = 0;
   try {
     repeatDebtors = listCustomers().filter((c) => {

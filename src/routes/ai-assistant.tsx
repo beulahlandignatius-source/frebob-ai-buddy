@@ -272,7 +272,18 @@ function AIAssistantPage() {
           {/* Messages */}
           <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 bg-[var(--surface-tinted)]/40">
             {messages.length === 0 ? (
-              <EmptyChatState />
+              snapshot.approvedRecords === 0 ? (
+                <IntelligentEmptyState
+                  icon={Sparkles}
+                  title="I'm ready to help"
+                  description="Record your first conversation, scan a receipt or explore the demo business so I can answer questions about your business."
+                  primary={{ label: "Record Conversation", icon: Plus, to: "/add-record" }}
+                  secondary={[{ label: "Scan Receipt", to: "/scanner" }]}
+                />
+              ) : (
+                <EmptyChatState />
+              )
+            ) : (
             ) : (
               messages.map((m) => (
                 <div key={m.id} className="space-y-1.5">

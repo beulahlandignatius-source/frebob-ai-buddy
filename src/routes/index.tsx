@@ -10,6 +10,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/brand/Logo";
 import { Button } from "@/components/fb/Button";
 import { cn } from "@/lib/utils";
+import heroFashion from "@/assets/landing/hero-sme-fashion.jpg";
+import heroRetail from "@/assets/landing/hero-sme-retail.jpg";
+import heroRestaurant from "@/assets/landing/hero-sme-restaurant.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({

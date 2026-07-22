@@ -206,5 +206,10 @@ export const extractBusinessRecord = createServerFn({ method: "POST" })
 
     await supabase.from("source_inputs").update({ status: "extracted" }).eq("id", src.id);
 
-    return { extractionId: ext.id as string, mode, note, payload: payload as unknown };
+    return {
+      extractionId: ext.id as string,
+      mode,
+      note: note ?? null,
+      payload: payload as Record<string, unknown>,
+    };
   });

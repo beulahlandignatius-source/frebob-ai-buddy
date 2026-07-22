@@ -23,7 +23,7 @@ function Splash() {
     const run = async () => {
       const { data } = await supabase.auth.getUser();
       // brief splash
-      await new Promise((r) => setTimeout(r, 5200));
+      await new Promise((r) => setTimeout(r, 7000));
       if (cancelled) return;
       if (data.user) {
         // Check onboarding + business setup
@@ -58,15 +58,24 @@ function Splash() {
             Your Smart Business Assistant for Every SME
           </p>
         </div>
-        <div className="mt-4 h-1 w-32 rounded-full bg-muted overflow-hidden">
-          <div className="h-full w-1/2 brand-gradient animate-[loading_1.2s_ease-in-out_infinite]" />
+        <div className="mt-4 h-1 w-40 rounded-full bg-muted overflow-hidden">
+          <div className="h-full brand-gradient animate-[splash-progress_7s_ease-in-out_forwards]" />
+        </div>
+        <div className="flex items-center gap-1.5 mt-1" aria-label="Loading">
+          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-[dot-bounce_1.2s_ease-in-out_infinite]" />
+          <span className="h-1.5 w-1.5 rounded-full bg-accent animate-[dot-bounce_1.2s_ease-in-out_infinite] [animation-delay:150ms]" />
+          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-[dot-bounce_1.2s_ease-in-out_infinite] [animation-delay:300ms]" />
         </div>
       </div>
 
       <style>{`
-        @keyframes loading {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(220%); }
+        @keyframes splash-progress {
+          0% { width: 0%; }
+          100% { width: 100%; }
+        }
+        @keyframes dot-bounce {
+          0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+          40% { transform: translateY(-4px); opacity: 1; }
         }
       `}</style>
     </div>

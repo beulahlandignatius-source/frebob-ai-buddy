@@ -14,6 +14,8 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { initI18n } from "../i18n/config";
 import { DemoProvider } from "@/lib/demo/context";
 import { GuidedTourProvider } from "@/components/tour/GuidedTour";
+import { TourAutoStart } from "@/components/tour/TourAutoStart";
+
 
 if (typeof window !== "undefined") initI18n();
 
@@ -132,10 +134,12 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <DemoProvider>
         <GuidedTourProvider>
+          <TourAutoStart />
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
           <Outlet />
         </GuidedTourProvider>
       </DemoProvider>
+
     </QueryClientProvider>
   );
 }

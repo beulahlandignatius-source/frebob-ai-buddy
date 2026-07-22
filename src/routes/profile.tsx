@@ -7,6 +7,8 @@ import { PageCanvas, SurfaceHeader, SectionLabel, SuccessBanner, StatusBadge } f
 import { DEMO_USER, fmt, orders, customers } from "@/lib/mock-data";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { EnterDemoButton } from "@/components/demo/EnterDemoButton";
+
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -89,12 +91,17 @@ function Profile() {
           <SetupRow label="Team members invited" status="pending" />
         </section>
 
+        <div className="mt-6">
+          <EnterDemoButton variant="ghost" label="Explore Demo Business" subtitle="See FreBob populated with a sample Nigerian SME" />
+        </div>
+
         <div className="mt-8 flex justify-between items-center">
           <p className="text-xs text-muted-foreground">FreBob · your smart business assistant</p>
           <Button variant="ghost" size="sm" onClick={signOut}>
             <LogOut className="h-4 w-4 mr-1" /> Sign out
           </Button>
         </div>
+
       </PageCanvas>
     </AppShell>
   );

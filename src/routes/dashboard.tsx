@@ -41,6 +41,7 @@ import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState"
 import { useDemo } from "@/lib/demo/context";
 import { EnterDemoButton } from "@/components/demo/EnterDemoButton";
 import { useTour } from "@/components/tour/GuidedTour";
+import { useCloudSync } from "@/lib/cloud-sync";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({

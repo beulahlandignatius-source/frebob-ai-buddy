@@ -4,6 +4,10 @@
 // server function forwards to Gemini.
 
 import { listApprovedRecords, type ApprovedRecord } from "./records-store";
+import { listUserProducts } from "./user-products-store";
+import { listScans } from "./scanner-store";
+import { listCustomers, computeMetrics } from "./customers-store";
+import { summariseDuplicates } from "./duplicates-store";
 
 export type CopilotLanguage = "english" | "nigerian_pidgin" | "yoruba" | "hausa" | "igbo";
 
@@ -28,9 +32,13 @@ export type BusinessSnapshot = {
   today: PeriodStats;
   week: PeriodStats;
   month: PeriodStats;
+  previousWeek: PeriodStats;
   outstandingCustomers: { name: string; phone: string | null; balance: number; reference: string }[];
   pendingOrders: { reference: string; customer: string; status: string; total: number }[];
   bestSelling: { product: string; quantity: number; revenue: number }[];
+  lowStockProducts: { name: string; stock: number; reorder: number; unit: string; status: "low" | "out" }[];
+  pendingScans: number;
+  customerIssues: { duplicatesToReview: number; repeatDebtors: number };
 };
 
 export type PeriodStats = {
@@ -94,6 +102,17 @@ export function buildSnapshot(records: ApprovedRecord[] = listApprovedRecords())
   const week = periodStats(records.filter((r) => inRange(r, startOfWeek())));
   const month = periodStats(records.filter((r) => inRange(r, startOfMonth())));
 
+  // Previous week window (for trend, using approved records only)
+  const prevWeekStart = new Date(startOfWeek());
+  prevWeekStart.setDate(prevWeekStart.getDate() - 7);
+  const prevWeekEnd = startOfWeek();
+  const previousWeek = periodStats(
+    records.filter((r) => {
+      const t = new Date(r.approvedAt).getTime();
+      return t >= prevWeekStart.getTime() && t < prevWeekEnd.getTime();
+    }),
+  );
+
   // Outstanding customers
   const outstandingCustomers = records
     .filter((r) => (r.data.balance ?? 0) > 0 && r.data.customer.name)
@@ -134,7 +153,41 @@ export function buildSnapshot(records: ApprovedRecord[] = listApprovedRecords())
     .sort((a, b) => b.quantity - a.quantity)
     .slice(0, 5);
 
-  return { totalApproved: records.length, today, week, month, outstandingCustomers, pendingOrders, bestSelling };
+  // Low-stock products from approved user inventory
+  const lowStockProducts = listUserProducts()
+    .filter((p) => p.status === "low" || p.status === "out")
+    .map((p) => ({
+      name: p.name,
+      stock: p.stock,
+      reorder: p.reorder,
+      unit: p.unit,
+      status: p.status as "low" | "out",
+    }))
+    .slice(0, 8);
+
+  // Scanner items awaiting review
+  const pendingScans = listScans().filter(
+    (s) => s.status === "ready_for_review" || s.status === "draft" || s.status === "processing",
+  ).length;
+
+  // Customer issues (duplicates awaiting review + repeat debtors)
+  let duplicatesToReview = 0;
+  try { duplicatesToReview = summariseDuplicates().unreviewed ?? 0; } catch { /* store may be empty */ }
+  let repeatDebtors = 0;
+  try {
+    repeatDebtors = listCustomers().filter((c) => {
+      const m = computeMetrics(c.id);
+      return (m.outstanding ?? 0) > 0;
+    }).length;
+  } catch { /* store may be empty */ }
+
+  return {
+    totalApproved: records.length,
+    today, week, month, previousWeek,
+    outstandingCustomers, pendingOrders, bestSelling,
+    lowStockProducts, pendingScans,
+    customerIssues: { duplicatesToReview, repeatDebtors },
+  };
 }
 
 // -------- Deterministic answers -------------------------------------------
@@ -148,19 +201,133 @@ type Intent =
   | "daily_summary"
   | "weekly_summary"
   | "monthly_summary"
+  | "health_check"
   | "unknown";
 
 export function detectIntent(question: string): Intent {
   const q = question.toLowerCase();
+  if (/(business\s*health|health\s*check|how.*business.*doing|how is my business|business summary|needs? my attention|what.*attention today|overall.*business)/i.test(q)) return "health_check";
   if (/(low\s*stock|running\s*low|finish|wetin.*finish|out of stock)/i.test(q)) return "low_stock";
   if (/(pending|awaiting|reserv|to deliver|to pick)/i.test(q)) return "pending_orders";
   if (/(best sell|top sell|move pass|sell pass|selling most|hot cake|best product)/i.test(q)) return "best_selling";
   if (/(owe|balance|debtor|outstand|never pay|never balance|no pay finish)/i.test(q)) return "outstanding";
   if (/(week|weekly)/i.test(q)) return "weekly_summary";
   if (/(month|monthly)/i.test(q)) return "monthly_summary";
-  if (/(summary|summarise|summarize|overall|how business|how work)/i.test(q)) return "daily_summary";
+  if (/(summary|summarise|summarize|overall|how work)/i.test(q)) return "daily_summary";
   if (/(today|dis\s*day|sell.*today|sales?.*today|money.*today|wetin.*today)/i.test(q)) return "today_sales";
   return "unknown";
+}
+
+export type HealthTier = "excellent" | "good" | "needs_attention" | "critical";
+export type HealthAssessment = {
+  tier: HealthTier;
+  emoji: string;
+  label: string;
+  goingWell: string[];
+  needsAttention: string[];
+  recommendations: string[];
+};
+
+export function assessBusinessHealth(snap: BusinessSnapshot): HealthAssessment {
+  const going: string[] = [];
+  const attention: string[] = [];
+  const recs: string[] = [];
+
+  // What's going well
+  if (snap.week.sales > 0 && snap.week.sales >= snap.previousWeek.sales && snap.previousWeek.sales > 0) {
+    going.push(`Sales this week (${fmtNaira(snap.week.sales)}) match or beat last week (${fmtNaira(snap.previousWeek.sales)}).`);
+  } else if (snap.week.sales > 0) {
+    going.push(`You recorded ${fmtNaira(snap.week.sales)} in approved sales this week.`);
+  }
+  if (snap.week.received > 0) going.push(`${fmtNaira(snap.week.received)} received in payments this week.`);
+  if (snap.bestSelling.length > 0) going.push(`Top mover: ${snap.bestSelling[0].product} (${snap.bestSelling[0].quantity} sold).`);
+
+  // Needs attention
+  const totalOwed = snap.outstandingCustomers.reduce((s, c) => s + c.balance, 0);
+  if (snap.outstandingCustomers.length > 0) {
+    attention.push(`${snap.outstandingCustomers.length} customer${snap.outstandingCustomers.length === 1 ? "" : "s"} owe ${fmtNaira(totalOwed)}.`);
+  }
+  if (snap.pendingOrders.length > 0) {
+    attention.push(`${snap.pendingOrders.length} pending order${snap.pendingOrders.length === 1 ? "" : "s"} awaiting fulfilment.`);
+  }
+  if (snap.lowStockProducts.length > 0) {
+    const outCount = snap.lowStockProducts.filter((p) => p.status === "out").length;
+    attention.push(`${snap.lowStockProducts.length} product${snap.lowStockProducts.length === 1 ? "" : "s"} running low${outCount > 0 ? ` (${outCount} out of stock)` : ""}.`);
+  }
+  if (snap.pendingScans > 0) {
+    attention.push(`${snap.pendingScans} scanned document${snap.pendingScans === 1 ? "" : "s"} awaiting your review.`);
+  }
+  if (snap.customerIssues.duplicatesToReview > 0) {
+    attention.push(`${snap.customerIssues.duplicatesToReview} possible duplicate customer${snap.customerIssues.duplicatesToReview === 1 ? "" : "s"} to review.`);
+  }
+
+  // Recommendations (grounded — only from present data)
+  if (snap.outstandingCustomers[0]) {
+    const top = snap.outstandingCustomers[0];
+    recs.push(`Follow up with ${top.name} today — outstanding ${fmtNaira(top.balance)} (${top.reference}).`);
+  }
+  const outStock = snap.lowStockProducts.find((p) => p.status === "out") ?? snap.lowStockProducts[0];
+  if (outStock) {
+    recs.push(`Restock ${outStock.name} — ${outStock.stock} ${outStock.unit} left (reorder at ${outStock.reorder}).`);
+  }
+  if (snap.pendingScans > 0) {
+    recs.push(`Review ${snap.pendingScans} scanned document${snap.pendingScans === 1 ? "" : "s"} so they enter Business Memory.`);
+  }
+  if (snap.customerIssues.duplicatesToReview > 0) {
+    recs.push(`Resolve ${snap.customerIssues.duplicatesToReview} duplicate customer group${snap.customerIssues.duplicatesToReview === 1 ? "" : "s"} to keep balances accurate.`);
+  }
+
+  // Tier — non-numerical judgement
+  let tier: HealthTier = "good";
+  const critical =
+    snap.lowStockProducts.some((p) => p.status === "out") ||
+    totalOwed >= 200000 ||
+    snap.pendingOrders.length >= 5;
+  const needs = attention.length >= 2;
+  const excellent = attention.length === 0 && going.length >= 2;
+  if (critical) tier = "critical";
+  else if (needs) tier = "needs_attention";
+  else if (excellent) tier = "excellent";
+
+  const meta: Record<HealthTier, { emoji: string; label: string }> = {
+    excellent: { emoji: "🟢", label: "Excellent" },
+    good: { emoji: "🟢", label: "Good" },
+    needs_attention: { emoji: "🟠", label: "Needs Attention" },
+    critical: { emoji: "🔴", label: "Critical" },
+  };
+
+  return { tier, emoji: meta[tier].emoji, label: meta[tier].label, goingWell: going, needsAttention: attention, recommendations: recs };
+}
+
+export function formatHealthReport(snap: BusinessSnapshot, lang: CopilotLanguage): CopilotAnswer {
+  if (snap.totalApproved === 0) {
+    return {
+      text: NO_DATA[lang],
+      evidence: [{ label: "Approved Records", value: "0" }],
+      hasData: false,
+    };
+  }
+  const h = assessBusinessHealth(snap);
+  const bullet = (arr: string[]) => arr.length ? arr.map((x) => `• ${x}`).join("\n") : "• Nothing to flag right now.";
+  const text =
+    `Business Health\n\n${h.emoji} ${h.label}\n\n` +
+    `What's going well\n${bullet(h.goingWell)}\n\n` +
+    `Needs attention\n${bullet(h.needsAttention)}\n\n` +
+    `Bob's recommendation\n${h.recommendations.length ? bullet(h.recommendations) : "• Keep approving records — Bob will surface actions as data grows."}`;
+  return {
+    text,
+    evidence: [
+      { label: "Approved Records", value: String(snap.totalApproved) },
+      { label: "This week sales", value: fmtNaira(snap.week.sales) },
+      { label: "This week received", value: fmtNaira(snap.week.received) },
+      { label: "Outstanding customers", value: String(snap.outstandingCustomers.length) },
+      { label: "Pending orders", value: String(snap.pendingOrders.length) },
+      { label: "Low-stock products", value: String(snap.lowStockProducts.length) },
+      { label: "Scans awaiting review", value: String(snap.pendingScans) },
+      { label: "Source", value: "Business Memory + approved operational records" },
+    ],
+    hasData: true,
+  };
 }
 
 const NO_DATA: Record<CopilotLanguage, string> = {
@@ -174,13 +341,28 @@ const NO_DATA: Record<CopilotLanguage, string> = {
 export function deterministicAnswer(intent: Intent, snap: BusinessSnapshot, lang: CopilotLanguage): CopilotAnswer | null {
   const empty = snap.totalApproved === 0;
 
+  if (intent === "health_check") {
+    return formatHealthReport(snap, lang);
+  }
+
   if (intent === "low_stock") {
+    if (snap.lowStockProducts.length === 0) {
+      return {
+        text: lang === "english"
+          ? "No products are flagged low or out of stock in your inventory right now."
+          : "No product dey low or finish for your inventory now.",
+        evidence: [{ label: "Low-stock products", value: "0" }, { label: "Source", value: "Inventory" }],
+        hasData: true,
+      };
+    }
+    const lines = snap.lowStockProducts.map((p) => `• ${p.name} — ${p.stock} ${p.unit} left (reorder at ${p.reorder})${p.status === "out" ? " · OUT OF STOCK" : ""}`).join("\n");
     return {
-      text: lang === "english"
-        ? "Low-stock tracking needs inventory data. Approved records don't yet include current stock levels, so I can't confirm what is running low."
-        : "I no fit confirm low stock — approved records no dey carry current stock levels.",
-      evidence: [{ label: "Data source", value: "Business Memory" }, { label: "Approved records", value: String(snap.totalApproved) }],
-      hasData: false,
+      text: `${snap.lowStockProducts.length} product${snap.lowStockProducts.length === 1 ? "" : "s"} need${snap.lowStockProducts.length === 1 ? "s" : ""} restocking:\n\n${lines}`,
+      evidence: [
+        { label: "Low-stock products", value: String(snap.lowStockProducts.length) },
+        { label: "Source", value: "Inventory" },
+      ],
+      hasData: true,
     };
   }
 

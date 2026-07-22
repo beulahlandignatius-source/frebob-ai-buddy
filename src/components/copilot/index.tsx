@@ -1,7 +1,7 @@
 // FreBob Copilot — reusable chat components (Calm Ledger identity).
 
 import type { ReactNode } from "react";
-import { Sparkles, ShieldCheck, Send, Mic, Trash2, Clock, MessageSquare, Plus, X, FileText, TrendingUp, Wallet, AlertTriangle, Package, ClipboardList, PieChart } from "lucide-react";
+import { Sparkles, ShieldCheck, Send, Mic, Trash2, Clock, MessageSquare, Plus, X, FileText, TrendingUp, Wallet, AlertTriangle, Package, ClipboardList, PieChart, HeartPulse } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/fb/Button";
 import { BobAvatar } from "@/components/copilot/BobAvatar";
@@ -91,6 +91,7 @@ export function AIThinkingIndicator({ label = "Bob is analysing your business…
 
 /* ---------- SuggestedQuestionCard ---------- */
 export const suggestionCatalog = [
+  { key: "health", icon: HeartPulse, label: "Business Health", question: "How is my business doing?" },
   { key: "today", icon: TrendingUp, label: "Today's Sales", question: "How much did I sell today?" },
   { key: "owe", icon: Wallet, label: "Outstanding Payments", question: "Who still owes me?" },
   { key: "low", icon: AlertTriangle, label: "Low Stock", question: "What products are running low?" },

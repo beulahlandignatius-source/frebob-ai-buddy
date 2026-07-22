@@ -62,6 +62,10 @@ function Reports() {
   const setPreset = (p: PresetKey) => navigate({ search: (s: Search) => ({ ...s, preset: p }) });
   const setCompare = (c: CompareKey) => navigate({ search: (s: Search) => ({ ...s, compare: c }) });
   const refresh = () => { setRefreshKey((k) => k + 1); setUpdatedAt(new Date().toISOString()); };
+  const hasAnyData = useMemo(
+    () => listOrders().length > 0 || listApprovedRecords().length > 0,
+    [refreshKey],
+  );
 
   const tabs: { value: TabKey; label: string }[] = [
     { value: "overview", label: "Overview" },

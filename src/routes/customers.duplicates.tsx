@@ -31,7 +31,19 @@ type Sort = "priority" | "confidence" | "recent";
 
 function DuplicatesPage() {
   const [tick, setTick] = useState(0);
-  useEffect(() => { setTick((t) => t + 1); }, []);
+  const [ui, setUi] = useState<"loading" | "ready" | "error">("loading");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  useEffect(() => {
+    setUi("loading");
+    setErrorMsg(null);
+    try {
+      setTick((t) => t + 1);
+      setUi("ready");
+    } catch (e) {
+      setErrorMsg(e instanceof Error ? e.message : "Could not scan for duplicates.");
+      setUi("error");
+    }
+  }, []);
 
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<StatusFilter>("all");

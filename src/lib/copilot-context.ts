@@ -4,6 +4,10 @@
 // server function forwards to Gemini.
 
 import { listApprovedRecords, type ApprovedRecord } from "./records-store";
+import { listUserProducts } from "./user-products-store";
+import { listScans } from "./scanner-store";
+import { listCustomers, computeMetrics } from "./customers-store";
+import { summariseDuplicates } from "./duplicates-store";
 
 export type CopilotLanguage = "english" | "nigerian_pidgin" | "yoruba" | "hausa" | "igbo";
 

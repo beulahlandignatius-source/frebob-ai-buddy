@@ -113,7 +113,18 @@ function ScanHistory() {
         </div>
 
         <SectionLabel>{filtered.length} scan{filtered.length === 1 ? "" : "s"}</SectionLabel>
-        {filtered.length === 0 ? (
+        {ui === "loading" ? (
+          <LoadingSkeleton rows={4} />
+        ) : ui === "error" ? (
+          <ErrorState message={errorMsg ?? "Could not load scan history."} onRetry={load} />
+        ) : scans.length === 0 ? (
+          <IntelligentEmptyState
+            icon={ScanLine}
+            title="No documents scanned yet"
+            description="Scan receipts, invoices or delivery notes and FreBob will extract line items, customers and totals for review."
+            primary={{ label: "Scan Document", icon: Plus, to: "/scanner/new", }}
+          />
+        ) : filtered.length === 0 ? (
           <EmptyState
             title="No scans match these filters"
             description="Try changing the filter, or scan a new document."

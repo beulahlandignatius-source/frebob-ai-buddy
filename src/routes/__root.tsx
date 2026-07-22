@@ -11,6 +11,10 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { initI18n } from "../i18n/config";
+
+if (typeof window !== "undefined") initI18n();
+
 
 function NotFoundComponent() {
   return (

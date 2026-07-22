@@ -76,7 +76,7 @@ function TopNav() {
   const links = [
     { href: "#features", label: "Features" },
     { href: "#how", label: "How it works" },
-    { href: "#ai", label: "AI" },
+    { href: "#ai", label: "Assistant" },
     { href: "#faq", label: "FAQ" },
   ];
   return (

@@ -11,12 +11,20 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SigninRouteImport } from './routes/signin'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as ScannerRouteImport } from './routes/scanner'
 import { Route as ReportsRouteImport } from './routes/reports'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as NotificationsRouteImport } from './routes/notifications'
+import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as CustomersRouteImport } from './routes/customers'
 import { Route as BusinessSetupRouteImport } from './routes/business-setup'
+import { Route as BusinessMemoryRouteImport } from './routes/business-memory'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AiAssistantRouteImport } from './routes/ai-assistant'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SignupRoute = SignupRouteImport.update({
@@ -29,9 +37,29 @@ const SigninRoute = SigninRouteImport.update({
   path: '/signin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScannerRoute = ScannerRouteImport.update({
+  id: '/scanner',
+  path: '/scanner',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReportsRoute = ReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersRoute = OrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -44,9 +72,19 @@ const NotificationsRoute = NotificationsRouteImport.update({
   path: '/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InventoryRoute = InventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomersRoute = CustomersRouteImport.update({
+  id: '/customers',
+  path: '/customers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BusinessSetupRoute = BusinessSetupRouteImport.update({
@@ -54,9 +92,19 @@ const BusinessSetupRoute = BusinessSetupRouteImport.update({
   path: '/business-setup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BusinessMemoryRoute = BusinessMemoryRouteImport.update({
+  id: '/business-memory',
+  path: '/business-memory',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiAssistantRoute = AiAssistantRouteImport.update({
+  id: '/ai-assistant',
+  path: '/ai-assistant',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -67,35 +115,59 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ai-assistant': typeof AiAssistantRoute
   '/auth': typeof AuthRoute
+  '/business-memory': typeof BusinessMemoryRoute
   '/business-setup': typeof BusinessSetupRoute
+  '/customers': typeof CustomersRoute
   '/dashboard': typeof DashboardRoute
+  '/inventory': typeof InventoryRoute
   '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
+  '/orders': typeof OrdersRoute
+  '/profile': typeof ProfileRoute
   '/reports': typeof ReportsRoute
+  '/scanner': typeof ScannerRoute
+  '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ai-assistant': typeof AiAssistantRoute
   '/auth': typeof AuthRoute
+  '/business-memory': typeof BusinessMemoryRoute
   '/business-setup': typeof BusinessSetupRoute
+  '/customers': typeof CustomersRoute
   '/dashboard': typeof DashboardRoute
+  '/inventory': typeof InventoryRoute
   '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
+  '/orders': typeof OrdersRoute
+  '/profile': typeof ProfileRoute
   '/reports': typeof ReportsRoute
+  '/scanner': typeof ScannerRoute
+  '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ai-assistant': typeof AiAssistantRoute
   '/auth': typeof AuthRoute
+  '/business-memory': typeof BusinessMemoryRoute
   '/business-setup': typeof BusinessSetupRoute
+  '/customers': typeof CustomersRoute
   '/dashboard': typeof DashboardRoute
+  '/inventory': typeof InventoryRoute
   '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
+  '/orders': typeof OrdersRoute
+  '/profile': typeof ProfileRoute
   '/reports': typeof ReportsRoute
+  '/scanner': typeof ScannerRoute
+  '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
 }
@@ -103,46 +175,78 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/ai-assistant'
     | '/auth'
+    | '/business-memory'
     | '/business-setup'
+    | '/customers'
     | '/dashboard'
+    | '/inventory'
     | '/notifications'
     | '/onboarding'
+    | '/orders'
+    | '/profile'
     | '/reports'
+    | '/scanner'
+    | '/settings'
     | '/signin'
     | '/signup'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/ai-assistant'
     | '/auth'
+    | '/business-memory'
     | '/business-setup'
+    | '/customers'
     | '/dashboard'
+    | '/inventory'
     | '/notifications'
     | '/onboarding'
+    | '/orders'
+    | '/profile'
     | '/reports'
+    | '/scanner'
+    | '/settings'
     | '/signin'
     | '/signup'
   id:
     | '__root__'
     | '/'
+    | '/ai-assistant'
     | '/auth'
+    | '/business-memory'
     | '/business-setup'
+    | '/customers'
     | '/dashboard'
+    | '/inventory'
     | '/notifications'
     | '/onboarding'
+    | '/orders'
+    | '/profile'
     | '/reports'
+    | '/scanner'
+    | '/settings'
     | '/signin'
     | '/signup'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AiAssistantRoute: typeof AiAssistantRoute
   AuthRoute: typeof AuthRoute
+  BusinessMemoryRoute: typeof BusinessMemoryRoute
   BusinessSetupRoute: typeof BusinessSetupRoute
+  CustomersRoute: typeof CustomersRoute
   DashboardRoute: typeof DashboardRoute
+  InventoryRoute: typeof InventoryRoute
   NotificationsRoute: typeof NotificationsRoute
   OnboardingRoute: typeof OnboardingRoute
+  OrdersRoute: typeof OrdersRoute
+  ProfileRoute: typeof ProfileRoute
   ReportsRoute: typeof ReportsRoute
+  ScannerRoute: typeof ScannerRoute
+  SettingsRoute: typeof SettingsRoute
   SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
 }
@@ -163,11 +267,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SigninRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scanner': {
+      id: '/scanner'
+      path: '/scanner'
+      fullPath: '/scanner'
+      preLoaderRoute: typeof ScannerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reports': {
       id: '/reports'
       path: '/reports'
       fullPath: '/reports'
       preLoaderRoute: typeof ReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders': {
+      id: '/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -184,11 +316,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/inventory': {
+      id: '/inventory'
+      path: '/inventory'
+      fullPath: '/inventory'
+      preLoaderRoute: typeof InventoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/customers': {
+      id: '/customers'
+      path: '/customers'
+      fullPath: '/customers'
+      preLoaderRoute: typeof CustomersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/business-setup': {
@@ -198,11 +344,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BusinessSetupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/business-memory': {
+      id: '/business-memory'
+      path: '/business-memory'
+      fullPath: '/business-memory'
+      preLoaderRoute: typeof BusinessMemoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai-assistant': {
+      id: '/ai-assistant'
+      path: '/ai-assistant'
+      fullPath: '/ai-assistant'
+      preLoaderRoute: typeof AiAssistantRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -217,12 +377,20 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AiAssistantRoute: AiAssistantRoute,
   AuthRoute: AuthRoute,
+  BusinessMemoryRoute: BusinessMemoryRoute,
   BusinessSetupRoute: BusinessSetupRoute,
+  CustomersRoute: CustomersRoute,
   DashboardRoute: DashboardRoute,
+  InventoryRoute: InventoryRoute,
   NotificationsRoute: NotificationsRoute,
   OnboardingRoute: OnboardingRoute,
+  OrdersRoute: OrdersRoute,
+  ProfileRoute: ProfileRoute,
   ReportsRoute: ReportsRoute,
+  ScannerRoute: ScannerRoute,
+  SettingsRoute: SettingsRoute,
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,
 }

@@ -53,9 +53,10 @@ function Reports() {
   const compareRange = useMemo(() => resolveCompare(range, safeCompare), [range, safeCompare]);
   const [updatedAt, setUpdatedAt] = useState<string>(() => new Date().toISOString());
 
-  const setTab = (v: TabKey) => navigate({ search: (p) => ({ ...p, tab: v }) });
-  const setPreset = (p: PresetKey) => navigate({ search: (s) => ({ ...s, preset: p }) });
-  const setCompare = (c: CompareKey) => navigate({ search: (s) => ({ ...s, compare: c }) });
+  type Search = { tab: string; preset: string; compare: string };
+  const setTab = (v: TabKey) => navigate({ search: (p: Search) => ({ ...p, tab: v }) });
+  const setPreset = (p: PresetKey) => navigate({ search: (s: Search) => ({ ...s, preset: p }) });
+  const setCompare = (c: CompareKey) => navigate({ search: (s: Search) => ({ ...s, compare: c }) });
   const refresh = () => { setRefreshKey((k) => k + 1); setUpdatedAt(new Date().toISOString()); };
 
   const tabs: { value: TabKey; label: string }[] = [

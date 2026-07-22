@@ -49,6 +49,8 @@ function Reports() {
   const { tab, preset, compare } = Route.useSearch();
   const navigate = useNavigate({ from: "/reports" });
   const [refreshKey, setRefreshKey] = useState(0);
+  const { tick: cloudTick } = useCloudSync();
+  useEffect(() => { if (cloudTick) setRefreshKey((k) => k + 1); }, [cloudTick]);
 
   const safeTab: TabKey = (TAB_VALUES as readonly string[]).includes(tab) ? (tab as TabKey) : "overview";
   const safePreset: PresetKey = (["today","yesterday","this_week","last_week","this_month","last_month","last_30","custom"] as const)

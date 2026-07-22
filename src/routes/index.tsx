@@ -730,7 +730,7 @@ function LanguagesSection() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHead eyebrow="Languages" title="Speaks the way your customers do." />
         <div className="mt-12 grid md:grid-cols-2 gap-5">
-          <div className="rounded-3xl border border-border bg-background p-8">
+          <div className="rounded-3xl border border-border bg-background p-6 sm:p-8">
             <div className="flex items-center gap-2 text-primary"><Globe className="h-5 w-5" /><div className="font-semibold">Interface</div></div>
             <div className="mt-4 flex flex-wrap gap-2">
               {["English", "Nigerian Pidgin", "Yoruba", "Hausa", "Igbo"].map((l) => (
@@ -738,7 +738,7 @@ function LanguagesSection() {
               ))}
             </div>
           </div>
-          <div className="rounded-3xl border border-border bg-background p-8">
+          <div className="rounded-3xl border border-border bg-background p-6 sm:p-8">
             <div className="flex items-center gap-2 text-accent"><Mic className="h-5 w-5" /><div className="font-semibold">Voice</div></div>
             <div className="mt-4 flex flex-wrap gap-2">
               {["English", "Yoruba", "Hausa", "Igbo"].map((l) => (

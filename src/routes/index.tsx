@@ -572,17 +572,17 @@ function WhyDifferent() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHead eyebrow="Why FreBob is different" title="A category shift, not another tool." />
         <div className="mt-12 grid md:grid-cols-2 gap-5">
-          <div className="rounded-3xl border border-border bg-background p-8">
+          <div className="rounded-3xl border border-border bg-background p-6 sm:p-8">
             <div className="text-sm font-semibold text-muted-foreground">Traditional Apps</div>
             <ul className="mt-4 space-y-3">
               {traditional.map((t) => (
                 <li key={t} className="flex items-center gap-3 text-foreground/80">
-                  <X className="h-4 w-4 text-destructive" /> {t}
+                  <X className="h-4 w-4 shrink-0 text-destructive" /> {t}
                 </li>
               ))}
             </ul>
           </div>
-          <div className="rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5 p-8 shadow-elegant">
+          <div className="rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5 p-6 sm:p-8 shadow-elegant">
             <div className="text-sm font-semibold text-primary flex items-center gap-2"><Sparkles className="h-4 w-4" /> FreBob</div>
             <ul className="mt-4 space-y-3">
               {frebob.map((t) => (

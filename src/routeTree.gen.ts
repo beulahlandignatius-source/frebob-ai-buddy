@@ -38,6 +38,7 @@ import { Route as CustomersDuplicatesRouteImport } from './routes/customers.dupl
 import { Route as CustomersIdRouteImport } from './routes/customers.$id'
 import { Route as ConversationsNewRouteImport } from './routes/conversations.new'
 import { Route as ConversationsIdRouteImport } from './routes/conversations.$id'
+import { Route as AdminYarngptRouteImport } from './routes/admin.yarngpt'
 import { Route as ScannerScanIdConvertRouteImport } from './routes/scanner.$scanId.convert'
 import { Route as OrdersIdPaymentRouteImport } from './routes/orders.$id.payment'
 import { Route as CustomersDuplicatesGroupIdRouteImport } from './routes/customers.duplicates.$groupId'
@@ -188,6 +189,11 @@ const ConversationsIdRoute = ConversationsIdRouteImport.update({
   path: '/conversations/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminYarngptRoute = AdminYarngptRouteImport.update({
+  id: '/admin/yarngpt',
+  path: '/admin/yarngpt',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ScannerScanIdConvertRoute = ScannerScanIdConvertRouteImport.update({
   id: '/convert',
   path: '/convert',
@@ -229,6 +235,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRouteWithChildren
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
+  '/admin/yarngpt': typeof AdminYarngptRoute
   '/conversations/$id': typeof ConversationsIdRoute
   '/conversations/new': typeof ConversationsNewRoute
   '/customers/$id': typeof CustomersIdRouteWithChildren
@@ -264,6 +271,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRouteWithChildren
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
+  '/admin/yarngpt': typeof AdminYarngptRoute
   '/conversations/$id': typeof ConversationsIdRoute
   '/conversations/new': typeof ConversationsNewRoute
   '/customers/$id': typeof CustomersIdRouteWithChildren
@@ -300,6 +308,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRouteWithChildren
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
+  '/admin/yarngpt': typeof AdminYarngptRoute
   '/conversations/$id': typeof ConversationsIdRoute
   '/conversations/new': typeof ConversationsNewRoute
   '/customers/$id': typeof CustomersIdRouteWithChildren
@@ -337,6 +346,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/signin'
     | '/signup'
+    | '/admin/yarngpt'
     | '/conversations/$id'
     | '/conversations/new'
     | '/customers/$id'
@@ -372,6 +382,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/signin'
     | '/signup'
+    | '/admin/yarngpt'
     | '/conversations/$id'
     | '/conversations/new'
     | '/customers/$id'
@@ -407,6 +418,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/signin'
     | '/signup'
+    | '/admin/yarngpt'
     | '/conversations/$id'
     | '/conversations/new'
     | '/customers/$id'
@@ -443,6 +455,7 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRouteWithChildren
   SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
+  AdminYarngptRoute: typeof AdminYarngptRoute
   ConversationsIdRoute: typeof ConversationsIdRoute
   ConversationsNewRoute: typeof ConversationsNewRoute
 }
@@ -652,6 +665,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConversationsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/yarngpt': {
+      id: '/admin/yarngpt'
+      path: '/admin/yarngpt'
+      fullPath: '/admin/yarngpt'
+      preLoaderRoute: typeof AdminYarngptRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/scanner/$scanId/convert': {
       id: '/scanner/$scanId/convert'
       path: '/convert'
@@ -805,6 +825,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRouteWithChildren,
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,
+  AdminYarngptRoute: AdminYarngptRoute,
   ConversationsIdRoute: ConversationsIdRoute,
   ConversationsNewRoute: ConversationsNewRoute,
 }

@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { DemoHint } from "@/components/demo/DemoHint";
 import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
+import { useDemo } from "@/lib/demo/context";
 
 export const Route = createFileRoute("/inventory")({
   head: () => ({

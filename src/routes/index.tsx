@@ -208,36 +208,28 @@ function HeroVideo() {
 }
 
 function VideoPosterMock() {
-  // A composed poster: chat → extraction → memory glimpse. No stock AI imagery.
+  // Authentic African business imagery — replaces the previous mock composite.
   return (
-    <div className="absolute inset-0 bg-gradient-to-br from-[#2a1057] via-[#4b1fa6] to-[#7a3fd6]">
-      <div className="absolute inset-0 [background:radial-gradient(600px_300px_at_20%_20%,rgba(247,147,30,0.25),transparent),radial-gradient(500px_300px_at_90%_90%,rgba(255,255,255,0.1),transparent)]" />
-      <div className="relative h-full w-full p-4 sm:p-6 grid grid-cols-12 gap-3">
-        <div className="col-span-7 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-md p-3 flex flex-col gap-2">
-          <div className="flex items-center gap-2 text-white/80 text-[11px]"><MessageCircle className="h-3.5 w-3.5" /> Customer chat</div>
-          <div className="rounded-xl bg-white/15 px-3 py-2 text-white text-xs w-fit max-w-[85%]">Aunty send me 3 ankara, I go pay ₦18,000 tomorrow</div>
-          <div className="rounded-xl bg-accent/90 px-3 py-2 text-accent-foreground text-xs w-fit self-end">Okay, noted 👍</div>
-          <div className="mt-auto rounded-xl bg-white/10 border border-white/20 px-3 py-2 flex items-center gap-2 text-white/90 text-[11px]">
-            <Sparkles className="h-3.5 w-3.5 text-accent" /> Bob extracted: 3× Ankara · ₦18,000 · unpaid
-          </div>
-        </div>
-        <div className="col-span-5 flex flex-col gap-3">
-          <div className="rounded-2xl bg-white/95 p-3 shadow-card flex-1">
-            <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Business Memory</div>
-            <div className="mt-1 text-sm font-semibold text-foreground">Order #A-108</div>
-            <div className="mt-2 space-y-1 text-[11px] text-muted-foreground">
-              <div className="flex justify-between"><span>Ankara ×3</span><span className="text-foreground">₦18,000</span></div>
-              <div className="flex justify-between"><span>Status</span><span className="text-warning">Unpaid</span></div>
-            </div>
-          </div>
-          <div className="rounded-2xl bg-white/95 p-3 shadow-card">
-            <div className="flex items-center gap-2 text-[11px] text-muted-foreground"><TrendingUp className="h-3.5 w-3.5 text-success" /> Today</div>
-            <div className="mt-1 text-lg font-bold text-foreground">₦142,500</div>
-            <div className="text-[10px] text-success">+18% vs yesterday</div>
-          </div>
-        </div>
+    <div className="absolute inset-0">
+      <img
+        src={heroAfricanBusiness.url}
+        alt="Nigerian small business owner running her boutique with her smartphone"
+        className="absolute inset-0 h-full w-full object-cover"
+        width={1280}
+        height={960}
+      />
+      <div className="absolute inset-0 bg-gradient-to-tr from-black/45 via-black/10 to-transparent" />
+      <div className="absolute top-3 left-3 rounded-full bg-white/85 backdrop-blur px-2.5 py-1 text-[10px] font-medium text-foreground flex items-center gap-1.5">
+        <Sparkles className="h-3 w-3 text-accent" /> Real businesses. Real workflows.
       </div>
       <div className="absolute top-3 right-3 rounded-full bg-black/40 text-white text-[10px] px-2 py-1 backdrop-blur">Preview</div>
+      <div className="absolute left-3 right-3 bottom-16 rounded-2xl bg-white/90 backdrop-blur-md p-3 shadow-card max-w-[75%] sm:max-w-[62%]">
+        <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+          <Sparkles className="h-3.5 w-3.5 text-accent" /> Bob extracted from a WhatsApp chat
+        </div>
+        <div className="mt-1 text-sm font-semibold text-foreground">3× Ankara · ₦18,000 · Unpaid</div>
+        <div className="text-[11px] text-muted-foreground mt-0.5">Saved to Business Memory · Order #A-108</div>
+      </div>
     </div>
   );
 }

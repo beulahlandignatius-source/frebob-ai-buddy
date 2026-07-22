@@ -263,32 +263,22 @@ function NewConversation() {
             {(tab === "voice" || tab === "whatsapp") && (
               <div className="bg-card border border-secondary rounded-[20px] p-5 space-y-4">
                 {tab === "voice" ? (
-                  <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-secondary py-8 text-center">
-                    <div className={cn(
-                      "h-16 w-16 rounded-full flex items-center justify-center transition",
-                      recording ? "bg-accent/20 text-accent animate-pulse" : "brand-gradient text-primary-foreground shadow-elegant",
-                    )}>
-                      {recording ? <Square className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-2xl brand-gradient text-primary-foreground shadow-elegant flex items-center justify-center shrink-0">
+                        <Mic className="h-5 w-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-bold text-sm">Record a business summary</p>
+                        <p className="text-xs text-muted-foreground">
+                          Speak in English, Pidgin, Yoruba, Hausa or Igbo. Pause any time — Bob transcribes when you confirm.
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-bold text-sm">
-                        {recording ? "Recording…" : transcribing ? "Bob is transcribing…" : "Record a business summary"}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {recording
-                          ? `${Math.floor(elapsed / 60)}:${String(elapsed % 60).padStart(2, "0")} — tap stop when done`
-                          : "Speak in English, Pidgin, Yoruba, Hausa or Igbo. Bob will draft the record."}
-                      </p>
-                    </div>
-                    {!recording ? (
-                      <Button size="sm" onClick={startRecording} disabled={transcribing}>
-                        <Mic className="h-4 w-4" /> Start recording
-                      </Button>
-                    ) : (
-                      <Button size="sm" variant="outline" onClick={stopRecording}>
-                        <Square className="h-4 w-4" /> Stop & transcribe
-                      </Button>
-                    )}
+                    <VoiceRecorder
+                      onConfirm={handleVoiceConfirm}
+                      confirmLabel={transcribing ? "Transcribing…" : "Transcribe with Bob"}
+                    />
                   </div>
                 ) : (
                   <label className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-secondary py-10 text-center cursor-pointer hover:border-primary/40 transition">

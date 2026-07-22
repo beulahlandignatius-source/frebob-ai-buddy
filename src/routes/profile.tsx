@@ -31,6 +31,7 @@ export const Route = createFileRoute("/profile")({
 
 function Profile() {
   const navigate = useNavigate();
+  const { start: startTour } = useTour();
   const [saved, setSaved] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState<string>(DEMO_USER.firstName);
 

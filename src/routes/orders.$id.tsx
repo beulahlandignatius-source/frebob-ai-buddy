@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
-import { PageCanvas, SurfaceHeader, SectionLabel, EmptyState } from "@/components/dash";
+import { PageCanvas, SurfaceHeader, SectionLabel, EmptyState, LoadingSkeleton, ErrorState } from "@/components/dash";
 import {
   BalanceBadge, OrderStatusBadge, OrderTimeline, PaymentHistory,
 } from "@/components/orders";

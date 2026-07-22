@@ -201,52 +201,43 @@ function Dashboard() {
         <section className="mb-8">
           <SectionLabel>Quick Actions</SectionLabel>
           <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-7 gap-3">
-            <button
-              type="button"
-              onClick={() => toast("Coming in a later batch")}
+            <Link
+              to="/scanner"
               className="col-span-3 sm:col-span-1 lg:col-span-2 flex flex-col justify-center gap-2 p-5 brand-gradient text-primary-foreground rounded-[20px] shadow-elegant hover:opacity-95 active:scale-[0.98] transition text-left"
             >
               <div className="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center">
                 <Plus className="h-5 w-5" />
               </div>
               <div>
-                <p className="font-display text-sm font-extrabold leading-tight">
-                  Add Business Record
-                </p>
+                <p className="font-display text-sm font-extrabold leading-tight">Add Business Record</p>
                 <p className="text-[11px] text-white/70 mt-0.5">Sale, payment or expense</p>
               </div>
-            </button>
+            </Link>
 
             {[
-              { icon: Boxes, label: "Inventory", tint: "bg-accent/10 text-accent", onClick: () => toast("Coming in a later batch") },
-              { icon: ShoppingCart, label: "Orders", tint: "bg-secondary text-primary", onClick: () => toast("Coming in a later batch") },
-              { icon: ScanLine, label: "Scanner", tint: "bg-secondary text-primary", onClick: () => toast("Coming in a later batch") },
-              { icon: Sparkles, label: "Ask FreBob", tint: "bg-secondary text-primary", onClick: () => toast("Coming in a later batch") },
+              { icon: Boxes, label: "Inventory", tint: "bg-accent/10 text-accent", to: "/inventory" as const },
+              { icon: ShoppingCart, label: "Orders", tint: "bg-secondary text-primary", to: "/orders" as const },
+              { icon: ScanLine, label: "Scanner", tint: "bg-secondary text-primary", to: "/scanner" as const },
+              { icon: Sparkles, label: "Ask FreBob", tint: "bg-secondary text-primary", to: "/ai-assistant" as const },
               { icon: BarChart3, label: "Reports", tint: "bg-secondary text-primary", to: "/reports" as const },
             ].map((a, i) => {
               const Icon = a.icon;
-              const inner = (
-                <>
+              return (
+                <Link
+                  key={i}
+                  to={a.to}
+                  className="flex flex-col items-center justify-center gap-2 p-4 bg-card rounded-[20px] border border-secondary hover:border-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition"
+                >
                   <div className={cn("h-9 w-9 rounded-xl flex items-center justify-center", a.tint)}>
                     <Icon className="h-4 w-4" />
                   </div>
                   <span className="text-[11px] font-bold text-foreground">{a.label}</span>
-                </>
-              );
-              const cls =
-                "flex flex-col items-center justify-center gap-2 p-4 bg-card rounded-[20px] border border-secondary hover:border-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition";
-              return a.to ? (
-                <Link key={i} to={a.to} className={cls}>
-                  {inner}
                 </Link>
-              ) : (
-                <button key={i} type="button" onClick={a.onClick} className={cls}>
-                  {inner}
-                </button>
               );
             })}
           </div>
         </section>
+
 
         {/* Stock + Activity */}
         <section className="grid gap-6 lg:grid-cols-5 mb-8">

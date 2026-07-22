@@ -363,7 +363,7 @@ export function LoadingSkeleton({ rows = 3, className }: { rows?: number; classN
   return (
     <div className={cn("space-y-3", className)}>
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="rounded-2xl border border-border bg-card p-4 animate-pulse">
+        <div key={i} className="rounded-2xl border border-secondary bg-card p-4 animate-pulse">
           <div className="h-3 w-1/3 bg-muted rounded" />
           <div className="mt-3 h-4 w-2/3 bg-muted rounded" />
         </div>
@@ -389,6 +389,67 @@ export function ErrorState({ onRetry, message }: { onRetry?: () => void; message
         </Button>
       )}
     </div>
+  );
+}
+
+/* ---------- SuccessBanner ---------- */
+export function SuccessBanner({ title, description, onDismiss }: { title: string; description?: string; onDismiss?: () => void }) {
+  return (
+    <div className="flex items-start gap-3 rounded-2xl border border-[color-mix(in_oklab,var(--success)_25%,transparent)] bg-[color-mix(in_oklab,var(--success)_10%,transparent)] p-4">
+      <div className="h-9 w-9 rounded-xl bg-[color-mix(in_oklab,var(--success)_18%,transparent)] text-[var(--success)] flex items-center justify-center shrink-0">
+        <CheckCircle2 className="h-4 w-4" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold text-foreground">{title}</p>
+        {description && <p className="text-xs text-muted-foreground mt-0.5">{description}</p>}
+      </div>
+      {onDismiss && (
+        <button type="button" onClick={onDismiss} className="text-xs text-muted-foreground hover:text-foreground">
+          Dismiss
+        </button>
+      )}
+    </div>
+  );
+}
+
+/* ---------- PageCanvas — tinted page wrapper matching Calm Ledger ---------- */
+export function PageCanvas({ children }: { children: ReactNode }) {
+  return (
+    <div className="-mx-4 lg:-mx-8 -my-6 lg:-my-10 px-4 lg:px-8 py-6 lg:py-10 bg-[var(--surface-tinted)] min-h-[calc(100vh-0px)]">
+      {children}
+    </div>
+  );
+}
+
+/* ---------- SectionLabel ---------- */
+export function SectionLabel({ children, right }: { children: ReactNode; right?: ReactNode }) {
+  return (
+    <div className="flex items-end justify-between mb-4">
+      <h2 className="font-display text-[11px] font-bold uppercase tracking-[0.18em] text-primary/40">
+        {children}
+      </h2>
+      {right}
+    </div>
+  );
+}
+
+/* ---------- SurfaceHeader — Calm Ledger page hero ---------- */
+export function SurfaceHeader({
+  eyebrow, title, subtitle, action,
+}: { eyebrow?: string; title: string; subtitle?: string; action?: ReactNode }) {
+  return (
+    <header className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4 mb-6">
+      <div className="min-w-0">
+        {eyebrow && (
+          <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-primary/60">{eyebrow}</p>
+        )}
+        <h1 className="mt-1 font-display text-[26px] sm:text-[32px] font-extrabold text-primary tracking-tight truncate">
+          {title}
+        </h1>
+        {subtitle && <p className="text-sm text-subtle-foreground truncate mt-0.5">{subtitle}</p>}
+      </div>
+      {action && <div className="shrink-0">{action}</div>}
+    </header>
   );
 }
 

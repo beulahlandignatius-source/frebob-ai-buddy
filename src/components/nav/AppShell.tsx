@@ -1,8 +1,9 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import {
-  LayoutDashboard, Sparkles, Plus, BarChart3, User, Brain, Boxes,
+  Home, MessageCircle, Plus, BarChart3, User, Brain, Boxes,
   ShoppingCart, Users, ScanLine, Bell, Settings, HelpCircle, PlayCircle,
+  LayoutDashboard,
 } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { cn } from "@/lib/utils";
@@ -11,20 +12,22 @@ import { useTour } from "@/components/tour/GuidedTour";
 import { EnterDemoButton } from "@/components/demo/EnterDemoButton";
 import { useDemo } from "@/lib/demo/context";
 
-type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; highlight?: boolean; tour?: string };
+type NavItem = { to: string; label: string; icon: typeof Home; highlight?: boolean; tour?: string };
 
+// Centralized mobile bottom navigation. Order and items are locked per spec:
+// Home, Chat, Create, Inventory, Reports. Do not modify without explicit request.
 const mobileNav: NavItem[] = [
-  { to: "/dashboard", label: "Home", icon: LayoutDashboard },
-  { to: "/ai-assistant", label: "Bob", icon: Sparkles, tour: "nav-bob" },
-  { to: "/add-record", label: "Add", icon: Plus, highlight: true, tour: "nav-add" },
+  { to: "/dashboard", label: "Home", icon: Home },
+  { to: "/ai-assistant", label: "Chat", icon: MessageCircle, tour: "nav-bob" },
+  { to: "/add-record", label: "Create", icon: Plus, highlight: true, tour: "nav-add" },
   { to: "/inventory", label: "Inventory", icon: Boxes, tour: "nav-inventory" },
   { to: "/reports", label: "Reports", icon: BarChart3 },
 ];
 
 const desktopNav: NavItem[] = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/dashboard", label: "Home", icon: LayoutDashboard },
+  { to: "/ai-assistant", label: "Chat", icon: MessageCircle, tour: "nav-bob" },
   { to: "/business-memory", label: "Business Memory", icon: Brain, tour: "nav-memory" },
-  { to: "/ai-assistant", label: "AI Assistant", icon: Sparkles, tour: "nav-bob" },
   { to: "/inventory", label: "Inventory", icon: Boxes, tour: "nav-inventory" },
   { to: "/orders", label: "Orders", icon: ShoppingCart },
   { to: "/customers", label: "Customers", icon: Users },
@@ -34,6 +37,7 @@ const desktopNav: NavItem[] = [
   { to: "/settings", label: "Settings", icon: Settings },
   { to: "/profile", label: "Profile", icon: User },
 ];
+
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -93,7 +97,11 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="mx-auto max-w-6xl px-4 lg:px-8 py-6 lg:py-10">{children}</div>
       </main>
 
-      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 border-t border-border bg-background/95 backdrop-blur-lg">
+      <nav
+        aria-label="Primary"
+        className="lg:hidden fixed bottom-0 inset-x-0 z-30 border-t border-border/60 bg-white/85 backdrop-blur-xl supports-[backdrop-filter]:bg-white/70"
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      >
         <div className="grid grid-cols-5 h-16">
           {mobileNav.map((item) => {
             const Icon = item.icon;
@@ -103,14 +111,15 @@ export function AppShell({ children }: { children: ReactNode }) {
                 key={item.to}
                 to={item.to}
                 data-tour={item.tour}
-                className="flex flex-col items-center justify-center gap-1 text-xs text-muted-foreground"
+                className="flex flex-col items-center justify-center gap-1 text-xs text-muted-foreground min-h-11"
                 aria-label={item.label}
+                aria-current={active ? "page" : undefined}
               >
                 <span
                   className={cn(
                     "flex items-center justify-center",
                     item.highlight
-                      ? "brand-gradient text-primary-foreground h-11 w-11 rounded-2xl shadow-elegant -mt-6"
+                      ? "brand-gradient text-primary-foreground h-[52px] w-[52px] rounded-2xl shadow-elegant -mt-6"
                       : "h-6",
                   )}
                 >
@@ -127,4 +136,5 @@ export function AppShell({ children }: { children: ReactNode }) {
     </div>
   );
 }
+
 

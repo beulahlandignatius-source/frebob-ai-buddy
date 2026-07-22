@@ -332,7 +332,7 @@ export function generateNotifications(): { created: number; total: number } {
         });
       }
     }
-    }
+
     // Recent payments (informational)
     const payments = listPayments().slice(0, 20);
     for (const p of payments) {

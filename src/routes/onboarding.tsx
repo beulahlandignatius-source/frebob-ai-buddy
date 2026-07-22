@@ -82,21 +82,16 @@ function Onboarding() {
   const prev = () => setIndex((i) => Math.max(i - 1, 0));
 
   const save = async () => {
-    if (!category) return toast.error("Please choose a business category");
     setSaving(true);
     if (userId) {
-      const { error } = await supabase
+      await supabase
         .from("profiles")
         .update({
-          business_category: category,
+          business_category: category || null,
           preferred_language: language,
           onboarding_completed: true,
         })
         .eq("id", userId);
-      if (error) {
-        setSaving(false);
-        return toast.error(error.message);
-      }
     }
     setSaving(false);
     navigate({ to: "/business-setup" });

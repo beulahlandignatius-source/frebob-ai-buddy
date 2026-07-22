@@ -73,7 +73,8 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-border bg-card shadow-card p-6 sm:p-8">
+        <div className="glass-card rounded-3xl p-6 sm:p-8">
+
           {step === "identify" ? (
             <>
               <h2 className="text-2xl font-bold tracking-tight">

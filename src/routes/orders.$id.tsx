@@ -1,6 +1,6 @@
 // Order Detail — tabbed layout: Overview · Items · Payment Records · Timeline · Notes · Attachments
 import { createFileRoute, Link, useNavigate, useParams } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft, Wallet, XCircle, Phone, MessageSquare, Upload, X, Paperclip, StickyNote,
   ListChecks, LayoutGrid, History, Trash2, ExternalLink,

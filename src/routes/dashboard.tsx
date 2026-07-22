@@ -9,7 +9,12 @@ import {
   Sparkles,
   BarChart3,
   Sparkle,
+  TrendingUp,
+  Wallet,
+  Clock3,
+  PackageSearch,
 } from "lucide-react";
+
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/nav/AppShell";
 import {
@@ -121,23 +126,33 @@ function Dashboard() {
 
       {/* Metrics */}
       <section className="mt-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        {dashboardMetrics.map((m) => (
-          <MetricCard
-            key={m.key}
-            label={m.label}
-            value={m.value}
-            changePct={m.changePct}
-            sub={m.sub}
-            linkLabel={m.linkLabel}
-            linkTo={m.linkTo}
-            isCurrency={m.key !== "pending"}
-          />
-        ))}
+        {dashboardMetrics.map((m) => {
+          const iconMap: Record<string, typeof TrendingUp> = {
+            sales: TrendingUp,
+            received: Wallet,
+            outstanding: Clock3,
+            pending: PackageSearch,
+          };
+          return (
+            <MetricCard
+              key={m.key}
+              label={m.label}
+              value={m.value}
+              changePct={m.changePct}
+              sub={m.sub}
+              linkLabel={m.linkLabel}
+              linkTo={m.linkTo}
+              isCurrency={m.key !== "pending"}
+              icon={iconMap[m.key]}
+            />
+          );
+        })}
       </section>
 
       {/* Quick actions */}
       <section className="mt-8">
         <h2 className="text-lg font-semibold mb-3">Quick actions</h2>
+
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <QuickActionCard icon={Plus} label="Add Business Record" hint="Sale, payment, expense" primary onClick={() => toast("Coming in a later batch")} />
           <QuickActionCard icon={Boxes} label="View Inventory" hint="Stock & prices" onClick={() => toast("Coming in a later batch")} />

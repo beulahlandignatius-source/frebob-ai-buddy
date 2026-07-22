@@ -37,6 +37,7 @@ import { Route as CustomersDuplicatesRouteImport } from './routes/customers.dupl
 import { Route as CustomersIdRouteImport } from './routes/customers.$id'
 import { Route as ConversationsNewRouteImport } from './routes/conversations.new'
 import { Route as ConversationsIdRouteImport } from './routes/conversations.$id'
+import { Route as ScannerScanIdConvertRouteImport } from './routes/scanner.$scanId.convert'
 import { Route as OrdersIdPaymentRouteImport } from './routes/orders.$id.payment'
 import { Route as CustomersDuplicatesGroupIdRouteImport } from './routes/customers.duplicates.$groupId'
 import { Route as CustomersIdEditRouteImport } from './routes/customers.$id.edit'
@@ -181,6 +182,11 @@ const ConversationsIdRoute = ConversationsIdRouteImport.update({
   path: '/conversations/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ScannerScanIdConvertRoute = ScannerScanIdConvertRouteImport.update({
+  id: '/convert',
+  path: '/convert',
+  getParentRoute: () => ScannerScanIdRoute,
+} as any)
 const OrdersIdPaymentRoute = OrdersIdPaymentRouteImport.update({
   id: '/payment',
   path: '/payment',
@@ -224,12 +230,13 @@ export interface FileRoutesByFullPath {
   '/customers/merge-history': typeof CustomersMergeHistoryRoute
   '/customers/new': typeof CustomersNewRoute
   '/orders/$id': typeof OrdersIdRouteWithChildren
-  '/scanner/$scanId': typeof ScannerScanIdRoute
+  '/scanner/$scanId': typeof ScannerScanIdRouteWithChildren
   '/scanner/history': typeof ScannerHistoryRoute
   '/scanner/new': typeof ScannerNewRoute
   '/customers/$id/edit': typeof CustomersIdEditRoute
   '/customers/duplicates/$groupId': typeof CustomersDuplicatesGroupIdRoute
   '/orders/$id/payment': typeof OrdersIdPaymentRoute
+  '/scanner/$scanId/convert': typeof ScannerScanIdConvertRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -257,12 +264,13 @@ export interface FileRoutesByTo {
   '/customers/merge-history': typeof CustomersMergeHistoryRoute
   '/customers/new': typeof CustomersNewRoute
   '/orders/$id': typeof OrdersIdRouteWithChildren
-  '/scanner/$scanId': typeof ScannerScanIdRoute
+  '/scanner/$scanId': typeof ScannerScanIdRouteWithChildren
   '/scanner/history': typeof ScannerHistoryRoute
   '/scanner/new': typeof ScannerNewRoute
   '/customers/$id/edit': typeof CustomersIdEditRoute
   '/customers/duplicates/$groupId': typeof CustomersDuplicatesGroupIdRoute
   '/orders/$id/payment': typeof OrdersIdPaymentRoute
+  '/scanner/$scanId/convert': typeof ScannerScanIdConvertRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -291,12 +299,13 @@ export interface FileRoutesById {
   '/customers/merge-history': typeof CustomersMergeHistoryRoute
   '/customers/new': typeof CustomersNewRoute
   '/orders/$id': typeof OrdersIdRouteWithChildren
-  '/scanner/$scanId': typeof ScannerScanIdRoute
+  '/scanner/$scanId': typeof ScannerScanIdRouteWithChildren
   '/scanner/history': typeof ScannerHistoryRoute
   '/scanner/new': typeof ScannerNewRoute
   '/customers/$id/edit': typeof CustomersIdEditRoute
   '/customers/duplicates/$groupId': typeof CustomersDuplicatesGroupIdRoute
   '/orders/$id/payment': typeof OrdersIdPaymentRoute
+  '/scanner/$scanId/convert': typeof ScannerScanIdConvertRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -332,6 +341,7 @@ export interface FileRouteTypes {
     | '/customers/$id/edit'
     | '/customers/duplicates/$groupId'
     | '/orders/$id/payment'
+    | '/scanner/$scanId/convert'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -365,6 +375,7 @@ export interface FileRouteTypes {
     | '/customers/$id/edit'
     | '/customers/duplicates/$groupId'
     | '/orders/$id/payment'
+    | '/scanner/$scanId/convert'
   id:
     | '__root__'
     | '/'
@@ -398,6 +409,7 @@ export interface FileRouteTypes {
     | '/customers/$id/edit'
     | '/customers/duplicates/$groupId'
     | '/orders/$id/payment'
+    | '/scanner/$scanId/convert'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -621,6 +633,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConversationsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/scanner/$scanId/convert': {
+      id: '/scanner/$scanId/convert'
+      path: '/convert'
+      fullPath: '/scanner/$scanId/convert'
+      preLoaderRoute: typeof ScannerScanIdConvertRouteImport
+      parentRoute: typeof ScannerScanIdRoute
+    }
     '/orders/$id/payment': {
       id: '/orders/$id/payment'
       path: '/payment'
@@ -709,14 +728,26 @@ const OrdersRouteChildren: OrdersRouteChildren = {
 const OrdersRouteWithChildren =
   OrdersRoute._addFileChildren(OrdersRouteChildren)
 
+interface ScannerScanIdRouteChildren {
+  ScannerScanIdConvertRoute: typeof ScannerScanIdConvertRoute
+}
+
+const ScannerScanIdRouteChildren: ScannerScanIdRouteChildren = {
+  ScannerScanIdConvertRoute: ScannerScanIdConvertRoute,
+}
+
+const ScannerScanIdRouteWithChildren = ScannerScanIdRoute._addFileChildren(
+  ScannerScanIdRouteChildren,
+)
+
 interface ScannerRouteChildren {
-  ScannerScanIdRoute: typeof ScannerScanIdRoute
+  ScannerScanIdRoute: typeof ScannerScanIdRouteWithChildren
   ScannerHistoryRoute: typeof ScannerHistoryRoute
   ScannerNewRoute: typeof ScannerNewRoute
 }
 
 const ScannerRouteChildren: ScannerRouteChildren = {
-  ScannerScanIdRoute: ScannerScanIdRoute,
+  ScannerScanIdRoute: ScannerScanIdRouteWithChildren,
   ScannerHistoryRoute: ScannerHistoryRoute,
   ScannerNewRoute: ScannerNewRoute,
 }

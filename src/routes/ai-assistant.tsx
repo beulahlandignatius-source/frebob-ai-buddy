@@ -272,7 +272,7 @@ function AIAssistantPage() {
           {/* Messages */}
           <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 bg-[var(--surface-tinted)]/40">
             {messages.length === 0 ? (
-              snapshot.approvedRecords === 0 ? (
+              snapshot.totalApproved === 0 ? (
                 <IntelligentEmptyState
                   icon={Sparkles}
                   title="I'm ready to help"

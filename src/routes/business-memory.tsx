@@ -146,11 +146,12 @@ function BusinessMemory() {
             {state === "loading" ? <LoadingSkeleton rows={4} /> :
               state === "error" ? <ErrorState onRetry={() => setState("ready")} /> :
               filteredRecords.length === 0 ? (
-                <EmptyState
+                <IntelligentEmptyState
                   icon={MessageSquare}
-                  title="Your approved business records will appear here"
-                  description="Import a customer conversation, review the draft, then approve it to build memory."
-                  action={<Link to="/add-record"><Button size="sm"><Plus className="h-4 w-4 mr-1" /> Add first record</Button></Link>}
+                  title="Business Memory is empty"
+                  description="Approved conversations and documents become searchable business knowledge Bob can answer from."
+                  primary={{ label: "Record Conversation", icon: Plus, to: "/add-record" }}
+                  secondary={[{ label: "Scan a Receipt", to: "/scanner" }]}
                 />
               ) : (
                 <div className="grid gap-3">{filteredRecords.map((r) => <MemoryRecordCard key={r.id} r={r} />)}</div>

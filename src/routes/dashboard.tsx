@@ -200,7 +200,7 @@ function Dashboard() {
         {/* Quick actions */}
         <section className="mb-8">
           <SectionLabel>Quick Actions</SectionLabel>
-          <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-7 gap-3">
             <button
               type="button"
               onClick={() => toast("Coming in a later batch")}

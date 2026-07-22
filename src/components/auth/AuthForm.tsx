@@ -150,9 +150,6 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
                 </Button>
               </form>
 
-              <p className="mt-4 text-center text-xs text-muted-foreground">
-                Demo mode — no real message is sent.
-              </p>
             </>
           ) : (
             <VerifyStep

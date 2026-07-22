@@ -278,6 +278,18 @@ export function methodLabel(m: PaymentMethod) {
   return m === "cash" ? "Cash" : m === "bank_transfer" ? "Bank transfer" : m === "pos" ? "POS" : "Other";
 }
 
+export function kindLabel(k: PaymentKind) {
+  return k === "deposit" ? "Deposit" : k === "balance" ? "Balance payment" : k === "refund" ? "Refund" : "Payment";
+}
+
+export const PAYMENT_KIND_OPTIONS: { value: PaymentKind; label: string; hint: string }[] = [
+  { value: "payment", label: "Payment", hint: "Standard payment against this order" },
+  { value: "deposit", label: "Deposit", hint: "Down payment / part payment upfront" },
+  { value: "balance", label: "Balance payment", hint: "Settle the remaining balance" },
+  { value: "refund", label: "Refund", hint: "Money returned to the customer" },
+];
+
+
 export function statusLabel(s: OrderStatus) {
   switch (s) {
     case "enquiry": return "Inquiry";

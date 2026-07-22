@@ -587,7 +587,7 @@ function WhyDifferent() {
             <ul className="mt-4 space-y-3">
               {frebob.map((t) => (
                 <li key={t} className="flex items-center gap-3 text-foreground">
-                  <Check className="h-4 w-4 text-success" /> {t}
+                  <Check className="h-4 w-4 shrink-0 text-success" /> {t}
                 </li>
               ))}
             </ul>

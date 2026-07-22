@@ -5,7 +5,7 @@ import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
 import { Select } from "@/components/fb/Input";
 import {
-  PageCanvas, SurfaceHeader, SectionLabel, LoadingSkeleton,
+  PageCanvas, SurfaceHeader, SectionLabel, LoadingSkeleton, ErrorState,
 } from "@/components/dash";
 import {
   DuplicateSummaryCard, DuplicateGroupCard, DuplicateEmpty,

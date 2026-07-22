@@ -36,6 +36,9 @@ function ConversationReview() {
   const { id } = useParams({ from: "/conversations/$id" });
   const navigate = useNavigate();
   const extract = useServerFn(extractConversation);
+  const extractServer = useServerFn(extractBusinessRecord);
+  const approveServer = useServerFn(approveExtraction);
+  const rejectServer = useServerFn(rejectExtraction);
 
   const [conv, setConv] = useState<ConversationRecord | undefined>(() => getConversation(id));
   const [phase, setPhase] = useState<Phase>(conv?.status === "approved" ? "approved" : "processing");
@@ -46,7 +49,7 @@ function ConversationReview() {
   const [errMsg, setErrMsg] = useState<string | null>(null);
   const [runId, setRunId] = useState(0);
   const [approved, setApproved] = useState<{ reference: string; id: string } | null>(
-    conv?.approvedRecordId ? { reference: "", id: conv.approvedRecordId } : null,
+    conv?.approvedRecordId ? { reference: conv.approvedReference ?? "", id: conv.approvedRecordId } : null,
   );
 
   // Auto-advance stepper visual
@@ -66,13 +69,28 @@ function ConversationReview() {
     setStep(0);
     (async () => {
       try {
-        const res = await extract({ data: { text: conv.text, language: conv.language } });
+        let ex: Extraction;
+        let m: "ai" | "mock" = "ai";
+        let n: string | null = null;
+        let extractionId: string | undefined;
+        if (conv.sourceInputId) {
+          const res = await extractServer({ data: { sourceInputId: conv.sourceInputId } });
+          ex = JSON.parse(res.payloadJson) as Extraction;
+          m = res.mode;
+          n = res.note;
+          extractionId = res.extractionId;
+        } else {
+          const res = await extract({ data: { text: conv.text, language: conv.language } });
+          ex = res.extraction;
+          m = res.mode;
+          n = res.note ?? null;
+        }
         if (cancelled) return;
-        const withBalance = computeBalance(res.extraction);
+        const withBalance = computeBalance(ex);
         setExtraction(withBalance);
-        setMode(res.mode);
-        setNote(res.note ?? null);
-        const next = { ...conv, draft: withBalance, edited: withBalance, processingMode: res.mode };
+        setMode(m);
+        setNote(n);
+        const next = { ...conv, draft: withBalance, edited: withBalance, processingMode: m, extractionId: extractionId ?? conv.extractionId };
         saveConversation(next);
         setConv(next);
         setStep(4);

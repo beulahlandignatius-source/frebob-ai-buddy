@@ -8,12 +8,10 @@ import { BUSINESS_CATEGORIES, LANGUAGES } from "@/lib/constants";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import {
-  IllustrationChat,
-  IllustrationInventory,
-  IllustrationInsights,
-  IllustrationLocal,
-} from "@/components/onboarding/Illustrations";
+import chatArt from "@/assets/onboarding/chat.png.asset.json";
+import inventoryArt from "@/assets/onboarding/inventory.png.asset.json";
+import insightsArt from "@/assets/onboarding/insights.png.asset.json";
+import localArt from "@/assets/onboarding/local.png.asset.json";
 
 export const Route = createFileRoute("/onboarding")({
   head: () => ({
@@ -28,7 +26,7 @@ export const Route = createFileRoute("/onboarding")({
 });
 
 type Slide = {
-  illustration: React.ReactNode;
+  image: { url: string; alt: string };
   eyebrow: string;
   title: string;
   body: string;
@@ -36,25 +34,25 @@ type Slide = {
 
 const SLIDES: Slide[] = [
   {
-    illustration: <IllustrationChat />,
+    image: { url: chatArt.url, alt: "Shop owner chatting with FreBob assistant in multiple Nigerian languages" },
     eyebrow: "Meet FreBob",
     title: "Your smart business assistant",
     body: "Chat with FreBob in English, Pidgin, Yoruba, Hausa or Igbo. He listens, understands and helps you run your business.",
   },
   {
-    illustration: <IllustrationInventory />,
+    image: { url: inventoryArt.url, alt: "Neatly organized shop inventory being scanned by a phone" },
     eyebrow: "Inventory made easy",
     title: "Track stock without stress",
     body: "Snap a photo, speak, or type. FreBob keeps your products, prices and stock levels organised for you.",
   },
   {
-    illustration: <IllustrationInsights />,
+    image: { url: insightsArt.url, alt: "Business dashboard with sales chart and Naira insights" },
     eyebrow: "Clear insights",
     title: "See how your business is doing",
     body: "Get simple daily summaries — sales, top products, cash flow and stock alerts — all in one calm dashboard.",
   },
   {
-    illustration: <IllustrationLocal />,
+    image: { url: localArt.url, alt: "Warm Nigerian market shopfront with owner and customer" },
     eyebrow: "Built for SMEs",
     title: "Local, warm and trusted",
     body: "Designed for Nigerian small businesses. Your data stays yours. FreBob is here to help you grow.",

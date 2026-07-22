@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { Bell, CheckCheck, RefreshCcw, Search, Settings2, Trash2 } from "lucide-react";
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
@@ -23,6 +24,9 @@ import {
   getSettings, setSettings,
   type Notification, type GroupKey,
 } from "@/lib/notifications-store";
+import { pushNotifications, markCloudNotificationRead } from "@/lib/notifications.functions";
+import { useCurrentBusiness } from "@/hooks/use-current-business";
+import { useDemo } from "@/lib/demo/context";
 import { toast } from "sonner";
 import { DemoHint } from "@/components/demo/DemoHint";
 import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
@@ -51,6 +55,11 @@ function useNotifStore() {
 
 function NotificationsPage() {
   const navigate = useNavigate();
+  const push = useServerFn(pushNotifications);
+  const markCloud = useServerFn(markCloudNotificationRead);
+  const { context: bizCtx } = useCurrentBusiness();
+  const demo = useDemo();
+  const businessId = !demo.active && bizCtx?.businessId ? bizCtx.businessId : null;
   useNotifStore(); // subscribe
   const [mounted, setMounted] = useState(false);
   const items = mounted ? listNotifications() : [];
@@ -63,11 +72,26 @@ function NotificationsPage() {
   const [query, setQuery] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
 
+  const syncToCloud = useCallback(async () => {
+    if (!businessId) return;
+    const rows = listNotifications().map((n) => ({
+      category: n.category,
+      severity: n.priority,
+      title: n.title,
+      body: n.description,
+      dedupeKey: n.dedupeKey,
+      relatedType: n.relatedModule,
+      relatedId: n.relatedRecordId,
+      metadata: { action: n.action, actionUrl: n.actionUrl },
+    }));
+    try { await push({ data: { businessId, items: rows } }); } catch { /* non-blocking */ }
+  }, [businessId, push]);
+
   useEffect(() => {
     setMounted(true);
-    // First-load generation (idempotent)
     generateNotifications();
-  }, []);
+    void syncToCloud();
+  }, [syncToCloud]);
 
   const filtered = useMemo(() => {
     return items.filter((n) => {
@@ -95,17 +119,31 @@ function NotificationsPage() {
 
   const handleOpen = (n: Notification) => {
     markRead(n.id);
+    if (businessId) {
+      void markCloud({ data: { businessId, dedupeKey: n.dedupeKey, read: true } }).catch(() => {});
+    }
     if (n.action) navigate({ to: n.action.href });
   };
   const handleRefresh = () => {
     const res = generateNotifications();
+    void syncToCloud();
     toast(`Refreshed — ${res.total} active notification${res.total === 1 ? "" : "s"}.`);
+  };
+  const handleMarkAllRead = () => {
+    markAllRead();
+    if (businessId) {
+      const keys = listNotifications().map((n) => n.dedupeKey);
+      Promise.all(
+        keys.map((k) => markCloud({ data: { businessId, dedupeKey: k, read: true } }).catch(() => null)),
+      ).catch(() => {});
+    }
   };
   const updateSettings = (patch: Partial<typeof settings>) => {
     setSettings(patch);
     setSettingsState(getSettings());
     toast("Notification preferences updated.");
   };
+
 
   return (
     <AppShell>
@@ -119,7 +157,7 @@ function NotificationsPage() {
             <Button variant="ghost" size="sm" onClick={handleRefresh}>
               <RefreshCcw className="h-4 w-4 mr-1" /> Refresh
             </Button>
-            <Button variant="outline" size="sm" onClick={markAllRead} disabled={summary.unread === 0}>
+            <Button variant="outline" size="sm" onClick={handleMarkAllRead} disabled={summary.unread === 0}>
               <CheckCheck className="h-4 w-4 mr-1" /> Mark all read
             </Button>
             <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>

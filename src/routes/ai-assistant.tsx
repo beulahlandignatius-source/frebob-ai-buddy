@@ -42,6 +42,8 @@ import { blobToWavBase64 } from "@/lib/audio-wav";
 import type { LanguageCode } from "@/i18n/languages";
 import { DemoHint } from "@/components/demo/DemoHint";
 import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
+import { useCurrentBusiness } from "@/hooks/use-current-business";
+import { useDemo } from "@/lib/demo/context";
 
 const COPILOT_TO_LANG: Record<CopilotLanguage, LanguageCode> = {
   english: "en",
@@ -103,6 +105,9 @@ function relTime(ts: number) {
 function AIAssistantPage() {
   const ask = useServerFn(askCopilot);
   const transcribe = useServerFn(transcribeAudio);
+  const { context: bizCtx } = useCurrentBusiness();
+  const demo = useDemo();
+  const businessId = !demo.active && bizCtx?.businessId ? bizCtx.businessId : null;
   const [threads, setThreads] = useState<Thread[]>(() => loadThreads());
   const [activeId, setActiveId] = useState<string>(() => {
     const existing = loadThreads();
@@ -230,7 +235,7 @@ function AIAssistantPage() {
         };
       } else {
         const history = messages.slice(-6).map((m) => ({ role: m.role, content: m.text }));
-        const result = await ask({ data: { question, language, snapshot: snap, history } });
+        const result = await ask({ data: { question, language, snapshot: snap, history, businessId } });
 
         if (result.mode === "ai" && result.text) {
           assistant = {
@@ -268,7 +273,7 @@ function AIAssistantPage() {
 
     updateActive((t) => ({ ...t, messages: [...t.messages, assistant], updatedAt: Date.now() }));
     setThinking(false);
-  }, [ask, language, messages, thinking, updateActive]);
+  }, [ask, language, messages, thinking, updateActive, businessId]);
 
   const handleNew = useCallback(() => {
     const t = newThread();

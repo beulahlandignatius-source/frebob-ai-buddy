@@ -1,9 +1,9 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   Home, MessageCircle, Plus, BarChart3, User, Brain, Boxes,
   ShoppingCart, Users, ScanLine, Bell, Settings, HelpCircle, PlayCircle,
-  LayoutDashboard,
+  LayoutDashboard, FileText, UserPlus, X,
 } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { cn } from "@/lib/utils";
@@ -12,7 +12,8 @@ import { useTour } from "@/components/tour/GuidedTour";
 import { EnterDemoButton } from "@/components/demo/EnterDemoButton";
 import { useDemo } from "@/lib/demo/context";
 
-type NavItem = { to: string; label: string; icon: typeof Home; highlight?: boolean; tour?: string };
+type NavItem = { to: string; label: string; icon: typeof Home; tour?: string };
+
 
 // Centralized mobile bottom navigation. Order and items are locked per spec:
 // Home, Chat, Create, Inventory, Reports. Do not modify without explicit request.

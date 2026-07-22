@@ -7,6 +7,8 @@ import { PageCanvas, SurfaceHeader, SectionLabel } from "@/components/dash";
 import { Button } from "@/components/fb/Button";
 import { DEMO_CONVERSATIONS } from "@/lib/demo-conversations";
 import { createConversation, type Language, type SourceType } from "@/lib/records-store";
+import { createSourceInput } from "@/lib/source-inputs.functions";
+import { getCurrentBusinessSnapshot } from "@/hooks/use-current-business";
 import { transcribeAudio } from "@/lib/transcribe.functions";
 import { blobToWavBase64 } from "@/lib/audio-wav";
 import { VoiceRecorder } from "@/components/audio/VoiceRecorder";

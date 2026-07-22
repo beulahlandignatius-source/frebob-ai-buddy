@@ -123,12 +123,11 @@ function Dashboard() {
             <Link
               to="/notifications"
               className="relative h-10 w-10 rounded-full bg-card shadow-card flex items-center justify-center text-primary hover:shadow-soft transition"
-              aria-label="Notifications"
+              aria-label={`Notifications${unread > 0 ? `, ${unread} unread` : ""}`}
+              title={critical ? `${critical.title}` : undefined}
             >
               <Bell className="h-[18px] w-[18px]" />
-              {unread > 0 && (
-                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-accent ring-2 ring-card" />
-              )}
+              <NotificationBadge count={unread} />
             </Link>
             <Link
               to="/profile"

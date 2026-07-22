@@ -352,7 +352,7 @@ export const approveExtraction = createServerFn({ method: "POST" })
           business_id: ext.business_id,
           order_id: orderId,
           order_reference: reference,
-          amount: p.amount_paid,
+          amount: p.amount_paid ?? 0,
           method: "unknown",
           recorded_by: userId,
           recorded_by_label: data.approvedByLabel,

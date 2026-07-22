@@ -11,7 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SigninRouteImport } from './routes/signin'
+import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as BusinessSetupRouteImport } from './routes/business-setup'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -27,9 +29,19 @@ const SigninRoute = SigninRouteImport.update({
   path: '/signin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReportsRoute = ReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -58,7 +70,9 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/business-setup': typeof BusinessSetupRoute
   '/dashboard': typeof DashboardRoute
+  '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
+  '/reports': typeof ReportsRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
 }
@@ -67,7 +81,9 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/business-setup': typeof BusinessSetupRoute
   '/dashboard': typeof DashboardRoute
+  '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
+  '/reports': typeof ReportsRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
 }
@@ -77,7 +93,9 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/business-setup': typeof BusinessSetupRoute
   '/dashboard': typeof DashboardRoute
+  '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
+  '/reports': typeof ReportsRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
 }
@@ -88,7 +106,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/business-setup'
     | '/dashboard'
+    | '/notifications'
     | '/onboarding'
+    | '/reports'
     | '/signin'
     | '/signup'
   fileRoutesByTo: FileRoutesByTo
@@ -97,7 +117,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/business-setup'
     | '/dashboard'
+    | '/notifications'
     | '/onboarding'
+    | '/reports'
     | '/signin'
     | '/signup'
   id:
@@ -106,7 +128,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/business-setup'
     | '/dashboard'
+    | '/notifications'
     | '/onboarding'
+    | '/reports'
     | '/signin'
     | '/signup'
   fileRoutesById: FileRoutesById
@@ -116,7 +140,9 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BusinessSetupRoute: typeof BusinessSetupRoute
   DashboardRoute: typeof DashboardRoute
+  NotificationsRoute: typeof NotificationsRoute
   OnboardingRoute: typeof OnboardingRoute
+  ReportsRoute: typeof ReportsRoute
   SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
 }
@@ -137,11 +163,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SigninRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reports': {
+      id: '/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/onboarding': {
       id: '/onboarding'
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -180,7 +220,9 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BusinessSetupRoute: BusinessSetupRoute,
   DashboardRoute: DashboardRoute,
+  NotificationsRoute: NotificationsRoute,
   OnboardingRoute: OnboardingRoute,
+  ReportsRoute: ReportsRoute,
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,
 }

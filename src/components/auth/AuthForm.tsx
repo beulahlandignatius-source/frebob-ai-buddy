@@ -6,6 +6,8 @@ import { Field, Input } from "@/components/fb/Input";
 import { toast } from "sonner";
 import { Mail, Phone, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { EnterDemoButton } from "@/components/demo/EnterDemoButton";
+
 
 type Channel = "email" | "phone";
 type Step = "identify" | "verify";
@@ -147,7 +149,19 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
                 </Button>
               </form>
 
+              <div className="mt-5 flex items-center gap-3">
+                <div className="h-px flex-1 bg-border" />
+                <span className="text-[11px] uppercase tracking-wider text-muted-foreground">or</span>
+                <div className="h-px flex-1 bg-border" />
+              </div>
+              <EnterDemoButton
+                variant="ghost"
+                className="mt-3"
+                label="Explore Demo"
+                subtitle="Try FreBob with a sample Nigerian business — no account required."
+              />
             </>
+
           ) : (
             <VerifyStep
               mode={mode}

@@ -10,7 +10,10 @@ import {
   Wrench,
   ArrowUpRight,
   Plus,
-  Sparkles,
+  MessageCircle,
+  ScanLine,
+  PlayCircle,
+  ArrowRight,
 } from "lucide-react";
 import { listApprovedRecords } from "@/lib/records-store";
 import { listOrders, summariseOrders } from "@/lib/orders-store";

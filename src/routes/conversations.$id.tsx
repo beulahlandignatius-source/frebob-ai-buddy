@@ -34,7 +34,6 @@ type Phase = "processing" | "review" | "approved" | "error";
 function ConversationReview() {
   const { id } = useParams({ from: "/conversations/$id" });
   const navigate = useNavigate();
-  const router = useRouter();
   const extract = useServerFn(extractConversation);
 
   const [conv, setConv] = useState<ConversationRecord | undefined>(() => getConversation(id));
@@ -44,6 +43,7 @@ function ConversationReview() {
   const [mode, setMode] = useState<"ai" | "mock" | null>(null);
   const [note, setNote] = useState<string | null>(null);
   const [errMsg, setErrMsg] = useState<string | null>(null);
+  const [runId, setRunId] = useState(0);
   const [approved, setApproved] = useState<{ reference: string; id: string } | null>(
     conv?.approvedRecordId ? { reference: "", id: conv.approvedRecordId } : null,
   );
@@ -57,12 +57,12 @@ function ConversationReview() {
 
   // Kick off extraction if we have no draft yet
   useEffect(() => {
-    if (!conv || conv.draft || conv.status === "approved") {
-      if (conv?.status === "approved") setPhase("approved");
-      else if (conv?.draft) setPhase("review");
-      return;
-    }
+    if (!conv) return;
+    if (conv.status === "approved") { setPhase("approved"); return; }
+    if (conv.draft && runId === 0) { setPhase("review"); return; }
     let cancelled = false;
+    setPhase("processing");
+    setStep(0);
     (async () => {
       try {
         const res = await extract({ data: { text: conv.text, language: conv.language } });
@@ -71,8 +71,9 @@ function ConversationReview() {
         setExtraction(withBalance);
         setMode(res.mode);
         setNote(res.note ?? null);
-        saveConversation({ ...conv, draft: withBalance, edited: withBalance, processingMode: res.mode });
-        setConv({ ...conv, draft: withBalance, edited: withBalance, processingMode: res.mode });
+        const next = { ...conv, draft: withBalance, edited: withBalance, processingMode: res.mode };
+        saveConversation(next);
+        setConv(next);
         setStep(4);
         setTimeout(() => setPhase("review"), 400);
       } catch (e) {
@@ -83,17 +84,15 @@ function ConversationReview() {
     })();
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [runId]);
 
   const retry = () => {
     if (!conv) return;
-    setPhase("processing");
-    setStep(0);
     setErrMsg(null);
-    saveConversation({ ...conv, draft: undefined, edited: undefined });
-    setConv({ ...conv, draft: undefined, edited: undefined });
-    // trigger effect by remount pattern
-    router.invalidate();
+    const cleared = { ...conv, draft: undefined, edited: undefined };
+    saveConversation(cleared);
+    setConv(cleared);
+    setRunId((n) => n + 1);
   };
 
   if (!conv) {

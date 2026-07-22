@@ -53,6 +53,42 @@
 
 :root {
   --radius: 1rem;
+  --radius-pill: 9999px;
+
+  /* ── Spacing (8-point grid) ─────────────────────────────── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+
+  /* ── Type scale ─────────────────────────────────────────── */
+  --text-display: clamp(2.25rem, 4vw + 1rem, 3.5rem);
+  --text-h1: clamp(1.75rem, 2vw + 1rem, 2.25rem);
+  --text-h2: 1.5rem;
+  --text-h3: 1.25rem;
+  --text-h4: 1.125rem;
+  --text-body-lg: 1.0625rem;
+  --text-body: 1rem;
+  --text-small: 0.875rem;
+  --text-caption: 0.75rem;
+
+  --leading-tight: 1.2;
+  --leading-snug: 1.35;
+  --leading-normal: 1.55;
+  --leading-relaxed: 1.7;
+
+  /* ── Motion ─────────────────────────────────────────────── */
+  --duration-fast: 120ms;
+  --duration-base: 220ms;
+  --duration-slow: 360ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized: cubic-bezier(0.3, 0, 0, 1);
 
   /* Surfaces */
   --background: #ffffff;
@@ -82,16 +118,26 @@
   --muted-foreground: #5f6368;
   --subtle-foreground: #8a8a90;
 
-  --destructive: #e5484d;
+  /* Semantic status (WCAG AA on white) */
+  --destructive: #c8181e;
   --destructive-foreground: #ffffff;
-  --success: #2f9e6d;
-  --warning: #f7931e;
-  --info: #3b82f6;
+  --success: #1f7a52;
+  --success-foreground: #ffffff;
+  --warning: #a55a00;
+  --warning-foreground: #ffffff;
+  --info: #1b56c4;
+  --info-foreground: #ffffff;
 
   --border: #ececef;
   --input: #ececef;
   --ring: #4b1fa6;
 
+  /* Elevation scale */
+  --shadow-xs: 0 1px 2px rgba(29, 29, 31, 0.05);
+  --shadow-sm: 0 1px 2px rgba(29, 29, 31, 0.04), 0 2px 6px -3px rgba(29, 29, 31, 0.08);
+  --shadow-md: 0 2px 4px rgba(29, 29, 31, 0.04), 0 8px 20px -12px rgba(29, 29, 31, 0.14);
+  --shadow-lg: 0 6px 16px -8px rgba(29, 29, 31, 0.16), 0 20px 40px -20px rgba(29, 29, 31, 0.20);
+  --shadow-xl: 0 24px 60px -24px rgba(29, 29, 31, 0.28);
 
   /* Gradients & effects */
   --gradient-brand: linear-gradient(135deg, #4b1fa6, #5a2abf);

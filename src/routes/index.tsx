@@ -191,13 +191,13 @@ function HeroVideo() {
       )}
       <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 p-3 bg-gradient-to-t from-black/50 to-transparent">
         <div className="flex items-center gap-2">
-          <button onClick={toggle} aria-label={playing ? "Pause" : "Play"} className="h-9 w-9 grid place-items-center rounded-full bg-white/90 text-foreground hover:bg-white">
+          <button onClick={toggle} aria-label={playing ? "Pause" : "Play"} className="h-11 w-11 grid place-items-center rounded-full bg-white/90 text-foreground hover:bg-white focus-ring">
             {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
           </button>
-          <button onClick={replay} aria-label="Replay" className="h-9 w-9 grid place-items-center rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur">
+          <button onClick={replay} aria-label="Replay" className="h-11 w-11 grid place-items-center rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur focus-ring">
             <RotateCcw className="h-4 w-4" />
           </button>
-          <button onClick={toggleMute} aria-label={muted ? "Unmute" : "Mute"} className="h-9 w-9 grid place-items-center rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur">
+          <button onClick={toggleMute} aria-label={muted ? "Unmute" : "Mute"} className="h-11 w-11 grid place-items-center rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur focus-ring">
             {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
           </button>
         </div>

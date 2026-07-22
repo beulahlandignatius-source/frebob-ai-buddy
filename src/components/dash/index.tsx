@@ -412,7 +412,7 @@ export function SuccessBanner({ title, description, onDismiss }: { title: string
 /* ---------- PageCanvas — tinted page wrapper matching Calm Ledger ---------- */
 export function PageCanvas({ children }: { children: ReactNode }) {
   return (
-    <div className="-mx-4 lg:-mx-8 -my-6 lg:-my-10 px-4 lg:px-8 py-6 lg:py-10 bg-[var(--surface-tinted)] min-h-[calc(100vh-0px)]">
+    <div className="-mx-4 lg:-mx-8 -my-6 lg:-my-10 px-4 lg:px-8 py-6 lg:py-10 bg-[var(--surface-tinted)] min-h-[calc(100dvh-0px)]">
       {children}
     </div>
   );

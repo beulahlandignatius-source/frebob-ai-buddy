@@ -135,7 +135,7 @@ function Dashboard() {
   return (
     <AppShell>
       <DemoHint hintKey="dashboard-v1" title="Your daily command centre">Metrics update from your orders and payments. Tap notifications to jump into stock and payment alerts.</DemoHint>
-      <div className="-mx-4 lg:-mx-8 -my-6 lg:-my-10 px-4 lg:px-8 py-6 lg:py-10 bg-[var(--surface-tinted)] min-h-[calc(100vh-0px)]">
+      <div className="-mx-4 lg:-mx-8 -my-6 lg:-my-10 px-4 lg:px-8 py-6 lg:py-10 bg-[var(--surface-tinted)] min-h-[calc(100dvh-0px)]">
         {/* Header */}
         <header className="flex items-center justify-between mb-6">
           <div className="min-w-0">

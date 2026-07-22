@@ -107,7 +107,7 @@ function OrdersPage() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search order # or customer"
-                className="w-full h-10 pl-9 pr-3 rounded-full border border-secondary bg-card text-sm focus:outline-none focus:border-primary/40"
+                className="w-full h-10 pl-9 pr-3 rounded-full border border-secondary bg-card text-sm focus-ring focus:border-primary/40"
               />
             </div>
             <Button

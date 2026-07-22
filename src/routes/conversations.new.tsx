@@ -194,7 +194,7 @@ function NewConversation() {
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   placeholder="Paste the customer conversation here…"
-                  className="w-full min-h-[280px] resize-y rounded-xl border border-secondary bg-background p-3 text-sm leading-relaxed focus:outline-none focus:border-primary/40"
+                  className="w-full min-h-[280px] resize-y rounded-xl border border-secondary bg-background p-3 text-sm leading-relaxed focus-ring focus:border-primary/40"
                 />
                 <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
                   <span>{text.length.toLocaleString()} characters</span>
@@ -320,7 +320,7 @@ function NewConversation() {
                     <textarea
                       value={transcript}
                       onChange={(e) => setTranscript(e.target.value)}
-                      className="w-full min-h-[200px] resize-y rounded-xl border border-secondary bg-background p-3 text-sm leading-relaxed focus:outline-none focus:border-primary/40"
+                      className="w-full min-h-[200px] resize-y rounded-xl border border-secondary bg-background p-3 text-sm leading-relaxed focus-ring focus:border-primary/40"
                     />
                     <p className="mt-2 text-[11px] text-muted-foreground">
                       Edit anything Bob got wrong before processing.

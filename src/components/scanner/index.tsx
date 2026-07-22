@@ -240,7 +240,7 @@ export function EditableField({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className={cn(
-          "w-full h-11 px-3 rounded-xl border bg-background text-sm focus:outline-none focus:border-primary/40",
+          "w-full h-11 px-3 rounded-xl border bg-background text-sm focus-ring focus:border-primary/40",
           needsReview ? "border-accent/40 bg-accent/5" : "border-secondary",
         )}
       />
@@ -279,25 +279,25 @@ export function LineItemReviewTable({
               value={li.productName ?? ""}
               onChange={(e) => onChange(li.id, { productName: e.target.value || null })}
               placeholder="Product"
-              className="h-10 px-3 rounded-lg border border-secondary bg-background text-sm focus:outline-none focus:border-primary/40"
+              className="h-10 px-3 rounded-lg border border-secondary bg-background text-sm focus-ring focus:border-primary/40"
             />
             <input
               value={li.variant ?? ""}
               onChange={(e) => onChange(li.id, { variant: e.target.value || null })}
               placeholder="e.g. 128GB"
-              className="h-10 px-3 rounded-lg border border-secondary bg-background text-sm focus:outline-none focus:border-primary/40"
+              className="h-10 px-3 rounded-lg border border-secondary bg-background text-sm focus-ring focus:border-primary/40"
             />
             <input
               type="number" min={0}
               value={li.quantity ?? ""}
               onChange={(e) => onChange(li.id, { quantity: e.target.value === "" ? null : Number(e.target.value) })}
-              className="h-10 px-3 rounded-lg border border-secondary bg-background text-sm focus:outline-none focus:border-primary/40"
+              className="h-10 px-3 rounded-lg border border-secondary bg-background text-sm focus-ring focus:border-primary/40"
             />
             <input
               type="number" min={0}
               value={li.unitPrice ?? ""}
               onChange={(e) => onChange(li.id, { unitPrice: e.target.value === "" ? null : Number(e.target.value) })}
-              className="h-10 px-3 rounded-lg border border-secondary bg-background text-sm focus:outline-none focus:border-primary/40"
+              className="h-10 px-3 rounded-lg border border-secondary bg-background text-sm focus-ring focus:border-primary/40"
             />
             <div className={cn("h-10 px-3 rounded-lg border flex items-center text-sm font-semibold", mismatch ? "border-accent/40 bg-accent/10 text-accent" : "border-secondary bg-secondary/30")}>
               {li.lineTotal != null ? `${currency}${li.lineTotal.toLocaleString("en-NG")}` : (li.quantity != null && li.unitPrice != null ? `${currency}${calc.toLocaleString("en-NG")}` : "—")}

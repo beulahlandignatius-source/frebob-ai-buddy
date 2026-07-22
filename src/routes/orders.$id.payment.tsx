@@ -148,7 +148,7 @@ function RecordPaymentPage() {
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">₦</span>
                 <input type="number" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)}
                   min={1} max={maxAmount} placeholder="0"
-                  className="w-full h-12 pl-8 pr-3 rounded-xl border border-secondary bg-background text-base font-semibold focus:outline-none focus:border-primary/40" />
+                  className="w-full h-12 pl-8 pr-3 rounded-xl border border-secondary bg-background text-base font-semibold focus-ring focus:border-primary/40" />
               </div>
               <div className="mt-1 flex justify-between text-[11px] text-muted-foreground">
                 <span>{remainingLabel}</span>
@@ -174,12 +174,12 @@ function RecordPaymentPage() {
               <div>
                 <label className="block text-sm font-medium mb-1.5">Reference</label>
                 <input value={reference} onChange={(e) => setReference(e.target.value)} placeholder="Transfer code, receipt no."
-                  className="w-full h-11 px-3 rounded-xl border border-secondary bg-background text-sm focus:outline-none focus:border-primary/40" />
+                  className="w-full h-11 px-3 rounded-xl border border-secondary bg-background text-sm focus-ring focus:border-primary/40" />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1.5">Date & time</label>
                 <input type="datetime-local" value={date} onChange={(e) => setDate(e.target.value)}
-                  className="w-full h-11 px-3 rounded-xl border border-secondary bg-background text-sm focus:outline-none focus:border-primary/40" />
+                  className="w-full h-11 px-3 rounded-xl border border-secondary bg-background text-sm focus-ring focus:border-primary/40" />
               </div>
             </div>
 
@@ -207,7 +207,7 @@ function RecordPaymentPage() {
             <div>
               <label className="block text-sm font-medium mb-1.5">Notes</label>
               <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} placeholder="Optional context for this payment"
-                className="w-full px-3 py-2 rounded-xl border border-secondary bg-background text-sm focus:outline-none focus:border-primary/40 resize-none" />
+                className="w-full px-3 py-2 rounded-xl border border-secondary bg-background text-sm focus-ring focus:border-primary/40 resize-none" />
             </div>
 
             {error && <div className="rounded-xl border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">{error}</div>}

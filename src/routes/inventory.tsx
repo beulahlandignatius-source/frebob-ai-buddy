@@ -86,7 +86,7 @@ function Inventory() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search products or SKU"
-              className="w-full h-10 pl-9 pr-3 rounded-full border border-secondary bg-card text-sm focus:outline-none focus:border-primary/40"
+              className="w-full h-10 pl-9 pr-3 rounded-full border border-secondary bg-card text-sm focus-ring focus:border-primary/40"
             />
           </div>
           <PeriodTabs
@@ -377,7 +377,7 @@ function AddProductDialog({ onClose, onAdded }: { onClose: () => void; onAdded: 
   );
 }
 
-const inputCls = "w-full h-10 px-3 rounded-xl border border-secondary bg-background text-sm focus:outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10";
+const inputCls = "w-full h-10 px-3 rounded-xl border border-secondary bg-background text-sm focus-ring focus:border-primary/40 focus:ring-2 focus:ring-primary/10";
 
 function Field({ label, hint, required, children }: { label: string; hint?: string; required?: boolean; children: React.ReactNode }) {
   return (

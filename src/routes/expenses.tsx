@@ -181,13 +181,13 @@ function ExpenseForm({ onSaved, onCancel }: { onSaved: () => void; onCancel: () 
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">₦</span>
             <input type="number" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} min={1} placeholder="0"
-              className="w-full h-12 pl-8 pr-3 rounded-xl border border-secondary bg-background text-base font-semibold focus:outline-none focus:border-primary/40" />
+              className="w-full h-12 pl-8 pr-3 rounded-xl border border-secondary bg-background text-base font-semibold focus-ring focus:border-primary/40" />
           </div>
         </div>
         <div>
           <label className="block text-sm font-medium mb-1.5">Date <span className="text-destructive">*</span></label>
           <input type="date" value={date} onChange={(e) => setDate(e.target.value)}
-            className="w-full h-12 px-3 rounded-xl border border-secondary bg-background text-sm focus:outline-none focus:border-primary/40" />
+            className="w-full h-12 px-3 rounded-xl border border-secondary bg-background text-sm focus-ring focus:border-primary/40" />
         </div>
       </div>
 
@@ -207,12 +207,12 @@ function ExpenseForm({ onSaved, onCancel }: { onSaved: () => void; onCancel: () 
         <div>
           <label className="block text-sm font-medium mb-1.5">Vendor / Payee</label>
           <input value={vendor} onChange={(e) => setVendor(e.target.value)} placeholder="e.g. NEPA, landlord, market supplier"
-            className="w-full h-11 px-3 rounded-xl border border-secondary bg-background text-sm focus:outline-none focus:border-primary/40" />
+            className="w-full h-11 px-3 rounded-xl border border-secondary bg-background text-sm focus-ring focus:border-primary/40" />
         </div>
         <div>
           <label className="block text-sm font-medium mb-1.5">Reference</label>
           <input value={reference} onChange={(e) => setReference(e.target.value)} placeholder="Receipt no., transfer code"
-            className="w-full h-11 px-3 rounded-xl border border-secondary bg-background text-sm focus:outline-none focus:border-primary/40" />
+            className="w-full h-11 px-3 rounded-xl border border-secondary bg-background text-sm focus-ring focus:border-primary/40" />
         </div>
       </div>
 
@@ -231,7 +231,7 @@ function ExpenseForm({ onSaved, onCancel }: { onSaved: () => void; onCancel: () 
       <div>
         <label className="block text-sm font-medium mb-1.5">Description</label>
         <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} placeholder="Optional details"
-          className="w-full px-3 py-2 rounded-xl border border-secondary bg-background text-sm focus:outline-none focus:border-primary/40 resize-none" />
+          className="w-full px-3 py-2 rounded-xl border border-secondary bg-background text-sm focus-ring focus:border-primary/40 resize-none" />
       </div>
 
       <div>

@@ -331,7 +331,7 @@ function NotesTab({ orderId, notes, onChange }: { orderId: string; notes: Return
         <SectionLabel>Add note</SectionLabel>
         <textarea value={text} onChange={(e) => setText(e.target.value)} rows={3}
           placeholder="Delivery instructions, follow-up reminders, internal context…"
-          className="w-full px-3 py-2 rounded-xl border border-secondary bg-background text-sm focus:outline-none focus:border-primary/40 resize-none" />
+          className="w-full px-3 py-2 rounded-xl border border-secondary bg-background text-sm focus-ring focus:border-primary/40 resize-none" />
         <div className="flex justify-end">
           <Button type="submit" size="sm" disabled={!text.trim()}>Add note</Button>
         </div>

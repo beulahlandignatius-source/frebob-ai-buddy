@@ -23,7 +23,32 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const signInWithGoogle = async () => {
+    setError(null);
+    setGoogleLoading(true);
+    try {
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
+      });
+      if (result.error) {
+        setGoogleLoading(false);
+        setError(result.error.message ?? "Google sign-in failed");
+        return;
+      }
+      if (result.redirected) {
+        // Browser redirected to Google — nothing else to do.
+        return;
+      }
+      toast.success(isSignup ? "Account created" : "Signed in");
+      navigate({ to: isSignup ? "/onboarding" : "/dashboard" });
+    } catch (e) {
+      setGoogleLoading(false);
+      setError(e instanceof Error ? e.message : "Google sign-in failed");
+    }
+  };
 
   const identifier = channel === "email" ? email : phone;
   const isSignup = mode === "signup";

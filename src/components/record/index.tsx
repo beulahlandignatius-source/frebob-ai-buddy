@@ -37,8 +37,8 @@ export function RecordSourceCard({
   );
 
   if (disabled) return <div>{inner}</div>;
-  if (to) return <Link to={to} search={search as never} className="block h-full">{inner}</Link>;
-  return <button type="button" onClick={onClick} className="block h-full w-full">{inner}</button>;
+  if (to) return <Link to={to} search={search as never} className="block h-full rounded-[20px] focus-ring">{inner}</Link>;
+  return <button type="button" onClick={onClick} className="block h-full w-full rounded-[20px] focus-ring">{inner}</button>;
 }
 
 

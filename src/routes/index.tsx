@@ -313,11 +313,30 @@ function SwipeableCards() {
 import frustratedAlaba from "@/assets/landing/frustrated-alaba.mp4.asset.json";
 import frustratedWhatsapp from "@/assets/landing/frustrated-whatsapp.mp4.asset.json";
 import frustratedCV from "@/assets/landing/frustrated-computer-village.mp4.asset.json";
+import heroAfricanBusiness from "@/assets/landing/hero-african-business.jpg.asset.json";
 
 const reelClips = [
   { src: frustratedAlaba.url, label: "Alaba International Market", caption: "Notebooks lost. Customers waiting." },
   { src: frustratedWhatsapp.url, label: "WhatsApp Vendor", caption: "1,200 chats. Which one paid?" },
   { src: frustratedCV.url, label: "Computer Village, Ikeja", caption: "Receipts everywhere. Profit unclear." },
+];
+
+// Additional category scenarios — labelled honestly as sample/demo scenarios,
+// not real FreBob customers. Each card plays on demand; only one at a time.
+const categoryScenarios: {
+  category: string;
+  problem: string;
+  kind: "Product demonstration" | "Example workflow" | "Sample business scenario";
+  gradient: string;
+  icon: typeof MessageCircle;
+  src: string;
+}[] = [
+  { category: "Fashion Designer", problem: "Lost customer conversations across WhatsApp chats.", kind: "Sample business scenario", gradient: "from-[#5d2ac2] via-[#7a3fd6] to-[#f7931e]", icon: MessageCircle, src: frustratedWhatsapp.url },
+  { category: "Retail Shop", problem: "Stock confusion — what sold, what's left?", kind: "Product demonstration", gradient: "from-[#2a1057] via-[#4b1fa6] to-[#5d2ac2]", icon: Package, src: frustratedAlaba.url },
+  { category: "Restaurant / Food", problem: "Forgotten orders and unrecorded daily takings.", kind: "Example workflow", gradient: "from-[#f7931e] via-[#e56b1a] to-[#5d2ac2]", icon: Receipt, src: frustratedCV.url },
+  { category: "Beauty / Salon", problem: "Scattered receipts and missed appointment payments.", kind: "Sample business scenario", gradient: "from-[#7a3fd6] via-[#5d2ac2] to-[#2a1057]", icon: Wallet, src: frustratedWhatsapp.url },
+  { category: "Pharmacy / Health Retail", problem: "Unrecorded payment evidence and stock movement.", kind: "Product demonstration", gradient: "from-[#4b1fa6] via-[#7a3fd6] to-[#f7931e]", icon: ScanLine, src: frustratedAlaba.url },
+  { category: "Professional Service", problem: "Hard to see how the business is really doing this month.", kind: "Example workflow", gradient: "from-[#2a1057] via-[#5d2ac2] to-[#f7931e]", icon: BarChart3, src: frustratedCV.url },
 ];
 
 function FrustrationReel() {

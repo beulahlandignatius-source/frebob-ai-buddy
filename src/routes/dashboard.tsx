@@ -150,7 +150,7 @@ function Dashboard() {
           <div className="flex items-center gap-3 shrink-0">
             <Link
               to="/notifications"
-              className="relative h-10 w-10 rounded-full bg-card shadow-card flex items-center justify-center text-primary hover:shadow-soft transition"
+              className="relative h-11 w-11 rounded-full bg-card shadow-card flex items-center justify-center text-primary hover:shadow-soft transition focus-ring"
               aria-label={`Notifications${unread > 0 ? `, ${unread} unread` : ""}`}
               title={critical ? `${critical.title}` : undefined}
             >
@@ -159,7 +159,7 @@ function Dashboard() {
             </Link>
             <Link
               to="/profile"
-              className="h-10 w-10 rounded-full brand-gradient text-primary-foreground font-bold flex items-center justify-center ring-2 ring-white shadow-soft"
+              className="h-11 w-11 rounded-full brand-gradient text-primary-foreground font-bold flex items-center justify-center ring-2 ring-white shadow-soft focus-ring"
               aria-label="Profile"
             >
               {firstName.slice(0, 1)}

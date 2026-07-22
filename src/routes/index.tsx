@@ -132,11 +132,11 @@ function Hero() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-14 pb-20 lg:pt-24 lg:pb-28 grid lg:grid-cols-2 gap-12 items-center relative">
         <div className="flex flex-col gap-6 lg:pr-6">
           <span className="inline-flex items-center gap-2 self-start rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
-            <Sparkles className="h-3.5 w-3.5" /> AI Business Operating System
+            <Sparkles className="h-3.5 w-3.5" /> Your Business Assistant
           </span>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.05] tracking-tight">
             Run Your Business.{" "}
-            <span className="brand-gradient-text">Let AI Handle</span>{" "}
+            <span className="brand-gradient-text">Let Bob Handle</span>{" "}
             the Complexity.
           </h1>
           <p className="text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed">
@@ -208,36 +208,28 @@ function HeroVideo() {
 }
 
 function VideoPosterMock() {
-  // A composed poster: chat → extraction → memory glimpse. No stock AI imagery.
+  // Authentic African business imagery — replaces the previous mock composite.
   return (
-    <div className="absolute inset-0 bg-gradient-to-br from-[#2a1057] via-[#4b1fa6] to-[#7a3fd6]">
-      <div className="absolute inset-0 [background:radial-gradient(600px_300px_at_20%_20%,rgba(247,147,30,0.25),transparent),radial-gradient(500px_300px_at_90%_90%,rgba(255,255,255,0.1),transparent)]" />
-      <div className="relative h-full w-full p-4 sm:p-6 grid grid-cols-12 gap-3">
-        <div className="col-span-7 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-md p-3 flex flex-col gap-2">
-          <div className="flex items-center gap-2 text-white/80 text-[11px]"><MessageCircle className="h-3.5 w-3.5" /> Customer chat</div>
-          <div className="rounded-xl bg-white/15 px-3 py-2 text-white text-xs w-fit max-w-[85%]">Aunty send me 3 ankara, I go pay ₦18,000 tomorrow</div>
-          <div className="rounded-xl bg-accent/90 px-3 py-2 text-accent-foreground text-xs w-fit self-end">Okay, noted 👍</div>
-          <div className="mt-auto rounded-xl bg-white/10 border border-white/20 px-3 py-2 flex items-center gap-2 text-white/90 text-[11px]">
-            <Sparkles className="h-3.5 w-3.5 text-accent" /> Bob extracted: 3× Ankara · ₦18,000 · unpaid
-          </div>
-        </div>
-        <div className="col-span-5 flex flex-col gap-3">
-          <div className="rounded-2xl bg-white/95 p-3 shadow-card flex-1">
-            <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Business Memory</div>
-            <div className="mt-1 text-sm font-semibold text-foreground">Order #A-108</div>
-            <div className="mt-2 space-y-1 text-[11px] text-muted-foreground">
-              <div className="flex justify-between"><span>Ankara ×3</span><span className="text-foreground">₦18,000</span></div>
-              <div className="flex justify-between"><span>Status</span><span className="text-warning">Unpaid</span></div>
-            </div>
-          </div>
-          <div className="rounded-2xl bg-white/95 p-3 shadow-card">
-            <div className="flex items-center gap-2 text-[11px] text-muted-foreground"><TrendingUp className="h-3.5 w-3.5 text-success" /> Today</div>
-            <div className="mt-1 text-lg font-bold text-foreground">₦142,500</div>
-            <div className="text-[10px] text-success">+18% vs yesterday</div>
-          </div>
-        </div>
+    <div className="absolute inset-0">
+      <img
+        src={heroAfricanBusiness.url}
+        alt="Nigerian small business owner running her boutique with her smartphone"
+        className="absolute inset-0 h-full w-full object-cover"
+        width={1280}
+        height={960}
+      />
+      <div className="absolute inset-0 bg-gradient-to-tr from-black/45 via-black/10 to-transparent" />
+      <div className="absolute top-3 left-3 rounded-full bg-white/85 backdrop-blur px-2.5 py-1 text-[10px] font-medium text-foreground flex items-center gap-1.5">
+        <Sparkles className="h-3 w-3 text-accent" /> Real businesses. Real workflows.
       </div>
       <div className="absolute top-3 right-3 rounded-full bg-black/40 text-white text-[10px] px-2 py-1 backdrop-blur">Preview</div>
+      <div className="absolute left-3 right-3 bottom-16 rounded-2xl bg-white/90 backdrop-blur-md p-3 shadow-card max-w-[75%] sm:max-w-[62%]">
+        <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+          <Sparkles className="h-3.5 w-3.5 text-accent" /> Bob extracted from a WhatsApp chat
+        </div>
+        <div className="mt-1 text-sm font-semibold text-foreground">3× Ankara · ₦18,000 · Unpaid</div>
+        <div className="text-[11px] text-muted-foreground mt-0.5">Saved to Business Memory · Order #A-108</div>
+      </div>
     </div>
   );
 }
@@ -321,11 +313,30 @@ function SwipeableCards() {
 import frustratedAlaba from "@/assets/landing/frustrated-alaba.mp4.asset.json";
 import frustratedWhatsapp from "@/assets/landing/frustrated-whatsapp.mp4.asset.json";
 import frustratedCV from "@/assets/landing/frustrated-computer-village.mp4.asset.json";
+import heroAfricanBusiness from "@/assets/landing/hero-african-business.jpg.asset.json";
 
 const reelClips = [
   { src: frustratedAlaba.url, label: "Alaba International Market", caption: "Notebooks lost. Customers waiting." },
   { src: frustratedWhatsapp.url, label: "WhatsApp Vendor", caption: "1,200 chats. Which one paid?" },
   { src: frustratedCV.url, label: "Computer Village, Ikeja", caption: "Receipts everywhere. Profit unclear." },
+];
+
+// Additional category scenarios — labelled honestly as sample/demo scenarios,
+// not real FreBob customers. Each card plays on demand; only one at a time.
+const categoryScenarios: {
+  category: string;
+  problem: string;
+  kind: "Product demonstration" | "Example workflow" | "Sample business scenario";
+  gradient: string;
+  icon: typeof MessageCircle;
+  src: string;
+}[] = [
+  { category: "Fashion Designer", problem: "Lost customer conversations across WhatsApp chats.", kind: "Sample business scenario", gradient: "from-[#5d2ac2] via-[#7a3fd6] to-[#f7931e]", icon: MessageCircle, src: frustratedWhatsapp.url },
+  { category: "Retail Shop", problem: "Stock confusion — what sold, what's left?", kind: "Product demonstration", gradient: "from-[#2a1057] via-[#4b1fa6] to-[#5d2ac2]", icon: Package, src: frustratedAlaba.url },
+  { category: "Restaurant / Food", problem: "Forgotten orders and unrecorded daily takings.", kind: "Example workflow", gradient: "from-[#f7931e] via-[#e56b1a] to-[#5d2ac2]", icon: Receipt, src: frustratedCV.url },
+  { category: "Beauty / Salon", problem: "Scattered receipts and missed appointment payments.", kind: "Sample business scenario", gradient: "from-[#7a3fd6] via-[#5d2ac2] to-[#2a1057]", icon: Wallet, src: frustratedWhatsapp.url },
+  { category: "Pharmacy / Health Retail", problem: "Unrecorded payment evidence and stock movement.", kind: "Product demonstration", gradient: "from-[#4b1fa6] via-[#7a3fd6] to-[#f7931e]", icon: ScanLine, src: frustratedAlaba.url },
+  { category: "Professional Service", problem: "Hard to see how the business is really doing this month.", kind: "Example workflow", gradient: "from-[#2a1057] via-[#5d2ac2] to-[#f7931e]", icon: BarChart3, src: frustratedCV.url },
 ];
 
 function FrustrationReel() {
@@ -373,8 +384,103 @@ function FrustrationReel() {
         </div>
       </div>
 
+      <CategoryScenarioGrid />
+
       <style>{`@keyframes reelScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }`}</style>
     </section>
+  );
+}
+
+/* Category scenarios — extends the reel above. Only one video plays at a time. */
+function CategoryScenarioGrid() {
+  const [activeIdx, setActiveIdx] = useState<number | null>(null);
+  const refs = useRef<Array<HTMLVideoElement | null>>([]);
+
+  const playOnly = (i: number) => {
+    refs.current.forEach((el, idx) => {
+      if (!el) return;
+      if (idx === i) {
+        el.currentTime = el.currentTime || 0;
+        el.play().catch(() => {});
+      } else {
+        el.pause();
+      }
+    });
+    setActiveIdx(i);
+  };
+  const pauseAt = (i: number) => {
+    const el = refs.current[i];
+    if (el) el.pause();
+    if (activeIdx === i) setActiveIdx(null);
+  };
+
+  return (
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-10 sm:mt-14">
+      <div className="text-center mb-6 sm:mb-8">
+        <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-wider text-muted-foreground">
+          <span className="h-1.5 w-1.5 rounded-full bg-primary" /> Across every kind of business
+        </div>
+        <h3 className="mt-3 text-xl sm:text-2xl font-semibold text-foreground">
+          The same chaos, in six familiar shapes.
+        </h3>
+        <p className="mt-2 text-sm text-muted-foreground max-w-xl mx-auto">
+          Tap a card to preview a sample scenario. Only one plays at a time.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
+        {categoryScenarios.map((c, i) => {
+          const isActive = activeIdx === i;
+          const Icon = c.icon;
+          return (
+            <figure
+              key={c.category}
+              className="relative rounded-2xl overflow-hidden shadow-card bg-black aspect-[9/16]"
+            >
+              <video
+                ref={(el) => { refs.current[i] = el; }}
+                src={c.src}
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                onPause={() => { if (activeIdx === i) setActiveIdx(null); }}
+                className={cn(
+                  "absolute inset-0 h-full w-full object-cover transition-opacity",
+                  isActive ? "opacity-100" : "opacity-40",
+                )}
+              />
+              {!isActive ? (
+                <div className={cn("absolute inset-0 bg-gradient-to-br opacity-70", c.gradient)} />
+              ) : null}
+
+              <button
+                type="button"
+                onClick={() => (isActive ? pauseAt(i) : playOnly(i))}
+                aria-label={isActive ? `Pause ${c.category} scenario` : `Play ${c.category} scenario`}
+                className="absolute inset-0 grid place-items-center focus-ring"
+              >
+                <span className="h-14 w-14 grid place-items-center rounded-full bg-white/90 text-foreground shadow-elegant hover:bg-white transition">
+                  {isActive ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 translate-x-0.5" />}
+                </span>
+              </button>
+
+              <div className="absolute top-2 left-2 rounded-full bg-black/55 backdrop-blur px-2 py-0.5 text-[10px] uppercase tracking-wider text-white/90 flex items-center gap-1.5">
+                <Icon className="h-3 w-3" /> {c.kind}
+              </div>
+
+              <figcaption className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/85 via-black/50 to-transparent">
+                <div className="text-[10px] uppercase tracking-wider text-white/70">{c.category}</div>
+                <div className="text-xs sm:text-sm font-medium text-white mt-0.5">{c.problem}</div>
+              </figcaption>
+            </figure>
+          );
+        })}
+      </div>
+      <p className="mt-4 text-center text-[11px] text-muted-foreground">
+        Illustrative scenarios — not real FreBob customers.
+      </p>
+    </div>
   );
 }
 

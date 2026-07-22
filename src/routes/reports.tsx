@@ -86,6 +86,17 @@ function Reports() {
           }
         />
 
+        {!hasAnyData ? (
+          <IntelligentEmptyState
+            icon={LineChart}
+            title="No reports yet"
+            description="Reports build automatically from your orders, payments and inventory. Add your first records to see sales trends and AI insights."
+            primary={{ label: "Add Record", to: "/add-record" }}
+            secondary={[{ label: "Scan Document", to: "/scanner" }]}
+          />
+        ) : (
+          <>
+
         <DateRangeBar
           preset={safePreset}
           compare={safeCompare}

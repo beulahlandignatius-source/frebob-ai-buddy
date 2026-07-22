@@ -86,6 +86,10 @@ function blobToBase64(blob: Blob): Promise<string> {
 export type MicRecorder = {
   stop: () => Promise<Blob>;
   cancel: () => void;
+  pause: () => void;
+  resume: () => void;
+  state: () => "recording" | "paused" | "inactive";
+  stream: MediaStream;
   mimeType: string;
 };
 
@@ -103,19 +107,25 @@ export async function startMicRecorder(): Promise<MicRecorder> {
   rec.ondataavailable = (e) => { if (e.data && e.data.size > 0) chunks.push(e.data); };
   rec.start();
 
+  const cleanup = () => stream.getTracks().forEach((t) => t.stop());
+
   return {
+    stream,
     mimeType: rec.mimeType || mimeType || "audio/webm",
+    state: () => rec.state,
+    pause: () => { if (rec.state === "recording") rec.pause(); },
+    resume: () => { if (rec.state === "paused") rec.resume(); },
     stop: () =>
       new Promise<Blob>((resolve) => {
         rec.onstop = () => {
-          stream.getTracks().forEach((t) => t.stop());
+          cleanup();
           resolve(new Blob(chunks, { type: rec.mimeType || mimeType || "audio/webm" }));
         };
-        rec.stop();
+        try { rec.stop(); } catch { cleanup(); resolve(new Blob(chunks, { type: rec.mimeType || mimeType || "audio/webm" })); }
       }),
     cancel: () => {
       try { rec.stop(); } catch { /* noop */ }
-      stream.getTracks().forEach((t) => t.stop());
+      cleanup();
     },
   };
 }

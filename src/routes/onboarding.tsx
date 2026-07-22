@@ -177,14 +177,22 @@ function Onboarding() {
   );
 }
 
-function SlideView({ slide }: { slide: Slide }) {
+function SlideView({ slide, eager }: { slide: Slide; eager: boolean }) {
   return (
     <div
       key={slide.title}
       className="px-6 sm:px-8 pt-8 pb-4 text-center animate-in fade-in slide-in-from-right-4 duration-300"
     >
       <div className="mx-auto w-full max-w-xs aspect-square flex items-center justify-center">
-        {slide.illustration}
+        <img
+          src={slide.image.url}
+          alt={slide.image.alt}
+          width={1024}
+          height={1024}
+          loading={eager ? "eager" : "lazy"}
+          decoding="async"
+          className="h-full w-full object-contain drop-shadow-[0_10px_30px_rgba(107,33,168,0.15)]"
+        />
       </div>
       <p className="mt-6 text-xs font-medium uppercase tracking-widest text-primary">
         {slide.eyebrow}

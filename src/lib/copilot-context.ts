@@ -102,6 +102,17 @@ export function buildSnapshot(records: ApprovedRecord[] = listApprovedRecords())
   const week = periodStats(records.filter((r) => inRange(r, startOfWeek())));
   const month = periodStats(records.filter((r) => inRange(r, startOfMonth())));
 
+  // Previous week window (for trend, using approved records only)
+  const prevWeekStart = new Date(startOfWeek());
+  prevWeekStart.setDate(prevWeekStart.getDate() - 7);
+  const prevWeekEnd = startOfWeek();
+  const previousWeek = periodStats(
+    records.filter((r) => {
+      const t = new Date(r.approvedAt).getTime();
+      return t >= prevWeekStart.getTime() && t < prevWeekEnd.getTime();
+    }),
+  );
+
   // Outstanding customers
   const outstandingCustomers = records
     .filter((r) => (r.data.balance ?? 0) > 0 && r.data.customer.name)
@@ -142,7 +153,41 @@ export function buildSnapshot(records: ApprovedRecord[] = listApprovedRecords())
     .sort((a, b) => b.quantity - a.quantity)
     .slice(0, 5);
 
-  return { totalApproved: records.length, today, week, month, outstandingCustomers, pendingOrders, bestSelling };
+  // Low-stock products from approved user inventory
+  const lowStockProducts = listUserProducts()
+    .filter((p) => p.status === "low" || p.status === "out")
+    .map((p) => ({
+      name: p.name,
+      stock: p.stock,
+      reorder: p.reorder,
+      unit: p.unit,
+      status: p.status as "low" | "out",
+    }))
+    .slice(0, 8);
+
+  // Scanner items awaiting review
+  const pendingScans = listScans().filter(
+    (s) => s.status === "ready_for_review" || s.status === "draft" || s.status === "processing",
+  ).length;
+
+  // Customer issues (duplicates awaiting review + repeat debtors)
+  let duplicatesToReview = 0;
+  try { duplicatesToReview = summariseDuplicates().unreviewedGroups ?? 0; } catch { /* store may be empty */ }
+  let repeatDebtors = 0;
+  try {
+    repeatDebtors = listCustomers().filter((c) => {
+      const m = computeMetrics(c.id);
+      return (m.outstanding ?? 0) > 0;
+    }).length;
+  } catch { /* store may be empty */ }
+
+  return {
+    totalApproved: records.length,
+    today, week, month, previousWeek,
+    outstandingCustomers, pendingOrders, bestSelling,
+    lowStockProducts, pendingScans,
+    customerIssues: { duplicatesToReview, repeatDebtors },
+  };
 }
 
 // -------- Deterministic answers -------------------------------------------

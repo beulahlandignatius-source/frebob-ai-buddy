@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { DemoHint } from "@/components/demo/DemoHint";
 import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
 import { useDemo } from "@/lib/demo/context";
+import { useCloudSync } from "@/lib/cloud-sync";
 
 export const Route = createFileRoute("/inventory")({
   head: () => ({

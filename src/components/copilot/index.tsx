@@ -1,7 +1,7 @@
 // FreBob Copilot — reusable chat components (Calm Ledger identity).
 
 import type { ReactNode } from "react";
-import { Sparkles, ShieldCheck, Send, Mic, Trash2, Clock, MessageSquare, Plus, X, FileText, TrendingUp, Wallet, AlertTriangle, Package, ClipboardList, PieChart } from "lucide-react";
+import { Sparkles, ShieldCheck, Send, Mic, Trash2, Clock, MessageSquare, Plus, X, FileText, TrendingUp, Wallet, AlertTriangle, Package, ClipboardList, PieChart, HeartPulse } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/fb/Button";
 import { BobAvatar } from "@/components/copilot/BobAvatar";

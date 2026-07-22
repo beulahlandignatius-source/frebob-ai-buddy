@@ -6,7 +6,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { History, Plus, Sparkles } from "lucide-react";
+import { History, Plus, Sparkles, X } from "lucide-react";
+import { toast } from "sonner";
 import { BobAvatar } from "@/components/copilot/BobAvatar";
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
@@ -35,6 +36,9 @@ import {
 import { askCopilot } from "@/lib/copilot.functions";
 import { listApprovedRecords } from "@/lib/records-store";
 import { ListenButton } from "@/components/audio/ListenButton";
+import { VoiceRecorder } from "@/components/audio/VoiceRecorder";
+import { transcribeAudio } from "@/lib/transcribe.functions";
+import { blobToWavBase64 } from "@/lib/audio-wav";
 import type { LanguageCode } from "@/i18n/languages";
 import { DemoHint } from "@/components/demo/DemoHint";
 import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";

@@ -244,7 +244,7 @@ function ExpenseForm({ onSaved, onCancel }: { onSaved: () => void; onCancel: () 
               <div className="h-14 w-14 rounded-lg bg-card flex items-center justify-center text-[10px] font-semibold text-muted-foreground">FILE</div>
             )}
             <div className="flex-1 min-w-0"><p className="text-sm font-medium truncate">{receipt.name}</p><p className="text-[11px] text-muted-foreground">Attached</p></div>
-            <button type="button" onClick={() => setReceipt(null)} className="p-2 hover:bg-card rounded-lg" aria-label="Remove receipt"><X className="h-4 w-4" /></button>
+            <button type="button" onClick={() => setReceipt(null)} className="tap-target grid place-items-center hover:bg-card rounded-lg focus-ring" aria-label="Remove receipt"><X className="h-4 w-4" /></button>
           </div>
         ) : (
           <label className="flex items-center gap-2 justify-center p-4 rounded-xl border border-dashed border-secondary bg-background hover:border-primary/40 cursor-pointer">

@@ -3,7 +3,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import {
   Home, MessageCircle, Plus, BarChart3, User, Brain, Boxes,
   ShoppingCart, Users, ScanLine, Bell, Settings, HelpCircle, PlayCircle,
-  LayoutDashboard, FileText, UserPlus, X, Pencil,
+  LayoutDashboard, FileText, UserPlus, X,
 } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { cn } from "@/lib/utils";
@@ -25,15 +25,17 @@ const mobileNav: (NavItem | { center: true })[] = [
   { to: "/reports", label: "Reports", icon: BarChart3 },
 ];
 
+// Manual Record is intentionally NOT listed here — it lives inside
+// Add Business Record only, per product spec.
 const createActions: { to: string; label: string; icon: typeof Home }[] = [
   { to: "/add-record", label: "Add Business Record", icon: FileText },
-  { to: "/records/manual", label: "Manual Record", icon: Pencil },
   { to: "/business-memory", label: "Open Business Memory", icon: Brain },
   { to: "/orders", label: "Create Order", icon: ShoppingCart },
   { to: "/inventory", label: "Add Product", icon: Boxes },
   { to: "/customers/new", label: "Add Customer", icon: UserPlus },
   { to: "/scanner/new", label: "Scan Document", icon: ScanLine },
 ];
+
 
 
 const desktopNav: NavItem[] = [

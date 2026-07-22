@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { MessageSquare, Pencil, ScanLine, MessageCircle, Brain } from "lucide-react";
+import { MessageSquare, Pencil, ScanLine, MessageCircle, Brain, Mic } from "lucide-react";
 import { AppShell } from "@/components/nav/AppShell";
 import { PageCanvas, SurfaceHeader } from "@/components/dash";
 import { RecordSourceCard } from "@/components/record";
@@ -9,7 +9,7 @@ export const Route = createFileRoute("/add-record")({
   head: () => ({
     meta: [
       { title: "Add Business Record — FreBob" },
-      { name: "description", content: "Choose how to add a sale, payment or order — from a conversation, manually or a receipt scan." },
+      { name: "description", content: "Choose how to add a sale, payment or order — from a conversation, voice note, manual entry, or a receipt scan." },
       { property: "og:title", content: "Add Business Record — FreBob" },
       { property: "og:description", content: "One clear starting point for every operational entry." },
     ],
@@ -34,6 +34,14 @@ function AddRecord() {
             status="Available"
             icon={MessageSquare}
             to="/conversations/new"
+          />
+          <RecordSourceCard
+            title="Voice Note"
+            description="Record yourself or upload a WhatsApp voice note. Bob transcribes and drafts the record."
+            status="Available"
+            icon={Mic}
+            to="/conversations/new"
+            search={{ tab: "voice" }}
           />
           <RecordSourceCard
             title="Manual Record"
@@ -75,3 +83,4 @@ function AddRecord() {
     </AppShell>
   );
 }
+

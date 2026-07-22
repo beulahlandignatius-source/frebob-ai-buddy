@@ -52,13 +52,33 @@ function OrderDetail() {
   const navigate = useNavigate();
   const [tick, setTick] = useState(0);
   const [tab, setTab] = useState<TabKey>("overview");
+  const [ui, setUi] = useState<"loading" | "ready" | "error">("loading");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const refresh = () => setTick((t) => t + 1);
+
+  useEffect(() => {
+    setUi("loading");
+    setErrorMsg(null);
+    try { refresh(); setUi("ready"); }
+    catch (e) { setErrorMsg(e instanceof Error ? e.message : "Could not load this order."); setUi("error"); }
+  }, [id]);
 
   const order = useMemo(() => getOrder(id), [id, tick]);
   const timeline = useMemo(() => (order ? buildTimeline(order) : []), [order]);
   const sourceScanIds = useMemo(() => findSourceScanIds("order", id), [id, tick]);
   const notes = useMemo(() => listOrderNotes(id), [id, tick]);
   const attachments = useMemo(() => listOrderAttachments(id), [id, tick]);
+
+  if (ui === "loading") {
+    return <AppShell><PageCanvas><LoadingSkeleton rows={5} /></PageCanvas></AppShell>;
+  }
+  if (ui === "error") {
+    return (
+      <AppShell><PageCanvas>
+        <ErrorState message={errorMsg ?? "Could not load this order."} onRetry={refresh} />
+      </PageCanvas></AppShell>
+    );
+  }
 
   if (!order) {
     return (

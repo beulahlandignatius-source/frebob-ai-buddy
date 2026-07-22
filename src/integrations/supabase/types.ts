@@ -14,6 +14,136 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_extractions: {
+        Row: {
+          approved_record_id: string | null
+          business_id: string
+          confidence: string
+          created_at: string
+          id: string
+          latency_ms: number | null
+          missing_fields: string[]
+          model: string | null
+          needs_review: boolean
+          payload: Json
+          reviewed_at: string | null
+          reviewed_by: string | null
+          source_input_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          approved_record_id?: string | null
+          business_id: string
+          confidence?: string
+          created_at?: string
+          id?: string
+          latency_ms?: number | null
+          missing_fields?: string[]
+          model?: string | null
+          needs_review?: boolean
+          payload: Json
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source_input_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          approved_record_id?: string | null
+          business_id?: string
+          confidence?: string
+          created_at?: string
+          id?: string
+          latency_ms?: number | null
+          missing_fields?: string[]
+          model?: string | null
+          needs_review?: boolean
+          payload?: Json
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source_input_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_extractions_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_extractions_source_input_id_fkey"
+            columns: ["source_input_id"]
+            isOneToOne: false
+            referencedRelation: "source_inputs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      approved_record_items: {
+        Row: {
+          approved_record_id: string
+          business_id: string
+          created_at: string
+          id: string
+          line_total: number | null
+          product_id: string | null
+          product_name: string
+          quantity: number
+          unit_price: number | null
+          variant: string | null
+        }
+        Insert: {
+          approved_record_id: string
+          business_id: string
+          created_at?: string
+          id?: string
+          line_total?: number | null
+          product_id?: string | null
+          product_name: string
+          quantity: number
+          unit_price?: number | null
+          variant?: string | null
+        }
+        Update: {
+          approved_record_id?: string
+          business_id?: string
+          created_at?: string
+          id?: string
+          line_total?: number | null
+          product_id?: string | null
+          product_name?: string
+          quantity?: number
+          unit_price?: number | null
+          variant?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "approved_record_items_approved_record_id_fkey"
+            columns: ["approved_record_id"]
+            isOneToOne: false
+            referencedRelation: "approved_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "approved_record_items_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "approved_record_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       approved_records: {
         Row: {
           approved_at: string
@@ -67,6 +197,53 @@ export type Database = {
             columns: ["conversation_id"]
             isOneToOne: false
             referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assistant_queries: {
+        Row: {
+          answer: string | null
+          business_id: string
+          created_at: string
+          error: string | null
+          evidence: Json
+          id: string
+          language: string | null
+          latency_ms: number | null
+          question: string
+          user_id: string | null
+        }
+        Insert: {
+          answer?: string | null
+          business_id: string
+          created_at?: string
+          error?: string | null
+          evidence?: Json
+          id?: string
+          language?: string | null
+          latency_ms?: number | null
+          question: string
+          user_id?: string | null
+        }
+        Update: {
+          answer?: string | null
+          business_id?: string
+          created_at?: string
+          error?: string | null
+          evidence?: Json
+          id?: string
+          language?: string | null
+          latency_ms?: number | null
+          question?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assistant_queries_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
             referencedColumns: ["id"]
           },
         ]
@@ -132,7 +309,9 @@ export type Database = {
           business_id: string
           created_at: string
           id: string
+          invited_by: string | null
           role: Database["public"]["Enums"]["business_member_role"]
+          status: string
           updated_at: string
           user_id: string
         }
@@ -140,7 +319,9 @@ export type Database = {
           business_id: string
           created_at?: string
           id?: string
+          invited_by?: string | null
           role?: Database["public"]["Enums"]["business_member_role"]
+          status?: string
           updated_at?: string
           user_id: string
         }
@@ -148,7 +329,9 @@ export type Database = {
           business_id?: string
           created_at?: string
           id?: string
+          invited_by?: string | null
           role?: Database["public"]["Enums"]["business_member_role"]
+          status?: string
           updated_at?: string
           user_id?: string
         }
@@ -169,17 +352,20 @@ export type Database = {
           city: string | null
           country: string | null
           created_at: string
+          created_by: string | null
           currency: string
           description: string | null
           email: string | null
           id: string
           initial_inventory: string | null
           initial_products: string | null
+          location: string | null
           logo_url: string | null
           name: string
           owner_id: string
           phone: string | null
           settings: Json
+          setup_completed: boolean
           state: string | null
           updated_at: string
           website: string | null
@@ -190,17 +376,20 @@ export type Database = {
           city?: string | null
           country?: string | null
           created_at?: string
+          created_by?: string | null
           currency?: string
           description?: string | null
           email?: string | null
           id?: string
           initial_inventory?: string | null
           initial_products?: string | null
+          location?: string | null
           logo_url?: string | null
           name: string
           owner_id: string
           phone?: string | null
           settings?: Json
+          setup_completed?: boolean
           state?: string | null
           updated_at?: string
           website?: string | null
@@ -211,17 +400,20 @@ export type Database = {
           city?: string | null
           country?: string | null
           created_at?: string
+          created_by?: string | null
           currency?: string
           description?: string | null
           email?: string | null
           id?: string
           initial_inventory?: string | null
           initial_products?: string | null
+          location?: string | null
           logo_url?: string | null
           name?: string
           owner_id?: string
           phone?: string | null
           settings?: Json
+          setup_completed?: boolean
           state?: string | null
           updated_at?: string
           website?: string | null
@@ -394,6 +586,95 @@ export type Database = {
           },
         ]
       }
+      evidence_links: {
+        Row: {
+          approved_record_id: string | null
+          business_id: string
+          created_at: string
+          extraction_id: string | null
+          id: string
+          inventory_event_id: string | null
+          kind: string
+          order_id: string | null
+          payment_id: string | null
+          source_input_id: string | null
+        }
+        Insert: {
+          approved_record_id?: string | null
+          business_id: string
+          created_at?: string
+          extraction_id?: string | null
+          id?: string
+          inventory_event_id?: string | null
+          kind: string
+          order_id?: string | null
+          payment_id?: string | null
+          source_input_id?: string | null
+        }
+        Update: {
+          approved_record_id?: string | null
+          business_id?: string
+          created_at?: string
+          extraction_id?: string | null
+          id?: string
+          inventory_event_id?: string | null
+          kind?: string
+          order_id?: string | null
+          payment_id?: string | null
+          source_input_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evidence_links_approved_record_id_fkey"
+            columns: ["approved_record_id"]
+            isOneToOne: false
+            referencedRelation: "approved_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evidence_links_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evidence_links_extraction_id_fkey"
+            columns: ["extraction_id"]
+            isOneToOne: false
+            referencedRelation: "ai_extractions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evidence_links_inventory_event_id_fkey"
+            columns: ["inventory_event_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evidence_links_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evidence_links_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evidence_links_source_input_id_fkey"
+            columns: ["source_input_id"]
+            isOneToOne: false
+            referencedRelation: "source_inputs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inventory_events: {
         Row: {
           business_id: string
@@ -513,6 +794,67 @@ export type Database = {
           },
         ]
       }
+      order_items: {
+        Row: {
+          business_id: string
+          created_at: string
+          id: string
+          line_total: number
+          order_id: string
+          product_id: string | null
+          product_name: string
+          quantity: number
+          unit_price: number
+          variant: string | null
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          id?: string
+          line_total?: number
+          order_id: string
+          product_id?: string | null
+          product_name: string
+          quantity: number
+          unit_price?: number
+          variant?: string | null
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          id?: string
+          line_total?: number
+          order_id?: string
+          product_id?: string | null
+          product_name?: string
+          quantity?: number
+          unit_price?: number
+          variant?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_status_overrides: {
         Row: {
           business_id: string
@@ -548,6 +890,82 @@ export type Database = {
           },
         ]
       }
+      orders: {
+        Row: {
+          amount_paid: number
+          approved_record_id: string | null
+          balance: number
+          business_id: string
+          created_at: string
+          created_by: string | null
+          customer_id: string | null
+          delivery_mode: string | null
+          id: string
+          notes: string | null
+          payment_status: string
+          reference: string
+          status: string
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          amount_paid?: number
+          approved_record_id?: string | null
+          balance?: number
+          business_id: string
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          delivery_mode?: string | null
+          id?: string
+          notes?: string | null
+          payment_status?: string
+          reference: string
+          status?: string
+          total_amount?: number
+          updated_at?: string
+        }
+        Update: {
+          amount_paid?: number
+          approved_record_id?: string | null
+          balance?: number
+          business_id?: string
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          delivery_mode?: string | null
+          id?: string
+          notes?: string | null
+          payment_status?: string
+          reference?: string
+          status?: string
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_approved_record_id_fkey"
+            columns: ["approved_record_id"]
+            isOneToOne: false
+            referencedRelation: "approved_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payments: {
         Row: {
           amount: number
@@ -557,6 +975,7 @@ export type Database = {
           id: string
           method: string
           notes: string | null
+          order_id: string | null
           order_reference: string
           recorded_by: string | null
           recorded_by_label: string | null
@@ -570,6 +989,7 @@ export type Database = {
           id?: string
           method: string
           notes?: string | null
+          order_id?: string | null
           order_reference: string
           recorded_by?: string | null
           recorded_by_label?: string | null
@@ -583,6 +1003,7 @@ export type Database = {
           id?: string
           method?: string
           notes?: string | null
+          order_id?: string | null
           order_reference?: string
           recorded_by?: string | null
           recorded_by_label?: string | null
@@ -596,20 +1017,31 @@ export type Database = {
             referencedRelation: "businesses"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
         ]
       }
       products: {
         Row: {
           attributes: Json
+          available_stock: number
           business_id: string
           cost_price: number | null
           created_at: string
           created_by: string | null
           id: string
           image_url: string | null
+          is_active: boolean
           name: string
           quality_tier: string | null
           reorder_level: number | null
+          reserved_stock: number
+          selling_price: number | null
           sku: string | null
           unit_price: number | null
           updated_at: string
@@ -617,15 +1049,19 @@ export type Database = {
         }
         Insert: {
           attributes?: Json
+          available_stock?: number
           business_id: string
           cost_price?: number | null
           created_at?: string
           created_by?: string | null
           id?: string
           image_url?: string | null
+          is_active?: boolean
           name: string
           quality_tier?: string | null
           reorder_level?: number | null
+          reserved_stock?: number
+          selling_price?: number | null
           sku?: string | null
           unit_price?: number | null
           updated_at?: string
@@ -633,15 +1069,19 @@ export type Database = {
         }
         Update: {
           attributes?: Json
+          available_stock?: number
           business_id?: string
           cost_price?: number | null
           created_at?: string
           created_by?: string | null
           id?: string
           image_url?: string | null
+          is_active?: boolean
           name?: string
           quality_tier?: string | null
           reorder_level?: number | null
+          reserved_stock?: number
+          selling_price?: number | null
           sku?: string | null
           unit_price?: number | null
           updated_at?: string
@@ -853,6 +1293,65 @@ export type Database = {
           },
         ]
       }
+      source_inputs: {
+        Row: {
+          business_id: string
+          created_at: string
+          created_by: string | null
+          duration_ms: number | null
+          error: string | null
+          file_mime: string | null
+          file_path: string | null
+          id: string
+          language: string
+          meta: Json
+          raw_text: string | null
+          source_type: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          created_by?: string | null
+          duration_ms?: number | null
+          error?: string | null
+          file_mime?: string | null
+          file_path?: string | null
+          id?: string
+          language?: string
+          meta?: Json
+          raw_text?: string | null
+          source_type: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          created_by?: string | null
+          duration_ms?: number | null
+          error?: string | null
+          file_mime?: string | null
+          file_path?: string | null
+          id?: string
+          language?: string
+          meta?: Json
+          raw_text?: string | null
+          source_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "source_inputs_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -912,6 +1411,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_approve_records: { Args: { _business_id: string }; Returns: boolean }
+      can_write_business: { Args: { _business_id: string }; Returns: boolean }
+      can_write_inventory: { Args: { _business_id: string }; Returns: boolean }
+      can_write_sales: { Args: { _business_id: string }; Returns: boolean }
+      has_business_role: {
+        Args: { _business_id: string; _roles: string[] }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -924,7 +1431,14 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
-      business_member_role: "owner" | "admin" | "member"
+      business_member_role:
+        | "owner"
+        | "admin"
+        | "member"
+        | "manager"
+        | "sales_attendant"
+        | "inventory_staff"
+        | "read_only"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1053,7 +1567,15 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
-      business_member_role: ["owner", "admin", "member"],
+      business_member_role: [
+        "owner",
+        "admin",
+        "member",
+        "manager",
+        "sales_attendant",
+        "inventory_staff",
+        "read_only",
+      ],
     },
   },
 } as const

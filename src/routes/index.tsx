@@ -36,7 +36,7 @@ function Splash() {
         else if (!profile?.business_setup_completed) navigate({ to: "/business-setup" });
         else navigate({ to: "/dashboard" });
       } else {
-        navigate({ to: "/auth" });
+        navigate({ to: "/signin" });
       }
     };
     run();

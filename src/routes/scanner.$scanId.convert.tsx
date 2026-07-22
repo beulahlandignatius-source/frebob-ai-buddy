@@ -63,7 +63,7 @@ function ConvertScan() {
         <EmptyState
           title="Approve this scan first"
           description="Approved documents can be converted into orders, payments and inventory changes."
-          action={{ label: "Open review", to: `/scanner/${scanId}` }}
+          action={<Link to="/scanner/$scanId" params={{ scanId }}><Button variant="outline">Open review</Button></Link>}
         />
       </PageCanvas></AppShell>
     );
@@ -135,7 +135,7 @@ function CreateOrderWizard({ scan, reviewed, navigate }: WizardProps) {
       <EmptyState
         title="No order derived yet"
         description="This scan was approved as a memory record but not as an order. Try re-approving after setting the document type to Sales receipt or Customer order."
-        action={{ label: "Back to scan", to: `/scanner/${scan.id}` }}
+        action={<Link to="/scanner/$scanId" params={{ scanId: scan.id }}><Button variant="outline">Back to scan</Button></Link>}
       />
     );
   }
@@ -222,7 +222,7 @@ function RecordPaymentWizard({ scan, reviewed, navigate }: WizardProps) {
       <EmptyState
         title="No orders yet"
         description="Create an order first, then come back to record this payment against it."
-        action={{ label: "Back to scan", to: `/scanner/${scan.id}` }}
+        action={<Link to="/scanner/$scanId" params={{ scanId: scan.id }}><Button variant="outline">Back to scan</Button></Link>}
       />
     );
   }
@@ -337,7 +337,7 @@ function InventoryWizard({ scan, reviewed, navigate, kind }: WizardProps & { kin
       <EmptyState
         title="No line items on this scan"
         description="Add products to the scan review page first, then convert them into stock movements."
-        action={{ label: "Back to scan", to: `/scanner/${scan.id}` }}
+        action={<Link to="/scanner/$scanId" params={{ scanId: scan.id }}><Button variant="outline">Back to scan</Button></Link>}
       />
     );
   }

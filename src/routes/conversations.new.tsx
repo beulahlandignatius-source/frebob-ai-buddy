@@ -24,7 +24,7 @@ export const Route = createFileRoute("/conversations/new")({
   component: NewConversation,
 });
 
-type Tab = "paste" | "upload" | "demo";
+type Tab = "paste" | "voice" | "whatsapp" | "upload" | "demo";
 const LANGS: { value: Language; label: string }[] = [
   { value: "auto", label: "Auto-detect" },
   { value: "english", label: "English" },
@@ -33,6 +33,14 @@ const LANGS: { value: Language; label: string }[] = [
   { value: "hausa", label: "Hausa (team test)" },
   { value: "igbo", label: "Igbo (team test)" },
 ];
+
+const STT_LANG: Partial<Record<Language, string>> = {
+  english: "en",
+  nigerian_pidgin: "en",
+  yoruba: "yo",
+  hausa: "ha",
+  igbo: "ig",
+};
 
 function NewConversation() {
   const navigate = useNavigate();

@@ -1,3 +1,4 @@
+import type { Json } from "@/integrations/supabase/types";
 // FreBob — Batch 10A: Business Settings store.
 // Persists business info + configuration in the `businesses` row (Supabase)
 // with append-only audit events in `settings_audit`. Enforced by RLS.
@@ -226,7 +227,7 @@ export async function saveBusiness(params: {
     country: info.country.trim() || null,
     website: info.website.trim() || null,
     currency: info.currency,
-    settings: settings as unknown as object,
+    settings: settings as unknown as Json,
   };
 
   let businessId: string;
@@ -263,8 +264,8 @@ export async function saveBusiness(params: {
       actor_id: ownerId,
       section: a.section,
       setting_key: a.setting_key,
-      old_value: a.old_value ?? null,
-      new_value: a.new_value ?? null,
+      old_value: (a.old_value ?? null) as Json,
+      new_value: (a.new_value ?? null) as Json,
     }));
     await supabase.from("settings_audit").insert(rows);
   }

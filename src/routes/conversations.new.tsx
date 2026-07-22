@@ -8,7 +8,7 @@ import { Button } from "@/components/fb/Button";
 import { DEMO_CONVERSATIONS } from "@/lib/demo-conversations";
 import { createConversation, type Language, type SourceType } from "@/lib/records-store";
 import { createSourceInput } from "@/lib/source-inputs.functions";
-import { getCurrentBusinessSnapshot } from "@/hooks/use-current-business";
+import { getCurrentBusiness } from "@/hooks/use-current-business";
 import { transcribeAudio } from "@/lib/transcribe.functions";
 import { blobToWavBase64 } from "@/lib/audio-wav";
 import { VoiceRecorder } from "@/components/audio/VoiceRecorder";
@@ -142,9 +142,28 @@ function NewConversation() {
     await runTranscription(f, "whatsapp_audio", f.name);
   };
 
-  const start = (sourceType: SourceType, textIn: string, fileName?: string) => {
+  const start = async (sourceType: SourceType, textIn: string, fileName?: string) => {
     setBusy(true);
     const conv = createConversation({ text: textIn.trim(), language, sourceType, fileName });
+    // Best-effort: mirror this entry into the new source_inputs pipeline so
+    // future review/approval flows can read it. Legacy conversation review
+    // still works from localStorage — no blocking on DB errors.
+    try {
+      const ctx = await getCurrentBusiness();
+      if (ctx?.businessId && !ctx.isDemo) {
+        await createSourceInput({
+          data: {
+            businessId: ctx.businessId,
+            sourceType,
+            language,
+            rawText: textIn.trim(),
+            meta: fileName ? { fileName } : {},
+          },
+        });
+      }
+    } catch (err) {
+      console.warn("[add-record] source_inputs mirror failed", err);
+    }
     navigate({ to: "/conversations/$id", params: { id: conv.id } });
   };
 

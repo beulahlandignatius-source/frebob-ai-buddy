@@ -12,6 +12,11 @@ import {
 import { BobAvatar } from "@/components/copilot/BobAvatar";
 
 import { supabase } from "@/integrations/supabase/client";
+import {
+  generateNotifications, unreadCount, criticalUnread,
+  subscribe as subscribeNotif,
+} from "@/lib/notifications-store";
+import { NotificationBadge } from "@/components/notifications";
 import { AppShell } from "@/components/nav/AppShell";
 import {
   dashboardMetrics,

@@ -7,13 +7,14 @@ import {
   PageCanvas, SurfaceHeader, SectionLabel, PeriodTabs,
   LoadingSkeleton, ErrorState, EmptyState, SuccessBanner,
 } from "@/components/dash";
-import { memoryNotes, type MemoryNote, fmt } from "@/lib/mock-data";
+import { memoryNotes as demoMemoryNotes, type MemoryNote, fmt } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { listApprovedRecords, type ApprovedRecord } from "@/lib/records-store";
 import { humanise, StatusPill } from "@/components/record";
 import { DemoHint } from "@/components/demo/DemoHint";
 import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
+import { useDemo } from "@/lib/demo/context";
 
 export const Route = createFileRoute("/business-memory")({
   head: () => ({

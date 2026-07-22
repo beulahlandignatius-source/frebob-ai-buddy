@@ -152,7 +152,11 @@ function DuplicatesPage() {
           Possible duplicate groups
         </SectionLabel>
 
-        {allGroups.length === 0 ? (
+        {ui === "loading" ? (
+          <LoadingSkeleton rows={4} />
+        ) : ui === "error" ? (
+          <ErrorState message={errorMsg ?? "Could not scan for duplicates."} onRetry={() => setTick((t) => t + 1)} />
+        ) : allGroups.length === 0 ? (
           <DuplicateEmpty>
             <p className="font-medium text-foreground mb-1">No possible duplicate customers found.</p>
             <p>FreBob will show records here when customer details appear to match.</p>
@@ -173,12 +177,6 @@ function DuplicatesPage() {
               members.forEach((m) => { metrics[m.customer.id] = m.metrics; });
               return <DuplicateGroupCard key={g.id} group={g} customers={customers} metrics={metrics} />;
             })}
-          </div>
-        )}
-
-        {allGroups.length === 0 && (
-          <div className="mt-6">
-            <LoadingSkeleton rows={0} />
           </div>
         )}
 

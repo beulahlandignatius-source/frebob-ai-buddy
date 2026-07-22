@@ -24,6 +24,7 @@ import {
   type Notification, type GroupKey,
 } from "@/lib/notifications-store";
 import { toast } from "sonner";
+import { DemoHint } from "@/components/demo/DemoHint";
 
 export const Route = createFileRoute("/notifications")({
   head: () => ({
@@ -105,6 +106,7 @@ function NotificationsPage() {
 
   return (
     <AppShell>
+      <DemoHint hintKey="notifications-v1" title="Everything that needs you">Stock alerts, order updates and payment reminders live here. Dismiss what's handled to keep the list focused.</DemoHint>
       <PageHeader
         eyebrow="Inbox"
         title="Notifications"

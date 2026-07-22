@@ -111,7 +111,7 @@ function DuplicatesPage() {
             <input
               type="text" value={query} onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by customer name, phone or email"
-              className="w-full h-11 pl-9 pr-3 rounded-full border border-secondary bg-card text-sm focus:outline-none focus:border-primary/40"
+              className="w-full h-11 pl-9 pr-3 rounded-full border border-secondary bg-card text-sm focus-ring focus:border-primary/40"
             />
           </div>
           <div className="grid grid-cols-3 gap-2 sm:flex sm:gap-2">

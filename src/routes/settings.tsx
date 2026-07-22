@@ -143,7 +143,7 @@ function SelectRow({ label, value, onChange, options }: { label: string; value: 
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-9 px-3 rounded-lg border border-secondary bg-background text-sm font-medium focus:outline-none focus:border-primary/40"
+        className="h-9 px-3 rounded-lg border border-secondary bg-background text-sm font-medium focus-ring focus:border-primary/40"
       >
         {options.map((o) => <option key={o}>{o}</option>)}
       </select>

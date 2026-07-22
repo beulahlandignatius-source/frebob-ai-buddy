@@ -210,7 +210,7 @@ function Dashboard() {
             <Link
               key={m.key}
               to={m.linkTo}
-              className="group bg-card p-4 sm:p-5 rounded-[20px] border border-secondary hover:border-primary/25 transition"
+              className="group bg-card p-4 sm:p-5 rounded-[20px] border border-secondary hover:border-primary/25 transition focus-ring"
             >
               <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-primary/50">
                 {m.label}
@@ -246,7 +246,7 @@ function Dashboard() {
         <section className="mb-8">
           <Link
             to="/business-memory"
-            className="group flex items-center gap-4 rounded-[20px] border border-secondary bg-card p-4 sm:p-5 hover:border-primary/25 transition"
+            className="group flex items-center gap-4 rounded-[20px] border border-secondary bg-card p-4 sm:p-5 hover:border-primary/25 transition focus-ring"
           >
             <div className="h-11 w-11 rounded-2xl brand-gradient text-primary-foreground flex items-center justify-center shrink-0 shadow-soft">
               <Brain className="h-5 w-5" />

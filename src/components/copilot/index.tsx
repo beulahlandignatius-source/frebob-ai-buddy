@@ -177,7 +177,7 @@ export function ChatInput({
           }}
           rows={1}
           placeholder={voiceBusy ? "Transcribing your voice note…" : "Ask about sales, stock, customers, orders…"}
-          className="flex-1 resize-none min-h-[44px] max-h-40 px-4 py-2.5 rounded-2xl border border-secondary bg-background text-sm focus:outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
+          className="flex-1 resize-none min-h-[44px] max-h-40 px-4 py-2.5 rounded-2xl border border-secondary bg-background text-sm focus-ring focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
           disabled={voiceBusy}
         />
         {onVoice && (
@@ -206,7 +206,7 @@ export function ChatInput({
           <select
             value={language}
             onChange={(e) => onLanguageChange(e.target.value as CopilotLanguage)}
-            className="rounded-lg border border-secondary bg-background text-[11px] px-2 py-1 focus:outline-none focus:border-primary/40"
+            className="rounded-lg border border-secondary bg-background text-[11px] px-2 py-1 focus-ring focus:border-primary/40"
           >
             {languages.map((l) => (
               <option key={l.value} value={l.value}>{l.label}</option>

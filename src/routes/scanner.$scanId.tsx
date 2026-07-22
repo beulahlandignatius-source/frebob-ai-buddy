@@ -271,7 +271,7 @@ function ReviewScan() {
                       value={reviewed.documentType}
                       disabled={phase === "approved"}
                       onChange={(e) => updateField("documentType", e.target.value as DocumentType)}
-                      className="w-full h-11 px-3 rounded-xl border border-secondary bg-background text-sm focus:outline-none focus:border-primary/40"
+                      className="w-full h-11 px-3 rounded-xl border border-secondary bg-background text-sm focus-ring focus:border-primary/40"
                     >
                       {DOCUMENT_TYPES.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
                     </select>
@@ -312,7 +312,7 @@ function ReviewScan() {
                     value={reviewed.notes ?? ""}
                     onChange={(e) => updateField("notes", e.target.value || null)}
                     rows={3}
-                    className="w-full px-3 py-2 rounded-xl border border-secondary bg-background text-sm focus:outline-none focus:border-primary/40"
+                    className="w-full px-3 py-2 rounded-xl border border-secondary bg-background text-sm focus-ring focus:border-primary/40"
                     placeholder="Add any correction notes for future reference…"
                   />
                 </label>

@@ -338,7 +338,7 @@ function ReviewForm({
                   value={extraction.internal_note ?? ""}
                   onChange={(e) => setField("internal_note", e.target.value || null)}
                   rows={2}
-                  className="w-full rounded-xl border border-secondary bg-background p-2.5 text-sm focus:outline-none focus:border-primary/40"
+                  className="w-full rounded-xl border border-secondary bg-background p-2.5 text-sm focus-ring focus:border-primary/40"
                   placeholder="Optional context for your own records"
                 />
               </div>
@@ -379,7 +379,7 @@ function TextInput({ value, onChange, placeholder }: { value: string; onChange: 
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="w-full h-11 rounded-xl border border-secondary bg-background px-3 text-sm focus:outline-none focus:border-primary/40"
+      className="w-full h-11 rounded-xl border border-secondary bg-background px-3 text-sm focus-ring focus:border-primary/40"
     />
   );
 }
@@ -394,7 +394,7 @@ function NumberInput({ value, onChange }: { value: number | null; onChange: (v: 
         const v = e.target.value;
         onChange(v === "" ? null : Number(v));
       }}
-      className="w-full h-11 rounded-xl border border-secondary bg-background px-3 text-sm focus:outline-none focus:border-primary/40"
+      className="w-full h-11 rounded-xl border border-secondary bg-background px-3 text-sm focus-ring focus:border-primary/40"
     />
   );
 }
@@ -404,7 +404,7 @@ function Select({ value, onChange, options }: { value: string; onChange: (v: str
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full h-11 rounded-xl border border-secondary bg-background px-3 text-sm focus:outline-none focus:border-primary/40"
+      className="w-full h-11 rounded-xl border border-secondary bg-background px-3 text-sm focus-ring focus:border-primary/40"
     >
       {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>

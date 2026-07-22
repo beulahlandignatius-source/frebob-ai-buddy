@@ -66,6 +66,10 @@ export type ConversationRecord = {
   edited?: Extraction;
   approvedRecordId?: string;
   processingMode?: "ai" | "mock";
+  // B2/B3 — link to the Cloud pipeline when the user is signed in + non-demo.
+  sourceInputId?: string;
+  extractionId?: string;
+  approvedReference?: string;
 };
 
 export type ApprovedRecord = {

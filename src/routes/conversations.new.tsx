@@ -66,24 +66,19 @@ function NewConversation() {
   const [busy, setBusy] = useState(false);
 
   // Voice recording state
-  const recorderRef = useRef<MicRecorder | null>(null);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const [recording, setRecording] = useState(false);
-  const [elapsed, setElapsed] = useState(0);
   const [transcribing, setTranscribing] = useState(false);
   const [audioSource, setAudioSource] = useState<"voice" | "whatsapp_audio" | null>(null);
   const [audioFileName, setAudioFileName] = useState<string | null>(null);
   const [transcript, setTranscript] = useState("");
 
-  useEffect(() => () => {
-    recorderRef.current?.cancel();
-    if (timerRef.current) clearInterval(timerRef.current);
+  useEffect(() => {
+    // reset transcript state when switching tabs
   }, []);
 
   const activeText = tab === "upload"
     ? file?.text ?? ""
     : (tab === "voice" || tab === "whatsapp") ? transcript : text;
-  const canProcess = activeText.trim().length > 4 && !busy && !transcribing && !recording;
+  const canProcess = activeText.trim().length > 4 && !busy && !transcribing;
 
   const handleFile = async (f: File) => {
     const isText = f.type === "text/plain" || f.name.toLowerCase().endsWith(".txt");

@@ -174,28 +174,42 @@ function AIAssistantPage() {
 
     let assistant: CopilotMessage;
     try {
-      const history = messages.slice(-6).map((m) => ({ role: m.role, content: m.text }));
-      const result = await ask({ data: { question, language, snapshot: snap, history } });
-
-      if (result.mode === "ai" && result.text) {
+      // Business Health Check is answered deterministically so figures are
+      // always evidence-grounded and formatted consistently.
+      if (detectIntent(question) === "health_check") {
+        const report = formatHealthReport(snap, language);
         assistant = {
           id: crypto.randomUUID(),
           role: "assistant",
-          text: result.text,
+          text: report.text,
           time: nowTime(),
-          evidence: result.evidence,
+          evidence: report.evidence,
           mode: "ai",
         };
       } else {
-        const fallback = mockAnswer(question, snap, language);
-        assistant = {
-          id: crypto.randomUUID(),
-          role: "assistant",
-          text: fallback.text,
-          time: nowTime(),
-          evidence: fallback.evidence,
-          mode: "mock",
-        };
+        const history = messages.slice(-6).map((m) => ({ role: m.role, content: m.text }));
+        const result = await ask({ data: { question, language, snapshot: snap, history } });
+
+        if (result.mode === "ai" && result.text) {
+          assistant = {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            text: result.text,
+            time: nowTime(),
+            evidence: result.evidence,
+            mode: "ai",
+          };
+        } else {
+          const fallback = mockAnswer(question, snap, language);
+          assistant = {
+            id: crypto.randomUUID(),
+            role: "assistant",
+            text: fallback.text,
+            time: nowTime(),
+            evidence: fallback.evidence,
+            mode: "mock",
+          };
+        }
       }
     } catch {
       const fallback = mockAnswer(question, snap, language);

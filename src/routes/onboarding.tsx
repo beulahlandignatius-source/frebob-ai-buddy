@@ -93,7 +93,8 @@ function Onboarding() {
         })
         .eq("id", userId);
     }
-    setSaving(false);
+    // Short perceived-transition delay before entering business setup
+    await new Promise((r) => setTimeout(r, 700));
     navigate({ to: "/business-setup" });
   };
 

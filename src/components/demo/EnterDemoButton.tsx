@@ -1,4 +1,3 @@
-import { Sparkles } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { useDemo } from "@/lib/demo/context";
 import { cn } from "@/lib/utils";
@@ -29,11 +28,11 @@ export function EnterDemoButton({
       <button
         onClick={onClick}
         className={cn(
-          "inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline",
+          "inline-flex items-center text-sm font-semibold text-primary hover:underline",
           className,
         )}
       >
-        <Sparkles className="h-4 w-4" /> {label}
+        {label}
       </button>
     );
   }
@@ -49,9 +48,7 @@ export function EnterDemoButton({
         className,
       )}
     >
-      <span className="inline-flex items-center gap-1.5">
-        <Sparkles className="h-4 w-4" /> {label}
-      </span>
+      <span>{label}</span>
       {subtitle && (
         <span className="text-[11px] font-normal opacity-80">{subtitle}</span>
       )}

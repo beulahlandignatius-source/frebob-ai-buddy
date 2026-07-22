@@ -197,10 +197,19 @@ export const setVoiceStatus = createServerFn({ method: "POST" })
     return d;
   })
   .handler(async ({ data, context }) => {
-    // Admin-only in the sense of "unlisted page" — RLS uses service_role for
-    // writes. We use supabaseAdmin here because yarngpt_voice_status writes
-    // aren't user-scoped and we don't want to widen the anon/authenticated
-    // grant.
+    // Admin-only: verify caller has the 'admin' role under RLS before touching
+    // shared config. Uses the caller's authenticated supabase client so we
+    // never elevate through the service-role client for authorization.
+    const { data: roleRow, error: roleErr } = await context.supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (roleErr || !roleRow) {
+      throw new Error("Forbidden: admin role required");
+    }
+
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     await supabaseAdmin
       .from("yarngpt_voice_status")

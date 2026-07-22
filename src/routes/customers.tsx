@@ -1,21 +1,27 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { UserPlus, Search, Users, Phone, MapPin } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
+import { UserPlus, Search, Users, AlertTriangle } from "lucide-react";
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
+import { Select } from "@/components/fb/Input";
 import {
-  PageCanvas, SurfaceHeader, SectionLabel, StatusBadge,
+  PageCanvas, SurfaceHeader, SectionLabel,
   LoadingSkeleton, ErrorState, EmptyState,
 } from "@/components/dash";
-import { customers, fmt, type Customer } from "@/lib/mock-data";
-import { cn } from "@/lib/utils";
-import { toast } from "sonner";
+import {
+  CustomerCard, CustomerTable, CustomerSummaryCard, OutstandingCustomerCard,
+} from "@/components/customers";
+import {
+  listCustomers, computeMetrics, primaryStatus, summariseCustomers,
+  formatMoney, normalizePhone,
+  type Customer, type CustomerMetrics, type CustomerStatus,
+} from "@/lib/customers-store";
 
 export const Route = createFileRoute("/customers")({
   head: () => ({
     meta: [
       { title: "Customers — FreBob" },
-      { name: "description", content: "Track your customers, their spending and outstanding balances." },
+      { name: "description", content: "Manage your customers, orders, balances and activity." },
       { property: "og:title", content: "Customers — FreBob" },
       { property: "og:description", content: "Grow relationships with your regulars, one order at a time." },
     ],
@@ -23,18 +29,92 @@ export const Route = createFileRoute("/customers")({
   component: CustomersPage,
 });
 
+type Filter = "all" | "new" | "repeat" | "with_balance" | "without_balance" | "recent" | "inactive";
+type Sort = "smart" | "recent" | "outstanding_desc" | "spent_desc" | "orders_desc" | "name" | "newest";
+
+type Row = { customer: Customer; metrics: CustomerMetrics; status: CustomerStatus };
+
 function CustomersPage() {
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState<Filter>("all");
+  const [sort, setSort] = useState<Sort>("smart");
   const [state, setState] = useState<"ready" | "loading" | "error">("ready");
+  const [tick, setTick] = useState(0);
 
-  const rows = useMemo(() => {
-    if (!query) return customers;
-    const q = query.toLowerCase();
-    return customers.filter((c) => c.name.toLowerCase().includes(q) || c.phone.includes(q) || c.location.toLowerCase().includes(q));
-  }, [query]);
+  useEffect(() => {
+    // ensure client-only render triggers metrics from localStorage
+    setTick((t) => t + 1);
+  }, []);
 
-  const totalSpent = customers.reduce((s, c) => s + c.spent, 0);
-  const totalOwed = customers.reduce((s, c) => s + c.owes, 0);
+  const rows: Row[] = useMemo(() => {
+    void tick;
+    const raw = listCustomers();
+    return raw.map((c) => {
+      const m = computeMetrics(c.id);
+      return { customer: c, metrics: m, status: primaryStatus(c, m) };
+    });
+  }, [tick]);
+
+  const summary = useMemo(() => { void tick; return summariseCustomers(); }, [tick]);
+
+  const filtered: Row[] = useMemo(() => {
+    let list = rows;
+    if (query.trim()) {
+      const q = query.trim().toLowerCase();
+      const qPhone = normalizePhone(q);
+      list = list.filter((r) => {
+        const c = r.customer;
+        return (
+          c.name.toLowerCase().includes(q) ||
+          (c.email && c.email.includes(q)) ||
+          (c.phone && c.phone.toLowerCase().includes(q)) ||
+          (qPhone && c.normalizedPhone && c.normalizedPhone === qPhone)
+        );
+      });
+    }
+    const recentCutoff = Date.now() - 30 * 86_400_000;
+    const inactiveCutoff = Date.now() - 60 * 86_400_000;
+    switch (filter) {
+      case "new": list = list.filter((r) => r.status === "new"); break;
+      case "repeat": list = list.filter((r) => r.metrics.isRepeat); break;
+      case "with_balance": list = list.filter((r) => r.metrics.hasBalance); break;
+      case "without_balance": list = list.filter((r) => !r.metrics.hasBalance); break;
+      case "recent": list = list.filter((r) => new Date(r.metrics.lastActivityAt).getTime() >= recentCutoff); break;
+      case "inactive": list = list.filter((r) => new Date(r.metrics.lastActivityAt).getTime() < inactiveCutoff); break;
+    }
+    const sorted = [...list];
+    switch (sort) {
+      case "recent":
+        sorted.sort((a, b) => (a.metrics.lastActivityAt < b.metrics.lastActivityAt ? 1 : -1)); break;
+      case "outstanding_desc":
+        sorted.sort((a, b) => b.metrics.outstanding - a.metrics.outstanding); break;
+      case "spent_desc":
+        sorted.sort((a, b) => b.metrics.totalSpent - a.metrics.totalSpent); break;
+      case "orders_desc":
+        sorted.sort((a, b) => b.metrics.totalOrders - a.metrics.totalOrders); break;
+      case "name":
+        sorted.sort((a, b) => a.customer.name.localeCompare(b.customer.name)); break;
+      case "newest":
+        sorted.sort((a, b) => (a.customer.createdAt < b.customer.createdAt ? 1 : -1)); break;
+      case "smart":
+      default:
+        sorted.sort((a, b) => {
+          if (a.metrics.hasBalance !== b.metrics.hasBalance) return a.metrics.hasBalance ? -1 : 1;
+          if (a.metrics.hasBalance && b.metrics.hasBalance) return b.metrics.outstanding - a.metrics.outstanding;
+          const ta = new Date(a.metrics.lastActivityAt).getTime();
+          const tb = new Date(b.metrics.lastActivityAt).getTime();
+          if (ta !== tb) return tb - ta;
+          return a.customer.name.localeCompare(b.customer.name);
+        });
+    }
+    return sorted;
+  }, [rows, query, filter, sort]);
+
+  const outstandingRows = useMemo(
+    () => rows.filter((r) => r.metrics.hasBalance).sort((a, b) => b.metrics.outstanding - a.metrics.outstanding),
+    [rows],
+  );
 
   return (
     <AppShell>
@@ -42,107 +122,100 @@ function CustomersPage() {
         <SurfaceHeader
           eyebrow="Customers"
           title="Your customer list"
-          subtitle={`${customers.length} customers · ${fmt(totalOwed)} outstanding`}
+          subtitle="Manage customer details, orders and balances"
           action={
-            <Button size="sm" onClick={() => toast("Add customer coming soon")}>
+            <Button size="sm" onClick={() => navigate({ to: "/customers/new" })}>
               <UserPlus className="h-4 w-4 mr-1" /> Add customer
             </Button>
           }
         />
 
-        <section className="grid grid-cols-3 gap-3 mb-6">
-          <MiniStat label="Customers" value={String(customers.length)} />
-          <MiniStat label="Lifetime spend" value={fmt(totalSpent)} tone="success" />
-          <MiniStat label="Owed to you" value={fmt(totalOwed)} tone="accent" />
+        <section className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+          <CustomerSummaryCard label="Total customers" value={summary.total} />
+          <CustomerSummaryCard label="Repeat" value={summary.repeat} tone="success" />
+          <CustomerSummaryCard label="With balance" value={summary.withBalance} hint={summary.totalOutstanding > 0 ? formatMoney(summary.totalOutstanding) : undefined} tone={summary.withBalance ? "warning" : undefined} />
+          <CustomerSummaryCard label="New this month" value={summary.newThisMonth} tone="accent" />
         </section>
 
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by name, phone or city"
-              className="w-full h-10 pl-9 pr-3 rounded-full border border-secondary bg-card text-sm focus:outline-none focus:border-primary/40"
+              placeholder="Search by name, phone or email"
+              className="w-full h-11 pl-9 pr-3 rounded-full border border-secondary bg-card text-sm focus:outline-none focus:border-primary/40"
             />
           </div>
-          <Button size="sm" variant="ghost" onClick={() => { setState("loading"); setTimeout(() => setState("ready"), 700); }}>
-            Refresh
-          </Button>
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:gap-2">
+            <Select value={filter} onChange={(e) => setFilter(e.target.value as Filter)} className="!h-11 !rounded-full">
+              <option value="all">All customers</option>
+              <option value="new">New</option>
+              <option value="repeat">Repeat</option>
+              <option value="with_balance">With balances</option>
+              <option value="without_balance">Without balances</option>
+              <option value="recent">Recently active</option>
+              <option value="inactive">Inactive</option>
+            </Select>
+            <Select value={sort} onChange={(e) => setSort(e.target.value as Sort)} className="!h-11 !rounded-full">
+              <option value="smart">Smart order</option>
+              <option value="recent">Recently active</option>
+              <option value="outstanding_desc">Highest balance</option>
+              <option value="spent_desc">Highest spend</option>
+              <option value="orders_desc">Most orders</option>
+              <option value="name">Name A–Z</option>
+              <option value="newest">Newest</option>
+            </Select>
+          </div>
         </div>
 
-        <SectionLabel>Customers</SectionLabel>
+        {outstandingRows.length > 0 && (
+          <section className="mb-6">
+            <SectionLabel right={<span className="text-[11px] text-muted-foreground inline-flex items-center gap-1"><AlertTriangle className="h-3 w-3" />{formatMoney(summary.totalOutstanding)} outstanding</span>}>
+              Customers who owe you
+            </SectionLabel>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {outstandingRows.slice(0, 4).map((r) => (
+                <OutstandingCustomerCard key={r.customer.id} customer={r.customer} metrics={r.metrics} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        <SectionLabel right={<span className="text-[11px] text-muted-foreground">{filtered.length} shown</span>}>
+          All customers
+        </SectionLabel>
+
         {state === "loading" ? (
           <LoadingSkeleton rows={5} />
         ) : state === "error" ? (
-          <ErrorState onRetry={() => setState("ready")} />
+          <ErrorState onRetry={() => setState("ready")} message="FreBob could not load your customers. Please try again." />
         ) : rows.length === 0 ? (
           <EmptyState
             icon={Users}
+            title="No customers yet"
+            description="Add your first customer or approve a customer record to start building your customer list."
+            action={<Link to="/customers/new"><Button size="sm"><UserPlus className="h-4 w-4 mr-1" /> Add customer</Button></Link>}
+          />
+        ) : filtered.length === 0 ? (
+          <EmptyState
+            icon={Users}
             title="No customers match"
-            description="Try a different search or add your first customer."
-            action={<Button size="sm" onClick={() => setQuery("")}>Clear search</Button>}
+            description="No customers match your search or filters."
+            action={<Button size="sm" variant="ghost" onClick={() => { setQuery(""); setFilter("all"); }}>Reset filters</Button>}
           />
         ) : (
-          <div className="grid gap-3 sm:grid-cols-2">
-            {rows.map((c) => <CustomerCard key={c.id} c={c} />)}
-          </div>
+          <>
+            <div className="grid gap-3 sm:grid-cols-2 md:hidden">
+              {filtered.map((r) => (
+                <CustomerCard key={r.customer.id} customer={r.customer} metrics={r.metrics} status={r.status} />
+              ))}
+            </div>
+            <CustomerTable rows={filtered} />
+          </>
         )}
       </PageCanvas>
     </AppShell>
-  );
-}
-
-function CustomerCard({ c }: { c: Customer }) {
-  const initials = c.name.split(" ").map((n) => n[0]).slice(0, 2).join("");
-  return (
-    <div className="bg-card border border-secondary rounded-[20px] p-4">
-      <div className="flex items-start gap-3">
-        <div className="h-11 w-11 rounded-full brand-gradient text-primary-foreground font-bold flex items-center justify-center shrink-0">
-          {initials}
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <p className="font-bold truncate">{c.name}</p>
-            <StatusBadge tone={c.tag === "vip" ? "success" : c.tag === "new" ? "info" : "neutral"}>
-              {c.tag === "vip" ? "VIP" : c.tag === "new" ? "New" : "Regular"}
-            </StatusBadge>
-          </div>
-          <p className="text-xs text-muted-foreground mt-1 flex items-center gap-3">
-            <span className="inline-flex items-center gap-1"><Phone className="h-3 w-3" /> {c.phone}</span>
-            <span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3" /> {c.location}</span>
-          </p>
-        </div>
-      </div>
-      <div className="mt-4 grid grid-cols-3 gap-2 text-center">
-        <div>
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Orders</p>
-          <p className="font-display text-sm font-extrabold mt-0.5">{c.orders}</p>
-        </div>
-        <div>
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Spent</p>
-          <p className="font-display text-sm font-extrabold mt-0.5 text-[var(--success)]">{fmt(c.spent)}</p>
-        </div>
-        <div>
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Owes</p>
-          <p className={cn("font-display text-sm font-extrabold mt-0.5", c.owes > 0 ? "text-accent" : "text-muted-foreground")}>
-            {c.owes > 0 ? fmt(c.owes) : "—"}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function MiniStat({ label, value, tone }: { label: string; value: string; tone?: "success" | "accent" }) {
-  return (
-    <div className="bg-card p-4 rounded-[20px] border border-secondary">
-      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-primary/50">{label}</p>
-      <p className={cn(
-        "mt-2 font-display text-[18px] sm:text-[20px] font-extrabold tracking-tight leading-none truncate",
-        tone === "success" ? "text-[var(--success)]" : tone === "accent" ? "text-accent" : "text-foreground",
-      )}>{value}</p>
-    </div>
   );
 }

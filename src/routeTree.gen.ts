@@ -19,6 +19,7 @@ import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as InventoryRouteImport } from './routes/inventory'
+import { Route as ExpensesRouteImport } from './routes/expenses'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CustomersRouteImport } from './routes/customers'
 import { Route as BusinessSetupRouteImport } from './routes/business-setup'
@@ -93,6 +94,11 @@ const NotificationsRoute = NotificationsRouteImport.update({
 const InventoryRoute = InventoryRouteImport.update({
   id: '/inventory',
   path: '/inventory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExpensesRoute = ExpensesRouteImport.update({
+  id: '/expenses',
+  path: '/expenses',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -231,6 +237,7 @@ export interface FileRoutesByFullPath {
   '/business-setup': typeof BusinessSetupRoute
   '/customers': typeof CustomersRouteWithChildren
   '/dashboard': typeof DashboardRoute
+  '/expenses': typeof ExpensesRoute
   '/inventory': typeof InventoryRoute
   '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
@@ -268,6 +275,7 @@ export interface FileRoutesByTo {
   '/business-setup': typeof BusinessSetupRoute
   '/customers': typeof CustomersRouteWithChildren
   '/dashboard': typeof DashboardRoute
+  '/expenses': typeof ExpensesRoute
   '/inventory': typeof InventoryRoute
   '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
@@ -306,6 +314,7 @@ export interface FileRoutesById {
   '/business-setup': typeof BusinessSetupRoute
   '/customers': typeof CustomersRouteWithChildren
   '/dashboard': typeof DashboardRoute
+  '/expenses': typeof ExpensesRoute
   '/inventory': typeof InventoryRoute
   '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
@@ -345,6 +354,7 @@ export interface FileRouteTypes {
     | '/business-setup'
     | '/customers'
     | '/dashboard'
+    | '/expenses'
     | '/inventory'
     | '/notifications'
     | '/onboarding'
@@ -382,6 +392,7 @@ export interface FileRouteTypes {
     | '/business-setup'
     | '/customers'
     | '/dashboard'
+    | '/expenses'
     | '/inventory'
     | '/notifications'
     | '/onboarding'
@@ -419,6 +430,7 @@ export interface FileRouteTypes {
     | '/business-setup'
     | '/customers'
     | '/dashboard'
+    | '/expenses'
     | '/inventory'
     | '/notifications'
     | '/onboarding'
@@ -457,6 +469,7 @@ export interface RootRouteChildren {
   BusinessSetupRoute: typeof BusinessSetupRoute
   CustomersRoute: typeof CustomersRouteWithChildren
   DashboardRoute: typeof DashboardRoute
+  ExpensesRoute: typeof ExpensesRoute
   InventoryRoute: typeof InventoryRoute
   NotificationsRoute: typeof NotificationsRoute
   OnboardingRoute: typeof OnboardingRoute
@@ -543,6 +556,13 @@ declare module '@tanstack/react-router' {
       path: '/inventory'
       fullPath: '/inventory'
       preLoaderRoute: typeof InventoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/expenses': {
+      id: '/expenses'
+      path: '/expenses'
+      fullPath: '/expenses'
+      preLoaderRoute: typeof ExpensesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -835,6 +855,7 @@ const rootRouteChildren: RootRouteChildren = {
   BusinessSetupRoute: BusinessSetupRoute,
   CustomersRoute: CustomersRouteWithChildren,
   DashboardRoute: DashboardRoute,
+  ExpensesRoute: ExpensesRoute,
   InventoryRoute: InventoryRoute,
   NotificationsRoute: NotificationsRoute,
   OnboardingRoute: OnboardingRoute,

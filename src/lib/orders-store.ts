@@ -11,18 +11,23 @@ import {
 } from "./records-store";
 
 export type PaymentMethod = "cash" | "bank_transfer" | "pos" | "other";
+export type PaymentKind = "payment" | "deposit" | "balance" | "refund";
 
 export type Payment = {
   id: string;
   orderId: string; // matches ApprovedRecord.reference
   amount: number;
   method: PaymentMethod;
+  kind: PaymentKind;
   reference: string;
+  proofUrl?: string; // data URL of uploaded proof (screenshot / receipt / POS slip)
+  proofName?: string;
   date: string; // ISO
   notes: string;
   recordedBy: string;
   createdAt: string;
 };
+
 
 export type OrderStatusOverride = {
   orderId: string;
@@ -89,7 +94,10 @@ export function recordPayment(input: {
   orderId: string;
   amount: number;
   method: PaymentMethod;
+  kind?: PaymentKind;
   reference?: string;
+  proofUrl?: string;
+  proofName?: string;
   date?: string;
   notes?: string;
   recordedBy?: string;
@@ -99,7 +107,10 @@ export function recordPayment(input: {
     orderId: input.orderId,
     amount: Math.max(0, Math.round(input.amount)),
     method: input.method,
+    kind: input.kind ?? "payment",
     reference: input.reference?.trim() ?? "",
+    proofUrl: input.proofUrl,
+    proofName: input.proofName,
     date: input.date ?? new Date().toISOString(),
     notes: input.notes?.trim() ?? "",
     recordedBy: input.recordedBy ?? "You",
@@ -109,6 +120,11 @@ export function recordPayment(input: {
   rows.push(row);
   write(PAY_KEY, rows);
   return row;
+}
+
+export function deletePayment(id: string) {
+  const rows = read<Payment>(PAY_KEY).filter((p) => p.id !== id);
+  write(PAY_KEY, rows);
 }
 
 // ----- Status overrides -------------------------------------------------------
@@ -130,6 +146,21 @@ export function setOrderStatus(orderId: string, status: OrderStatus): OrderStatu
   return row;
 }
 
+// ----- Payment status overrides ----------------------------------------------
+
+const PAY_STATUS_KEY = "frebob.orderPaymentStatusOverrides.v1";
+type PaymentStatusOverride = { orderId: string; status: PaymentStatus; updatedAt: string };
+
+export function getPaymentStatusOverride(orderId: string): PaymentStatus | undefined {
+  return read<PaymentStatusOverride>(PAY_STATUS_KEY).find((r) => r.orderId === orderId)?.status;
+}
+
+export function setPaymentStatusOverride(orderId: string, status: PaymentStatus | null) {
+  const rows = read<PaymentStatusOverride>(PAY_STATUS_KEY).filter((r) => r.orderId !== orderId);
+  if (status) rows.push({ orderId, status, updatedAt: new Date().toISOString() });
+  write(PAY_STATUS_KEY, rows);
+}
+
 // ----- Order derivation -------------------------------------------------------
 
 function derivePaymentStatus(total: number, paid: number): PaymentStatus {
@@ -143,16 +174,18 @@ function toOrder(rec: ApprovedRecord, payments: Payment[], override?: OrderStatu
   const recPays = payments.filter((p) => p.orderId === rec.reference);
   const total = rec.data.total_amount ?? 0;
   const paidFromRecord = rec.data.amount_paid ?? 0;
-  const paidExtra = recPays.reduce((s, p) => s + p.amount, 0);
-  const paid = paidFromRecord + paidExtra;
+  const paidExtra = recPays.reduce((s, p) => s + (p.kind === "refund" ? -p.amount : p.amount), 0);
+  const paid = Math.max(paidFromRecord + paidExtra, 0);
   const balance = Math.max(total - paid, 0);
-  const paymentStatus = derivePaymentStatus(total, paid);
+  const payOverride = getPaymentStatusOverride(rec.reference);
+  const paymentStatus = payOverride ?? derivePaymentStatus(total, paid);
 
   // Auto-complete when paid in full unless override says otherwise
   let orderStatus: OrderStatus = override?.status ?? rec.data.order_status;
   if (!override && paymentStatus === "paid" && orderStatus !== "cancelled" && orderStatus !== "completed") {
     // keep record's status; auto-completion happens through explicit updates
   }
+
 
   return {
     id: rec.reference,
@@ -216,13 +249,15 @@ export function buildTimeline(order: Order): TimelineEvent[] {
     });
   }
   for (const p of order.payments.slice().sort((a, b) => (a.date < b.date ? -1 : 1))) {
+    const isRefund = p.kind === "refund";
     events.push({
       time: p.date,
-      title: `Payment received · ${formatMoney(p.amount)}`,
+      title: `${isRefund ? "Refund issued" : kindLabel(p.kind) + " received"} · ${formatMoney(p.amount)}`,
       detail: `${methodLabel(p.method)}${p.reference ? ` · ref ${p.reference}` : ""}`,
       kind: "payment",
     });
   }
+
   const override = getStatusOverride(order.id);
   if (override) {
     events.push({
@@ -242,6 +277,18 @@ export function formatMoney(n: number) { return NGN.format(n || 0); }
 export function methodLabel(m: PaymentMethod) {
   return m === "cash" ? "Cash" : m === "bank_transfer" ? "Bank transfer" : m === "pos" ? "POS" : "Other";
 }
+
+export function kindLabel(k: PaymentKind) {
+  return k === "deposit" ? "Deposit" : k === "balance" ? "Balance payment" : k === "refund" ? "Refund" : "Payment";
+}
+
+export const PAYMENT_KIND_OPTIONS: { value: PaymentKind; label: string; hint: string }[] = [
+  { value: "payment", label: "Payment", hint: "Standard payment against this order" },
+  { value: "deposit", label: "Deposit", hint: "Down payment / part payment upfront" },
+  { value: "balance", label: "Balance payment", hint: "Settle the remaining balance" },
+  { value: "refund", label: "Refund", hint: "Money returned to the customer" },
+];
+
 
 export function statusLabel(s: OrderStatus) {
   switch (s) {

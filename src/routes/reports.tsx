@@ -13,6 +13,7 @@ import { DateRangeBar } from "@/components/reports/DateRangeBar";
 import { TabsBar } from "@/components/reports/primitives";
 import {
   OverviewTab, SalesTab, PaymentsTab, OrdersTab, InventoryTab, CustomersTab, AIInsightsTab,
+  ExpensesTab, ProfitTab,
 } from "@/components/reports/tabs";
 import {
   resolvePreset, resolveCompare, type PresetKey, type CompareKey,
@@ -20,7 +21,8 @@ import {
 import { DemoHint } from "@/components/demo/DemoHint";
 import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
 
-const TAB_VALUES = ["overview", "sales", "payments", "orders", "inventory", "customers", "ai"] as const;
+const TAB_VALUES = ["overview", "sales", "expenses", "profit", "payments", "orders", "inventory", "customers", "ai"] as const;
+
 type TabKey = typeof TAB_VALUES[number];
 
 const searchSchema = z.object({
@@ -70,6 +72,8 @@ function Reports() {
   const tabs: { value: TabKey; label: string }[] = [
     { value: "overview", label: "Overview" },
     { value: "sales", label: "Sales" },
+    { value: "expenses", label: "Expenses" },
+    { value: "profit", label: "Profit" },
     { value: "payments", label: "Payments" },
     { value: "orders", label: "Orders" },
     { value: "inventory", label: "Inventory" },
@@ -84,7 +88,7 @@ function Reports() {
         <SurfaceHeader
           eyebrow="Reports"
           title="Business performance"
-          subtitle="Understand your sales, payments, orders, customers and stock"
+          subtitle="Understand your sales, expenses, profit, payments, orders, customers and stock"
           action={
             <Button variant="outline" size="sm" onClick={() => toast("Export coming in Batch 8B")}>
               <Download className="h-4 w-4 mr-1" /> Export
@@ -117,6 +121,8 @@ function Reports() {
 
         {safeTab === "overview" && <OverviewTab range={range} compareRange={compareRange} refreshKey={refreshKey} />}
         {safeTab === "sales" && <SalesTab range={range} compareRange={compareRange} refreshKey={refreshKey} />}
+        {safeTab === "expenses" && <ExpensesTab range={range} compareRange={compareRange} refreshKey={refreshKey} />}
+        {safeTab === "profit" && <ProfitTab range={range} compareRange={compareRange} refreshKey={refreshKey} />}
         {safeTab === "payments" && <PaymentsTab range={range} compareRange={compareRange} refreshKey={refreshKey} />}
         {safeTab === "orders" && <OrdersTab range={range} compareRange={compareRange} refreshKey={refreshKey} />}
         {safeTab === "inventory" && <InventoryTab range={range} compareRange={compareRange} refreshKey={refreshKey} />}
@@ -128,3 +134,4 @@ function Reports() {
     </AppShell>
   );
 }
+

@@ -15,6 +15,8 @@ import {
   fmtNaira, fmtPct,
   type SalesReport, type PaymentsReport, type OrdersReport, type InventoryReport, type CustomersReport, type Overview,
 } from "@/lib/reporting/service";
+import { listExpenses, summariseExpenses, categoryLabel } from "@/lib/expenses-store";
+
 import type { DateRange } from "@/lib/reporting/period";
 import { formatRange } from "@/lib/reporting/period";
 import { generateInsight } from "@/lib/reporting/ai-insights.functions";
@@ -428,6 +430,113 @@ export function CustomersTab({ range, refreshKey }: TabProps) {
     </div>
   );
 }
+
+/* -------- Expenses -------- */
+export function ExpensesTab({ range, refreshKey }: TabProps) {
+  const [rows, setRows] = useState<ReturnType<typeof listExpenses>>([]);
+  useEffect(() => {
+    const all = listExpenses();
+    setRows(all.filter((e) => e.date >= range.from.toISOString() && e.date <= range.to.toISOString()));
+  }, [range, refreshKey]);
+  const summary = summariseExpenses(rows);
+  return (
+    <div className="space-y-6">
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <SmallStat label="Total expenses" value={fmtNaira(summary.total)} />
+        <SmallStat label="Records" value={String(summary.count)} />
+        <SmallStat label="Top category" value={summary.byCategory[0]?.label ?? "—"} sub={summary.byCategory[0] ? fmtNaira(summary.byCategory[0].amount) : undefined} />
+        <SmallStat label="Categories used" value={String(summary.byCategory.length)} />
+      </section>
+
+      <div className="flex justify-end">
+        <Link to="/expenses"><Button size="sm">Manage expenses</Button></Link>
+      </div>
+
+      <section>
+        <SectionTitle>Spend by category</SectionTitle>
+        <ReportTable
+          rows={summary.byCategory}
+          empty="No expenses recorded in this period yet."
+          columns={[
+            { key: "cat", header: "Category", render: (r) => <span className="font-medium">{r.label}</span> },
+            { key: "amt", header: "Amount", render: (r) => <span className="font-semibold text-accent">{fmtNaira(r.amount)}</span> },
+            { key: "share", header: "% of total", render: (r) => `${summary.total ? ((r.amount / summary.total) * 100).toFixed(1) : "0.0"}%` },
+          ]}
+        />
+      </section>
+
+      <section>
+        <SectionTitle>Recent expenses in this period</SectionTitle>
+        <ReportTable
+          rows={rows.slice(0, 12)}
+          empty="Add expenses under Expenses to see them here."
+          columns={[
+            { key: "d", header: "Date", render: (r) => new Date(r.date).toLocaleDateString("en-NG", { day: "numeric", month: "short" }) },
+            { key: "c", header: "Category", render: (r) => categoryLabel(r.category) },
+            { key: "v", header: "Vendor", render: (r) => r.vendor || "—" },
+            { key: "a", header: "Amount", render: (r) => <span className="font-semibold text-accent">{fmtNaira(r.amount)}</span> },
+          ]}
+        />
+      </section>
+    </div>
+  );
+}
+
+/* -------- Profit Summary -------- */
+export function ProfitTab({ range, refreshKey }: TabProps) {
+  const [sales, setSales] = useState<SalesReport | null>(null);
+  const [pay, setPay] = useState<PaymentsReport | null>(null);
+  const [expenses, setExpenses] = useState<ReturnType<typeof listExpenses>>([]);
+  useEffect(() => {
+    setSales(getSalesReport(range, null));
+    setPay(getPaymentsReport(range));
+    setExpenses(listExpenses().filter((e) => e.date >= range.from.toISOString() && e.date <= range.to.toISOString()));
+  }, [range, refreshKey]);
+  if (!sales || !pay) return <TabSkeleton />;
+
+  const revenue = sales.totals.validSales;
+  const received = pay.totals.moneyReceived;
+  const expTotal = expenses.reduce((s, r) => s + r.amount, 0);
+  const grossProfit = revenue - expTotal;
+  const cashProfit = received - expTotal;
+  const margin = revenue > 0 ? (grossProfit / revenue) * 100 : 0;
+  const byCat = summariseExpenses(expenses).byCategory;
+
+  return (
+    <div className="space-y-6">
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <SmallStat label="Revenue (valid sales)" value={fmtNaira(revenue)} />
+        <SmallStat label="Expenses" value={fmtNaira(expTotal)} />
+        <SmallStat label="Gross profit" value={fmtNaira(grossProfit)} sub={`Margin ${margin.toFixed(1)}%`} />
+        <SmallStat label="Cash profit" value={fmtNaira(cashProfit)} sub={`Received − expenses`} />
+      </section>
+
+      <div className="rounded-2xl border border-secondary bg-card p-4 text-sm text-muted-foreground">
+        <p className="text-foreground font-semibold mb-1">How this is calculated</p>
+        <ul className="list-disc pl-5 space-y-0.5">
+          <li><strong>Revenue</strong>: valid sales in this period (excludes cancelled).</li>
+          <li><strong>Expenses</strong>: all expenses logged in this period.</li>
+          <li><strong>Gross profit</strong> = Revenue − Expenses.</li>
+          <li><strong>Cash profit</strong> = Money received − Expenses.</li>
+        </ul>
+      </div>
+
+      <section>
+        <SectionTitle>Expense breakdown</SectionTitle>
+        <ReportTable
+          rows={byCat}
+          empty="No expenses recorded in this period yet."
+          columns={[
+            { key: "c", header: "Category", render: (r) => r.label },
+            { key: "a", header: "Amount", render: (r) => fmtNaira(r.amount) },
+            { key: "s", header: "% of revenue", render: (r) => `${revenue ? ((r.amount / revenue) * 100).toFixed(1) : "0.0"}%` },
+          ]}
+        />
+      </section>
+    </div>
+  );
+}
+
 
 /* -------- AI Insights -------- */
 export function AIInsightsTab({ range, compareRange, refreshKey }: TabProps) {

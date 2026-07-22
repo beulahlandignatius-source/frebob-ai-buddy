@@ -436,7 +436,7 @@ export function ExpensesTab({ range, refreshKey }: TabProps) {
   const [rows, setRows] = useState<ReturnType<typeof listExpenses>>([]);
   useEffect(() => {
     const all = listExpenses();
-    setRows(all.filter((e) => e.date >= range.fromISO && e.date <= range.toISO));
+    setRows(all.filter((e) => e.date >= range.from.toISOString() && e.date <= range.to.toISOString()));
   }, [range, refreshKey]);
   const summary = summariseExpenses(rows);
   return (
@@ -490,7 +490,7 @@ export function ProfitTab({ range, refreshKey }: TabProps) {
   useEffect(() => {
     setSales(getSalesReport(range, null));
     setPay(getPaymentsReport(range));
-    setExpenses(listExpenses().filter((e) => e.date >= range.fromISO && e.date <= range.toISO));
+    setExpenses(listExpenses().filter((e) => e.date >= range.from.toISOString() && e.date <= range.to.toISOString()));
   }, [range, refreshKey]);
   if (!sales || !pay) return <TabSkeleton />;
 

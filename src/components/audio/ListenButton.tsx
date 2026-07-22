@@ -19,7 +19,7 @@ type Props = {
   sourceType?: string;
   sourceRecordId?: string;
   className?: string;
-  size?: "sm" | "default";
+  size?: "sm" | "md" | "lg";
 };
 
 type State =

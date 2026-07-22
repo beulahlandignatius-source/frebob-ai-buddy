@@ -1,7 +1,8 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "@tanstack/react-router";
+import splashBot from "@/assets/frebob-splash-bot.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -22,15 +23,74 @@ function IndexRedirect() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const { data } = await supabase.auth.getUser();
+      // Minimum splash time so the animation reads.
+      const minDelay = new Promise((r) => setTimeout(r, 1600));
+      const authCheck = supabase.auth.getUser();
+      const [{ data }] = await Promise.all([authCheck, minDelay]);
       if (cancelled) return;
       navigate({ to: data.user ? "/dashboard" : "/auth", replace: true });
     })();
     return () => { cancelled = true; };
   }, [navigate]);
+
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-background">
-      <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" aria-label="Loading" />
+    <div
+      className="relative flex min-h-dvh items-center justify-center overflow-hidden"
+      style={{ background: "hsl(var(--primary))" }}
+    >
+      {/* soft glow */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse at center, hsl(var(--primary-glow) / 0.55), transparent 60%)",
+        }}
+      />
+      <div className="relative flex flex-col items-center gap-6">
+        <img
+          src={splashBot.url}
+          alt="FreBob"
+          width={200}
+          height={200}
+          className="h-40 w-40 sm:h-52 sm:w-52 object-contain splash-bot-anim drop-shadow-[0_20px_60px_rgba(0,0,0,0.35)]"
+        />
+        <div
+          className="h-1.5 w-40 overflow-hidden rounded-full bg-white/20"
+          aria-label="Loading"
+        >
+          <div className="h-full w-1/3 rounded-full bg-white/90 splash-bar-anim" />
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes splashZoom {
+          0%   { transform: scale(0.6); opacity: 0; }
+          40%  { transform: scale(1.08); opacity: 1; }
+          70%  { transform: scale(0.98); }
+          100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes splashFloat {
+          0%, 100% { transform: translateY(0); }
+          50%      { transform: translateY(-6px); }
+        }
+        .splash-bot-anim {
+          animation:
+            splashZoom 900ms cubic-bezier(0.22, 1, 0.36, 1) both,
+            splashFloat 2.4s ease-in-out 900ms infinite;
+          transform-origin: center;
+        }
+        @keyframes splashBar {
+          0%   { transform: translateX(-120%); }
+          100% { transform: translateX(320%); }
+        }
+        .splash-bar-anim {
+          animation: splashBar 1.4s ease-in-out infinite;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .splash-bot-anim, .splash-bar-anim { animation: none; }
+        }
+      `}</style>
     </div>
   );
 }

@@ -128,7 +128,7 @@ function Onboarding() {
               setLanguage={setLanguage}
             />
           ) : (
-            <SlideView slide={SLIDES[index]} />
+            <SlideView slide={SLIDES[index]} eager={index === 0} />
           )}
 
           {/* Dots + actions */}

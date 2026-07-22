@@ -1,14 +1,15 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { ClipboardPaste, Upload, Sparkles, X, FileText, ShieldAlert, Mic, Square, MessageCircle, Loader2, RefreshCw } from "lucide-react";
+import { ClipboardPaste, Upload, Sparkles, X, FileText, ShieldAlert, Mic, MessageCircle, Loader2, RefreshCw } from "lucide-react";
 import { AppShell } from "@/components/nav/AppShell";
 import { PageCanvas, SurfaceHeader, SectionLabel } from "@/components/dash";
 import { Button } from "@/components/fb/Button";
 import { DEMO_CONVERSATIONS } from "@/lib/demo-conversations";
 import { createConversation, type Language, type SourceType } from "@/lib/records-store";
 import { transcribeAudio } from "@/lib/transcribe.functions";
-import { blobToWavBase64, startMicRecorder, type MicRecorder } from "@/lib/audio-wav";
+import { blobToWavBase64 } from "@/lib/audio-wav";
+import { VoiceRecorder } from "@/components/audio/VoiceRecorder";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 

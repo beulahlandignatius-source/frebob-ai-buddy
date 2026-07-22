@@ -29,10 +29,13 @@ import { Route as AddRecordRouteImport } from './routes/add-record'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as OrdersIdRouteImport } from './routes/orders.$id'
 import { Route as CustomersNewRouteImport } from './routes/customers.new'
+import { Route as CustomersMergeHistoryRouteImport } from './routes/customers.merge-history'
+import { Route as CustomersDuplicatesRouteImport } from './routes/customers.duplicates'
 import { Route as CustomersIdRouteImport } from './routes/customers.$id'
 import { Route as ConversationsNewRouteImport } from './routes/conversations.new'
 import { Route as ConversationsIdRouteImport } from './routes/conversations.$id'
 import { Route as OrdersIdPaymentRouteImport } from './routes/orders.$id.payment'
+import { Route as CustomersDuplicatesGroupIdRouteImport } from './routes/customers.duplicates.$groupId'
 import { Route as CustomersIdEditRouteImport } from './routes/customers.$id.edit'
 
 const SignupRoute = SignupRouteImport.update({
@@ -135,6 +138,16 @@ const CustomersNewRoute = CustomersNewRouteImport.update({
   path: '/new',
   getParentRoute: () => CustomersRoute,
 } as any)
+const CustomersMergeHistoryRoute = CustomersMergeHistoryRouteImport.update({
+  id: '/merge-history',
+  path: '/merge-history',
+  getParentRoute: () => CustomersRoute,
+} as any)
+const CustomersDuplicatesRoute = CustomersDuplicatesRouteImport.update({
+  id: '/duplicates',
+  path: '/duplicates',
+  getParentRoute: () => CustomersRoute,
+} as any)
 const CustomersIdRoute = CustomersIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -155,6 +168,12 @@ const OrdersIdPaymentRoute = OrdersIdPaymentRouteImport.update({
   path: '/payment',
   getParentRoute: () => OrdersIdRoute,
 } as any)
+const CustomersDuplicatesGroupIdRoute =
+  CustomersDuplicatesGroupIdRouteImport.update({
+    id: '/$groupId',
+    path: '/$groupId',
+    getParentRoute: () => CustomersDuplicatesRoute,
+  } as any)
 const CustomersIdEditRoute = CustomersIdEditRouteImport.update({
   id: '/edit',
   path: '/edit',
@@ -183,9 +202,12 @@ export interface FileRoutesByFullPath {
   '/conversations/$id': typeof ConversationsIdRoute
   '/conversations/new': typeof ConversationsNewRoute
   '/customers/$id': typeof CustomersIdRouteWithChildren
+  '/customers/duplicates': typeof CustomersDuplicatesRouteWithChildren
+  '/customers/merge-history': typeof CustomersMergeHistoryRoute
   '/customers/new': typeof CustomersNewRoute
   '/orders/$id': typeof OrdersIdRouteWithChildren
   '/customers/$id/edit': typeof CustomersIdEditRoute
+  '/customers/duplicates/$groupId': typeof CustomersDuplicatesGroupIdRoute
   '/orders/$id/payment': typeof OrdersIdPaymentRoute
 }
 export interface FileRoutesByTo {
@@ -210,9 +232,12 @@ export interface FileRoutesByTo {
   '/conversations/$id': typeof ConversationsIdRoute
   '/conversations/new': typeof ConversationsNewRoute
   '/customers/$id': typeof CustomersIdRouteWithChildren
+  '/customers/duplicates': typeof CustomersDuplicatesRouteWithChildren
+  '/customers/merge-history': typeof CustomersMergeHistoryRoute
   '/customers/new': typeof CustomersNewRoute
   '/orders/$id': typeof OrdersIdRouteWithChildren
   '/customers/$id/edit': typeof CustomersIdEditRoute
+  '/customers/duplicates/$groupId': typeof CustomersDuplicatesGroupIdRoute
   '/orders/$id/payment': typeof OrdersIdPaymentRoute
 }
 export interface FileRoutesById {
@@ -238,9 +263,12 @@ export interface FileRoutesById {
   '/conversations/$id': typeof ConversationsIdRoute
   '/conversations/new': typeof ConversationsNewRoute
   '/customers/$id': typeof CustomersIdRouteWithChildren
+  '/customers/duplicates': typeof CustomersDuplicatesRouteWithChildren
+  '/customers/merge-history': typeof CustomersMergeHistoryRoute
   '/customers/new': typeof CustomersNewRoute
   '/orders/$id': typeof OrdersIdRouteWithChildren
   '/customers/$id/edit': typeof CustomersIdEditRoute
+  '/customers/duplicates/$groupId': typeof CustomersDuplicatesGroupIdRoute
   '/orders/$id/payment': typeof OrdersIdPaymentRoute
 }
 export interface FileRouteTypes {
@@ -267,9 +295,12 @@ export interface FileRouteTypes {
     | '/conversations/$id'
     | '/conversations/new'
     | '/customers/$id'
+    | '/customers/duplicates'
+    | '/customers/merge-history'
     | '/customers/new'
     | '/orders/$id'
     | '/customers/$id/edit'
+    | '/customers/duplicates/$groupId'
     | '/orders/$id/payment'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -294,9 +325,12 @@ export interface FileRouteTypes {
     | '/conversations/$id'
     | '/conversations/new'
     | '/customers/$id'
+    | '/customers/duplicates'
+    | '/customers/merge-history'
     | '/customers/new'
     | '/orders/$id'
     | '/customers/$id/edit'
+    | '/customers/duplicates/$groupId'
     | '/orders/$id/payment'
   id:
     | '__root__'
@@ -321,9 +355,12 @@ export interface FileRouteTypes {
     | '/conversations/$id'
     | '/conversations/new'
     | '/customers/$id'
+    | '/customers/duplicates'
+    | '/customers/merge-history'
     | '/customers/new'
     | '/orders/$id'
     | '/customers/$id/edit'
+    | '/customers/duplicates/$groupId'
     | '/orders/$id/payment'
   fileRoutesById: FileRoutesById
 }
@@ -492,6 +529,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CustomersNewRouteImport
       parentRoute: typeof CustomersRoute
     }
+    '/customers/merge-history': {
+      id: '/customers/merge-history'
+      path: '/merge-history'
+      fullPath: '/customers/merge-history'
+      preLoaderRoute: typeof CustomersMergeHistoryRouteImport
+      parentRoute: typeof CustomersRoute
+    }
+    '/customers/duplicates': {
+      id: '/customers/duplicates'
+      path: '/duplicates'
+      fullPath: '/customers/duplicates'
+      preLoaderRoute: typeof CustomersDuplicatesRouteImport
+      parentRoute: typeof CustomersRoute
+    }
     '/customers/$id': {
       id: '/customers/$id'
       path: '/$id'
@@ -520,6 +571,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrdersIdPaymentRouteImport
       parentRoute: typeof OrdersIdRoute
     }
+    '/customers/duplicates/$groupId': {
+      id: '/customers/duplicates/$groupId'
+      path: '/$groupId'
+      fullPath: '/customers/duplicates/$groupId'
+      preLoaderRoute: typeof CustomersDuplicatesGroupIdRouteImport
+      parentRoute: typeof CustomersDuplicatesRoute
+    }
     '/customers/$id/edit': {
       id: '/customers/$id/edit'
       path: '/edit'
@@ -542,13 +600,28 @@ const CustomersIdRouteWithChildren = CustomersIdRoute._addFileChildren(
   CustomersIdRouteChildren,
 )
 
+interface CustomersDuplicatesRouteChildren {
+  CustomersDuplicatesGroupIdRoute: typeof CustomersDuplicatesGroupIdRoute
+}
+
+const CustomersDuplicatesRouteChildren: CustomersDuplicatesRouteChildren = {
+  CustomersDuplicatesGroupIdRoute: CustomersDuplicatesGroupIdRoute,
+}
+
+const CustomersDuplicatesRouteWithChildren =
+  CustomersDuplicatesRoute._addFileChildren(CustomersDuplicatesRouteChildren)
+
 interface CustomersRouteChildren {
   CustomersIdRoute: typeof CustomersIdRouteWithChildren
+  CustomersDuplicatesRoute: typeof CustomersDuplicatesRouteWithChildren
+  CustomersMergeHistoryRoute: typeof CustomersMergeHistoryRoute
   CustomersNewRoute: typeof CustomersNewRoute
 }
 
 const CustomersRouteChildren: CustomersRouteChildren = {
   CustomersIdRoute: CustomersIdRouteWithChildren,
+  CustomersDuplicatesRoute: CustomersDuplicatesRouteWithChildren,
+  CustomersMergeHistoryRoute: CustomersMergeHistoryRoute,
   CustomersNewRoute: CustomersNewRoute,
 }
 

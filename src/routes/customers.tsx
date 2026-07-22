@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { UserPlus, Search, Users, AlertTriangle } from "lucide-react";
+import { UserPlus, Search, Users, AlertTriangle, GitMerge } from "lucide-react";
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
 import { Select } from "@/components/fb/Input";
@@ -124,11 +124,19 @@ function CustomersPage() {
           title="Your customer list"
           subtitle="Manage customer details, orders and balances"
           action={
-            <Button size="sm" onClick={() => navigate({ to: "/customers/new" })}>
-              <UserPlus className="h-4 w-4 mr-1" /> Add customer
-            </Button>
+            <div className="flex gap-2">
+              <Link to="/customers/duplicates">
+                <Button size="sm" variant="outline">
+                  <GitMerge className="h-4 w-4 mr-1" /> Duplicates
+                </Button>
+              </Link>
+              <Button size="sm" onClick={() => navigate({ to: "/customers/new" })}>
+                <UserPlus className="h-4 w-4 mr-1" /> Add customer
+              </Button>
+            </div>
           }
         />
+
 
         <section className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           <CustomerSummaryCard label="Total customers" value={summary.total} />

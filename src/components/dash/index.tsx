@@ -54,6 +54,7 @@ export function MetricCard({
   linkLabel,
   linkTo,
   isCurrency = true,
+  icon: Icon,
 }: {
   label: string;
   value: number;
@@ -62,15 +63,23 @@ export function MetricCard({
   linkLabel: string;
   linkTo: string;
   isCurrency?: boolean;
+  icon?: typeof Package;
 }) {
   const up = (changePct ?? 0) >= 0;
   return (
-    <div className="rounded-2xl border border-border bg-card p-5 shadow-card">
-      <p className="text-sm text-muted-foreground">{label}</p>
-      <p className="mt-2 text-2xl sm:text-[28px] font-bold tracking-tight">
+    <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 shadow-card">
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-sm text-muted-foreground">{label}</p>
+        {Icon && (
+          <div className="h-8 w-8 rounded-xl bg-secondary text-primary flex items-center justify-center shrink-0">
+            <Icon className="h-4 w-4" />
+          </div>
+        )}
+      </div>
+      <p className="mt-3 text-[26px] sm:text-[30px] font-bold tracking-tight leading-none">
         {isCurrency ? fmt(value) : value}
       </p>
-      <div className="mt-2 flex items-center gap-2 text-xs">
+      <div className="mt-3 flex items-center gap-2 text-xs">
         {typeof changePct === "number" && (
           <span
             className={cn(
@@ -96,6 +105,7 @@ export function MetricCard({
   );
 }
 
+
 /* ---------- QuickActionCard ---------- */
 export function QuickActionCard({
   icon: Icon,
@@ -103,16 +113,23 @@ export function QuickActionCard({
   hint,
   to,
   onClick,
+  primary = false,
 }: {
   icon: typeof Package;
   label: string;
   hint?: string;
   to?: string;
   onClick?: () => void;
+  primary?: boolean;
 }) {
   const content = (
     <>
-      <div className="h-10 w-10 rounded-xl brand-gradient text-primary-foreground flex items-center justify-center">
+      <div
+        className={cn(
+          "h-10 w-10 rounded-xl flex items-center justify-center shrink-0",
+          primary ? "brand-gradient text-primary-foreground" : "bg-secondary text-primary",
+        )}
+      >
         <Icon className="h-5 w-5" />
       </div>
       <div className="min-w-0">
@@ -121,11 +138,16 @@ export function QuickActionCard({
       </div>
     </>
   );
-  const cls =
-    "flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-card hover:border-primary/30 transition text-left w-full min-h-[68px]";
+  const cls = cn(
+    "flex items-center gap-3 rounded-2xl border p-4 transition text-left w-full min-h-[72px]",
+    primary
+      ? "border-primary/30 bg-[var(--surface-tinted)] shadow-elegant hover:border-primary/50"
+      : "border-border bg-card shadow-card hover:border-primary/30",
+  );
   if (to) return <Link to={to} className={cls}>{content}</Link>;
   return <button type="button" onClick={onClick} className={cls}>{content}</button>;
 }
+
 
 /* ---------- InventoryAlertRow ---------- */
 export function InventoryAlertRow({ item, onRestock }: { item: LowStock; onRestock?: (id: string) => void }) {

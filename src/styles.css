@@ -56,8 +56,9 @@
 
   /* Surfaces */
   --background: #ffffff;
-  --surface: #f7f7f8;
+  --surface: #f7f7f9;
   --surface-warm: #faf8f6;
+  --surface-tinted: #f5f1fc;
   --foreground: #1d1d1f;
 
   --card: #ffffff;
@@ -68,18 +69,18 @@
   /* Deep purple */
   --primary: #4b1fa6;
   --primary-foreground: #ffffff;
-  --primary-glow: #5a2abf;
+  --primary-glow: #5d2ac2;
 
   /* Orange accent */
   --accent: #f7931e;
   --accent-foreground: #1d1d1f;
 
-  --secondary: #f2eefb;
+  --secondary: #f5f1fc;
   --secondary-foreground: #3a1a80;
 
-  --muted: #f7f7f8;
-  --muted-foreground: #6e6e73;
-  --subtle-foreground: #8e8e93;
+  --muted: #f7f7f9;
+  --muted-foreground: #5f6368;
+  --subtle-foreground: #8a8a90;
 
   --destructive: #e5484d;
   --destructive-foreground: #ffffff;
@@ -90,6 +91,7 @@
   --border: #ececef;
   --input: #ececef;
   --ring: #4b1fa6;
+
 
   /* Gradients & effects */
   --gradient-brand: linear-gradient(135deg, #4b1fa6, #5a2abf);

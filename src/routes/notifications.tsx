@@ -157,7 +157,7 @@ function NotificationsPage() {
             <Button variant="ghost" size="sm" onClick={handleRefresh}>
               <RefreshCcw className="h-4 w-4 mr-1" /> Refresh
             </Button>
-            <Button variant="outline" size="sm" onClick={markAllRead} disabled={summary.unread === 0}>
+            <Button variant="outline" size="sm" onClick={handleMarkAllRead} disabled={summary.unread === 0}>
               <CheckCheck className="h-4 w-4 mr-1" /> Mark all read
             </Button>
             <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>

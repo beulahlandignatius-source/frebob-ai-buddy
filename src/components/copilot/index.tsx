@@ -132,7 +132,7 @@ export function EmptyChatState({ children }: { children?: ReactNode }) {
       <div className="h-14 w-14 rounded-2xl brand-gradient text-primary-foreground flex items-center justify-center shadow-elegant mb-3">
         <Sparkles className="h-6 w-6" />
       </div>
-      <h3 className="font-display font-bold text-lg text-primary">Ask FreBob anything about your business.</h3>
+      <h3 className="font-display font-bold text-lg text-primary">Ask Bob anything about your business.</h3>
       <p className="text-sm text-muted-foreground mt-1 max-w-md">
         I answer using records you've already approved in Business Memory — never guesses.
       </p>

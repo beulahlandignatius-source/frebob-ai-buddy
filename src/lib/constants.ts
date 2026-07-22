@@ -1,3 +1,5 @@
+export const APP_VERSION = "v0.19.0 — Batch 19A";
+
 export const LANGUAGES = [
   { code: "en", label: "English" },
   { code: "pcm", label: "Nigerian Pidgin" },

@@ -284,7 +284,6 @@ function AIAssistantPage() {
                 <EmptyChatState />
               )
             ) : (
-            ) : (
               messages.map((m) => (
                 <div key={m.id} className="space-y-1.5">
                   <ChatBubble msg={m} />

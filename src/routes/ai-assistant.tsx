@@ -235,7 +235,7 @@ function AIAssistantPage() {
         };
       } else {
         const history = messages.slice(-6).map((m) => ({ role: m.role, content: m.text }));
-        const result = await ask({ data: { question, language, snapshot: snap, history } });
+        const result = await ask({ data: { question, language, snapshot: snap, history, businessId } });
 
         if (result.mode === "ai" && result.text) {
           assistant = {

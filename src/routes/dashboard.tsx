@@ -8,7 +8,11 @@ import {
   Package,
   Wrench,
   ArrowUpRight,
+  Plus,
+  Sparkles,
 } from "lucide-react";
+import { listApprovedRecords } from "@/lib/records-store";
+import { listOrders } from "@/lib/orders-store";
 import { BobAvatar } from "@/components/copilot/BobAvatar";
 
 import { supabase } from "@/integrations/supabase/client";

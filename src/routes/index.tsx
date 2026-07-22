@@ -49,7 +49,7 @@ function Landing() {
   }, [navigate]);
 
   return (
-    <main id="main" className="min-h-screen bg-background text-foreground overflow-x-hidden">
+    <main id="main" className="min-h-dvh bg-background text-foreground overflow-x-hidden">
       <TopNav />
       <Hero />
       <TrustedFor />

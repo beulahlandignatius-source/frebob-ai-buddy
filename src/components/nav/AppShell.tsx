@@ -62,7 +62,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   useEffect(() => { setCreateOpen(false); }, [pathname]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-xl focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:shadow-elegant focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
@@ -117,7 +117,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </aside>
 
-      <main id="main-content" tabIndex={-1} className="lg:pl-64 pb-24 lg:pb-8 min-h-screen focus:outline-none">
+      <main id="main-content" tabIndex={-1} className="lg:pl-64 pb-24 lg:pb-8 min-h-dvh focus:outline-none">
         <DemoModeBanner />
         <div className="mx-auto max-w-6xl px-4 lg:px-8 py-6 lg:py-10">{children}</div>
 

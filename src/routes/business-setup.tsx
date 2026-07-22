@@ -166,14 +166,14 @@ function BusinessSetup() {
   const goBack = () => setStep((s) => Math.max(0, s - 1));
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       {/* Ambient background — Deep Purple × Orange */}
       <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -top-32 -left-24 h-80 w-80 rounded-full bg-primary/15 blur-3xl" />
         <div className="absolute top-40 -right-24 h-80 w-80 rounded-full bg-accent/15 blur-3xl" />
       </div>
 
-      <div className="relative mx-auto flex min-h-screen w-full max-w-xl flex-col px-5 pb-10 pt-6 sm:max-w-2xl sm:px-8">
+      <div className="relative mx-auto flex min-h-dvh w-full max-w-xl flex-col px-5 pb-10 pt-6 sm:max-w-2xl sm:px-8">
         {/* Header: logo + progress */}
         <header className="mb-6 flex items-center justify-between gap-4">
           <Logo size={36} />

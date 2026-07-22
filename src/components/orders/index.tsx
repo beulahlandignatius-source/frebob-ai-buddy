@@ -140,25 +140,37 @@ export function OrderTable({ orders }: { orders: Order[] }) {
 /* ---------- PaymentCard ---------- */
 export function PaymentCard({ payment }: { payment: Payment }) {
   const Icon = payment.method === "cash" ? Banknote : payment.method === "bank_transfer" ? Wallet : payment.method === "pos" ? CreditCard : MoreHorizontal;
+  const isRefund = payment.kind === "refund";
+  const kindText = payment.kind === "deposit" ? "Deposit" : payment.kind === "balance" ? "Balance" : payment.kind === "refund" ? "Refund" : "Payment";
   return (
     <div className="flex items-center gap-3 rounded-2xl border border-secondary bg-card p-3">
-      <div className="h-9 w-9 rounded-xl bg-[color-mix(in_oklab,var(--success)_12%,transparent)] text-[var(--success)] flex items-center justify-center shrink-0">
+      <div className={cn(
+        "h-9 w-9 rounded-xl flex items-center justify-center shrink-0",
+        isRefund ? "bg-destructive/10 text-destructive" : "bg-[color-mix(in_oklab,var(--success)_12%,transparent)] text-[var(--success)]",
+      )}>
         <Icon className="h-4 w-4" />
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold truncate">
-          {formatMoney(payment.amount)} · {methodLabel(payment.method)}
+          {isRefund ? "−" : ""}{formatMoney(payment.amount)} · {kindText}
+          <span className="ml-2 text-[11px] font-normal text-muted-foreground">{methodLabel(payment.method)}</span>
         </p>
         <p className="text-[11px] text-muted-foreground truncate">
           {new Date(payment.date).toLocaleString("en-NG", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
           {payment.reference ? ` · ref ${payment.reference}` : ""}
         </p>
         {payment.notes && <p className="text-[11px] text-muted-foreground italic truncate">"{payment.notes}"</p>}
+        {payment.proofUrl && (
+          <a href={payment.proofUrl} target="_blank" rel="noreferrer" className="text-[11px] text-primary hover:underline">
+            View proof{payment.proofName ? ` · ${payment.proofName}` : ""}
+          </a>
+        )}
       </div>
       <span className="text-[10px] text-muted-foreground shrink-0">by {payment.recordedBy}</span>
     </div>
   );
 }
+
 
 /* ---------- PaymentHistory ---------- */
 export function PaymentHistory({ payments }: { payments: Payment[] }) {

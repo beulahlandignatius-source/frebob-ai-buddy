@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { Sparkles, ShieldCheck, Send, Mic, Trash2, Clock, MessageSquare, Plus, X, FileText, TrendingUp, Wallet, AlertTriangle, Package, ClipboardList, PieChart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/fb/Button";
+import { BobAvatar } from "@/components/copilot/BobAvatar";
 import type { EvidenceItem, CopilotLanguage } from "@/lib/copilot-context";
 
 export type CopilotMessage = {
@@ -37,10 +38,8 @@ export function AIMessage({ msg }: { msg: CopilotMessage }) {
         msg.isError ? "border-destructive/30 bg-destructive/5" : "border-secondary bg-card",
       )}>
         <div className="flex items-center gap-2 mb-1.5">
-          <div className="h-6 w-6 rounded-lg brand-gradient text-primary-foreground flex items-center justify-center">
-            <Sparkles className="h-3 w-3" />
-          </div>
-          <span className="text-[11px] font-semibold text-primary">FreBob</span>
+          <BobAvatar size="xs" />
+          <span className="text-[11px] font-semibold text-primary">Bob</span>
           {msg.mode === "mock" && (
             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">Offline mode</span>
           )}
@@ -76,12 +75,10 @@ export function EvidenceCard({ items }: { items: EvidenceItem[] }) {
 }
 
 /* ---------- AIThinkingIndicator ---------- */
-export function AIThinkingIndicator({ label = "FreBob is analysing your business…" }: { label?: string }) {
+export function AIThinkingIndicator({ label = "Bob is analysing your business…" }: { label?: string }) {
   return (
     <div className="flex items-center gap-2 text-xs text-muted-foreground pl-1">
-      <div className="h-6 w-6 rounded-lg brand-gradient text-primary-foreground flex items-center justify-center">
-        <Sparkles className="h-3 w-3" />
-      </div>
+      <BobAvatar size="xs" />
       <span>{label}</span>
       <span className="flex gap-0.5">
         <span className="h-1.5 w-1.5 rounded-full bg-primary/50 animate-bounce" style={{ animationDelay: "0ms" }} />
@@ -129,9 +126,7 @@ export function SuggestedQuestionCard({
 export function EmptyChatState({ children }: { children?: ReactNode }) {
   return (
     <div className="flex flex-col items-center text-center px-6 py-8">
-      <div className="h-14 w-14 rounded-2xl brand-gradient text-primary-foreground flex items-center justify-center shadow-elegant mb-3">
-        <Sparkles className="h-6 w-6" />
-      </div>
+      <BobAvatar size="xl" className="mb-3" />
       <h3 className="font-display font-bold text-lg text-primary">Ask Bob anything about your business.</h3>
       <p className="text-sm text-muted-foreground mt-1 max-w-md">
         I answer using records you've already approved in Business Memory — never guesses.

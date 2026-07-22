@@ -273,7 +273,7 @@ function AIAssistantPage() {
 
     updateActive((t) => ({ ...t, messages: [...t.messages, assistant], updatedAt: Date.now() }));
     setThinking(false);
-  }, [ask, language, messages, thinking, updateActive]);
+  }, [ask, language, messages, thinking, updateActive, businessId]);
 
   const handleNew = useCallback(() => {
     const t = newThread();

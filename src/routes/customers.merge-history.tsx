@@ -23,7 +23,14 @@ export const Route = createFileRoute("/customers/merge-history")({
 
 function MergeHistoryPage() {
   const [tick, setTick] = useState(0);
-  useEffect(() => { setTick((t) => t + 1); }, []);
+  const [ui, setUi] = useState<"loading" | "ready" | "error">("loading");
+  const [loadError, setLoadError] = useState<string | null>(null);
+  useEffect(() => {
+    setUi("loading");
+    setLoadError(null);
+    try { setTick((t) => t + 1); setUi("ready"); }
+    catch (e) { setLoadError(e instanceof Error ? e.message : "Could not load merge history."); setUi("error"); }
+  }, []);
   const events = useMemo(() => { void tick; return listMergeEvents(); }, [tick]);
   const [banner, setBanner] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);

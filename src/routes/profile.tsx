@@ -8,12 +8,13 @@ import {
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
 import { PageCanvas, SurfaceHeader, SectionLabel, SuccessBanner, StatusBadge } from "@/components/dash";
-import { DEMO_USER, fmt, orders, customers } from "@/lib/mock-data";
+import { DEMO_USER, fmt, orders as demoOrders, customers as demoCustomers } from "@/lib/mock-data";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { EnterDemoButton } from "@/components/demo/EnterDemoButton";
 import { LanguageSelector } from "@/components/i18n/LanguageSelector";
 import { useTour } from "@/components/tour/GuidedTour";
+import { useDemo } from "@/lib/demo/context";
 
 
 
@@ -31,17 +32,25 @@ export const Route = createFileRoute("/profile")({
 
 function Profile() {
   const navigate = useNavigate();
+  const { active: demoActive } = useDemo();
   const { start: startTour } = useTour();
   const [saved, setSaved] = useState<string | null>(null);
-  const [displayName, setDisplayName] = useState<string>(DEMO_USER.firstName);
+  const [displayName, setDisplayName] = useState<string>(demoActive ? DEMO_USER.firstName : "You");
+  const [email, setEmail] = useState<string>("");
 
   useEffect(() => {
     try {
       const n = window.localStorage.getItem("frebob.userName");
       if (n && n.trim()) setDisplayName(n.trim());
     } catch { /* ignore */ }
+    (async () => {
+      const { data } = await supabase.auth.getUser();
+      if (data.user?.email) setEmail(data.user.email);
+    })();
   }, []);
 
+  const orders = demoActive ? demoOrders : [];
+  const customers = demoActive ? demoCustomers : [];
   const totalSales = orders.reduce((s, o) => s + o.total, 0);
   const initials = displayName.slice(0, 1).toUpperCase();
 
@@ -80,12 +89,18 @@ function Profile() {
                 <h2 className="font-display text-2xl font-extrabold text-primary truncate">{displayName}</h2>
                 <StatusBadge tone="success">Verified</StatusBadge>
               </div>
-              <p className="text-sm text-subtle-foreground truncate">{DEMO_USER.businessName}</p>
-              <p className="text-xs text-muted-foreground mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
-                <span className="inline-flex items-center gap-1"><Mail className="h-3 w-3" /> chinedu@alabasmart.ng</span>
-                <span className="inline-flex items-center gap-1"><Phone className="h-3 w-3" /> 0803 111 2233</span>
-                <span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3" /> Alaba Market, Lagos</span>
-              </p>
+              <p className="text-sm text-subtle-foreground truncate">{demoActive ? DEMO_USER.businessName : "Your business"}</p>
+              {demoActive ? (
+                <p className="text-xs text-muted-foreground mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
+                  <span className="inline-flex items-center gap-1"><Mail className="h-3 w-3" /> chinedu@alabasmart.ng</span>
+                  <span className="inline-flex items-center gap-1"><Phone className="h-3 w-3" /> 0803 111 2233</span>
+                  <span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3" /> Alaba Market, Lagos</span>
+                </p>
+              ) : email ? (
+                <p className="text-xs text-muted-foreground mt-2 inline-flex items-center gap-1">
+                  <Mail className="h-3 w-3" /> {email}
+                </p>
+              ) : null}
             </div>
             <Button size="sm" variant="outline" onClick={() => { setSaved("Profile changes saved."); }}>Edit</Button>
           </div>

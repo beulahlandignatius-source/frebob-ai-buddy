@@ -186,8 +186,8 @@ function Dashboard() {
           </div>
         </header>
 
-        {hasActivity ? (
-          /* Today at a Glance — AI glass panel */
+        {demoActive && hasActivity ? (
+          /* Today at a Glance — AI glass panel (demo only) */
           <section className="relative overflow-hidden rounded-[24px] p-5 sm:p-6 glass-card mb-6">
             <div className="pointer-events-none absolute -right-6 -top-6 h-32 w-32 rounded-full bg-accent/20 blur-3xl" />
             <div className="pointer-events-none absolute -left-10 bottom-0 h-24 w-24 rounded-full bg-primary/15 blur-3xl" />
@@ -211,17 +211,17 @@ function Dashboard() {
               </div>
             </div>
           </section>
-        ) : (
+        ) : !hasActivity ? (
           <div className="mb-6">
             <IntelligentEmptyState
               icon={Sparkles}
               title={`👋 Welcome to FreBob, ${firstName}`}
               description="You're ready to start managing your business. You haven't recorded any business activity yet — add your first record and Bob will start summarising your day."
               primary={{ label: "Add Business Record", icon: Plus, to: "/add-record" }}
-              secondary={[{ label: "Scan Document", to: "/scanner" }]}
+              secondary={[{ label: "Scan Document", to: "/scanner" }, { label: "Explore Demo", to: "/profile" }]}
             />
           </div>
-        )}
+        ) : null}
 
         {/* Metrics */}
         <section data-tour="dashboard-metrics" className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-8">

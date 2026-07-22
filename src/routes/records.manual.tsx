@@ -200,7 +200,7 @@ function ManualRecord() {
                   <p className="text-sm font-bold truncate">{file.name}</p>
                   <p className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</p>
                 </div>
-                <button type="button" onClick={() => setFile(null)} className="p-2 rounded-full hover:bg-secondary" aria-label="Remove file">
+                <button type="button" onClick={() => setFile(null)} className="tap-target grid place-items-center rounded-full hover:bg-secondary focus-ring" aria-label="Remove file">
                   <X className="h-4 w-4" />
                 </button>
               </div>

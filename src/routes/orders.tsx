@@ -163,11 +163,12 @@ function OrdersPage() {
         ) : ui === "error" ? (
           <ErrorState onRetry={() => setUi("ready")} message="Unable to load orders." />
         ) : allOrders.length === 0 ? (
-          <EmptyState
+          <IntelligentEmptyState
             icon={ShoppingCart}
             title="No orders yet"
-            description="Approve a conversation in Business Memory to create your first order."
-            action={<Button size="sm" onClick={() => navigate({ to: "/add-record" })}><Plus className="h-4 w-4 mr-1" /> Add a record</Button>}
+            description="Orders created from conversations and approved documents will appear here."
+            primary={{ label: "Create Order", icon: Plus, onClick: () => navigate({ to: "/add-record" }) }}
+            secondary={[{ label: "Scan a Document", to: "/scanner" }]}
           />
         ) : rows.length === 0 ? (
           <EmptyState

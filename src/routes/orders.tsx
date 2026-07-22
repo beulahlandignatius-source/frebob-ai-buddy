@@ -1,143 +1,196 @@
-import { createFileRoute } from "@tanstack/react-router";
+// Orders Dashboard — Batch 5B
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Plus, ShoppingCart, Phone, MessageCircle, Store } from "lucide-react";
+import { Plus, Search, ShoppingCart } from "lucide-react";
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
 import {
-  PageCanvas, SurfaceHeader, SectionLabel, PeriodTabs, StatusBadge,
+  PageCanvas, SurfaceHeader, SectionLabel, PeriodTabs,
   LoadingSkeleton, ErrorState, EmptyState,
 } from "@/components/dash";
-import { orders, fmt, type Order } from "@/lib/mock-data";
-import { cn } from "@/lib/utils";
+import { OrderCard, OrderTable, OrderSummaryStat } from "@/components/orders";
+import { formatMoney, listOrders, summariseOrders, type Order } from "@/lib/orders-store";
+import type { OrderStatus, PaymentStatus } from "@/lib/records-store";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/orders")({
   head: () => ({
     meta: [
       { title: "Orders — FreBob" },
-      { name: "description", content: "Manage orders, payments and delivery status for your business." },
+      { name: "description", content: "Track orders, payments and outstanding balances across your business." },
       { property: "og:title", content: "Orders — FreBob" },
-      { property: "og:description", content: "Track every order from creation to payment." },
+      { property: "og:description", content: "Simple order management with real payment tracking." },
     ],
   }),
-  component: Orders,
+  component: OrdersPage,
 });
 
-type Tab = "all" | "pending" | "partial" | "unpaid" | "completed";
+type StatusTab = "all" | "pending" | "reserved" | "completed" | "cancelled";
+type PayTab = "all" | "paid" | "partially_paid" | "unpaid";
+type DateTab = "all" | "today" | "week" | "month";
 
-function Orders() {
-  const [tab, setTab] = useState<Tab>("all");
-  const [state, setState] = useState<"ready" | "loading" | "error">("ready");
+function inDate(o: Order, tab: DateTab) {
+  if (tab === "all") return true;
+  const d = new Date(o.createdAt);
+  const now = new Date();
+  if (tab === "today") return d.toDateString() === now.toDateString();
+  if (tab === "week") {
+    const start = new Date(now); start.setDate(now.getDate() - 7); return d >= start;
+  }
+  if (tab === "month") {
+    const start = new Date(now); start.setMonth(now.getMonth() - 1); return d >= start;
+  }
+  return true;
+}
 
-  const rows = useMemo(() => tab === "all" ? orders : orders.filter((o) => o.status === tab), [tab]);
-  const totalOutstanding = orders.reduce((s, o) => s + (o.total - o.paid), 0);
-  const totalSales = orders.reduce((s, o) => s + o.total, 0);
+function matchStatus(o: Order, tab: StatusTab): boolean {
+  if (tab === "all") return true;
+  if (tab === "pending") return ["pending", "awaiting_pickup", "awaiting_delivery"].includes(o.orderStatus);
+  return o.orderStatus === (tab as OrderStatus);
+}
+
+function OrdersPage() {
+  const navigate = useNavigate();
+  const [status, setStatus] = useState<StatusTab>("all");
+  const [payment, setPayment] = useState<PayTab>("all");
+  const [dateTab, setDateTab] = useState<DateTab>("all");
+  const [query, setQuery] = useState("");
+  const [ui, setUi] = useState<"ready" | "loading" | "error">("ready");
+
+  const allOrders = useMemo(() => listOrders(), []);
+  const summary = useMemo(() => summariseOrders(allOrders), [allOrders]);
+
+  const rows = useMemo(() => {
+    return allOrders.filter((o) => {
+      if (!matchStatus(o, status)) return false;
+      if (payment !== "all" && o.paymentStatus !== (payment as PaymentStatus)) return false;
+      if (!inDate(o, dateTab)) return false;
+      if (query) {
+        const q = query.toLowerCase();
+        if (!o.id.toLowerCase().includes(q) && !o.customerName.toLowerCase().includes(q)) return false;
+      }
+      return true;
+    });
+  }, [allOrders, status, payment, dateTab, query]);
 
   return (
     <AppShell>
       <PageCanvas>
         <SurfaceHeader
-          eyebrow="Orders"
-          title="Orders & payments"
-          subtitle={`${orders.length} orders · ${fmt(totalOutstanding)} outstanding`}
+          eyebrow="Orders & Payments"
+          title="Orders"
+          subtitle={`${summary.total} orders · ${formatMoney(summary.outstandingValue)} outstanding`}
           action={
-            <Button size="sm" onClick={() => toast("New order flow coming soon")}>
+            <Button size="sm" onClick={() => toast("Manual new-order flow coming soon. Approve a conversation to create an order.")}>
               <Plus className="h-4 w-4 mr-1" /> New order
             </Button>
           }
         />
 
-        <section className="grid grid-cols-3 gap-3 mb-6">
-          <MiniStat label="Total sales" value={fmt(totalSales)} />
-          <MiniStat label="Received" value={fmt(orders.reduce((s, o) => s + o.paid, 0))} tone="success" />
-          <MiniStat label="Outstanding" value={fmt(totalOutstanding)} tone="accent" />
+        <section className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
+          <OrderSummaryStat label="Total orders" value={summary.total} />
+          <OrderSummaryStat label="Pending" value={summary.pending} tone="info" />
+          <OrderSummaryStat label="Reserved" value={summary.reserved} tone="accent" />
+          <OrderSummaryStat label="Completed" value={summary.completed} tone="success" />
+          <OrderSummaryStat label="Outstanding" value={formatMoney(summary.outstandingValue)} tone="accent" />
         </section>
 
-        <div className="flex flex-wrap items-center gap-3 mb-4">
-          <PeriodTabs
-            value={tab}
-            onChange={(v) => setTab(v)}
-            options={[
-              { value: "all", label: "All" },
-              { value: "pending", label: "Pending" },
-              { value: "partial", label: "Partial" },
-              { value: "unpaid", label: "Unpaid" },
-              { value: "completed", label: "Completed" },
-            ]}
-          />
-          <div className="ml-auto flex gap-2">
-            <Button size="sm" variant="ghost" onClick={() => { setState("loading"); setTimeout(() => setState("ready"), 700); }}>
-              Refresh
-            </Button>
-            <Button size="sm" variant="ghost" onClick={() => setState(state === "error" ? "ready" : "error")}>
-              Toggle error
-            </Button>
+        <div className="flex flex-col gap-3 mb-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative flex-1 min-w-[220px]">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search order # or customer"
+                className="w-full h-10 pl-9 pr-3 rounded-full border border-secondary bg-card text-sm focus:outline-none focus:border-primary/40"
+              />
+            </div>
+            <Button
+              size="sm" variant="ghost"
+              onClick={() => { setUi("loading"); setTimeout(() => setUi("ready"), 700); }}
+            >Refresh</Button>
+            <Button
+              size="sm" variant="ghost"
+              onClick={() => setUi(ui === "error" ? "ready" : "error")}
+            >Toggle error</Button>
+          </div>
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2">
+            <FilterGroup label="Status">
+              <PeriodTabs
+                value={status} onChange={setStatus}
+                options={[
+                  { value: "all", label: "All" },
+                  { value: "pending", label: "Pending" },
+                  { value: "reserved", label: "Reserved" },
+                  { value: "completed", label: "Completed" },
+                  { value: "cancelled", label: "Cancelled" },
+                ]}
+              />
+            </FilterGroup>
+            <FilterGroup label="Payment">
+              <PeriodTabs
+                value={payment} onChange={setPayment}
+                options={[
+                  { value: "all", label: "All" },
+                  { value: "paid", label: "Paid" },
+                  { value: "partially_paid", label: "Partial" },
+                  { value: "unpaid", label: "Unpaid" },
+                ]}
+              />
+            </FilterGroup>
+            <FilterGroup label="Date">
+              <PeriodTabs
+                value={dateTab} onChange={setDateTab}
+                options={[
+                  { value: "all", label: "All" },
+                  { value: "today", label: "Today" },
+                  { value: "week", label: "Week" },
+                  { value: "month", label: "Month" },
+                ]}
+              />
+            </FilterGroup>
           </div>
         </div>
 
-        <SectionLabel>Orders</SectionLabel>
-        {state === "loading" ? (
+        <SectionLabel>{rows.length} order{rows.length === 1 ? "" : "s"}</SectionLabel>
+        {ui === "loading" ? (
           <LoadingSkeleton rows={5} />
-        ) : state === "error" ? (
-          <ErrorState onRetry={() => setState("ready")} />
+        ) : ui === "error" ? (
+          <ErrorState onRetry={() => setUi("ready")} message="Unable to load orders." />
+        ) : allOrders.length === 0 ? (
+          <EmptyState
+            icon={ShoppingCart}
+            title="No orders yet"
+            description="Approve a conversation in Business Memory to create your first order."
+            action={<Button size="sm" onClick={() => navigate({ to: "/add-record" })}><Plus className="h-4 w-4 mr-1" /> Add a record</Button>}
+          />
         ) : rows.length === 0 ? (
           <EmptyState
             icon={ShoppingCart}
-            title="No orders here yet"
-            description="Once orders are logged they'll appear in this list."
-            action={<Button size="sm" onClick={() => toast("New order flow coming soon")}><Plus className="h-4 w-4 mr-1" /> Add order</Button>}
+            title="No orders match those filters"
+            description="Try clearing filters or a different search term."
+            action={<Button size="sm" variant="outline" onClick={() => { setStatus("all"); setPayment("all"); setDateTab("all"); setQuery(""); }}>Clear filters</Button>}
           />
         ) : (
-          <div className="space-y-2.5">
-            {rows.map((o) => <OrderRow key={o.id} o={o} />)}
-          </div>
+          <>
+            <div className="hidden md:block"><OrderTable orders={rows} /></div>
+            <div className="md:hidden space-y-2.5">
+              {rows.map((o) => <OrderCard key={o.id} order={o} />)}
+            </div>
+          </>
         )}
       </PageCanvas>
     </AppShell>
   );
 }
 
-function OrderRow({ o }: { o: Order }) {
-  const owed = o.total - o.paid;
-  const Ch = channelIcon[o.channel];
+function FilterGroup({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="bg-card border border-secondary rounded-[20px] p-4 flex items-center gap-3">
-      <div className="h-11 w-11 rounded-xl bg-secondary text-primary flex items-center justify-center shrink-0">
-        <Ch className="h-4 w-4" />
-      </div>
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <p className="text-sm font-bold truncate">#{o.id}</p>
-          <StatusBadge tone={statusTone(o.status)}>{statusLabel(o.status)}</StatusBadge>
-        </div>
-        <p className="text-xs text-muted-foreground truncate mt-0.5">
-          {o.customer} · {o.items} item{o.items > 1 ? "s" : ""} · {o.date}
-        </p>
-      </div>
-      <div className="text-right shrink-0">
-        <p className="font-display text-sm font-extrabold">{fmt(o.total)}</p>
-        {owed > 0 && <p className="text-[11px] text-accent font-semibold mt-0.5">{fmt(owed)} owed</p>}
-      </div>
-    </div>
-  );
-}
-
-const channelIcon = { "walk-in": Store, whatsapp: MessageCircle, phone: Phone };
-function statusTone(s: Order["status"]) {
-  return s === "completed" ? "success" : s === "partial" ? "warning" : s === "pending" ? "info" : "danger";
-}
-function statusLabel(s: Order["status"]) {
-  return s === "completed" ? "Completed" : s === "partial" ? "Partial" : s === "pending" ? "Pending" : "Unpaid";
-}
-
-function MiniStat({ label, value, tone }: { label: string; value: string; tone?: "success" | "accent" }) {
-  return (
-    <div className="bg-card p-4 rounded-[20px] border border-secondary">
-      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-primary/50">{label}</p>
-      <p className={cn(
-        "mt-2 font-display text-[18px] sm:text-[20px] font-extrabold tracking-tight leading-none truncate",
-        tone === "success" ? "text-[var(--success)]" : tone === "accent" ? "text-accent" : "text-foreground",
-      )}>{value}</p>
+    <div className="flex items-center gap-2">
+      <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-primary/50 shrink-0">{label}</span>
+      {children}
     </div>
   );
 }

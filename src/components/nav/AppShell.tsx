@@ -70,10 +70,10 @@ export function AppShell({ children }: { children: ReactNode }) {
       >
         Skip to main content
       </a>
-      <aside className="hidden lg:flex fixed inset-y-0 left-0 w-64 flex-col border-r border-sidebar-border bg-sidebar">
+      <aside className="hidden lg:flex fixed inset-y-4 left-4 w-64 flex-col liquid-glass rounded-3xl overflow-hidden">
 
 
-        <div className="flex items-center gap-2 px-5 h-16 border-b border-sidebar-border">
+        <div className="flex items-center gap-2 px-5 h-16 border-b border-white/40">
           <Logo size={32} />
           <span className="font-bold text-lg tracking-tight">FreBob</span>
         </div>
@@ -90,8 +90,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                 to={item.to}
                 data-tour={item.tour}
                 className={cn(
-                  "flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent transition",
-                  active && "bg-sidebar-accent text-sidebar-accent-foreground font-semibold",
+                  "flex items-center gap-3 rounded-2xl px-3 py-2 text-sm text-sidebar-foreground liquid-press transition",
+                  "hover:bg-white/50",
+                  active && "bg-white/70 text-primary font-semibold shadow-card",
                 )}
               >
                 <Icon className="h-4 w-4" /> {item.label}
@@ -99,29 +100,29 @@ export function AppShell({ children }: { children: ReactNode }) {
             );
           })}
         </nav>
-        <div className="border-t border-sidebar-border p-3 space-y-1">
+        <div className="border-t border-white/40 p-3 space-y-1">
           <p className="text-[10px] font-bold uppercase tracking-wider text-sidebar-foreground/50 px-2 py-1">
             Help
           </p>
           <button
             onClick={() => start()}
-            className="w-full flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent transition"
+            className="w-full flex items-center gap-3 rounded-2xl px-3 py-2 text-sm text-sidebar-foreground hover:bg-white/50 transition liquid-press"
           >
             <PlayCircle className="h-4 w-4" /> Start Product Tour
           </button>
           {!demoActive && (
-            <EnterDemoButton variant="inline" className="w-full justify-start px-3 py-2 rounded-xl hover:bg-sidebar-accent" />
+            <EnterDemoButton variant="inline" className="w-full justify-start px-3 py-2 rounded-2xl hover:bg-white/50" />
           )}
           <a
             href="mailto:support@frebob.app"
-            className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent transition"
+            className="flex items-center gap-3 rounded-2xl px-3 py-2 text-sm text-sidebar-foreground hover:bg-white/50 transition"
           >
             <HelpCircle className="h-4 w-4" /> Help Centre
           </a>
         </div>
       </aside>
 
-      <main id="main-content" tabIndex={-1} className="lg:pl-64 pb-24 lg:pb-8 min-h-dvh focus:outline-none">
+      <main id="main-content" tabIndex={-1} className="lg:pl-[19rem] pb-28 lg:pb-8 min-h-dvh focus:outline-none">
         <DemoModeBanner />
         <div className="lg:hidden px-4 pt-4">
           <BusinessSwitcher />
@@ -132,8 +133,8 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <nav
         aria-label="Primary"
-        className="lg:hidden fixed bottom-0 inset-x-0 z-30 border-t border-border/60 bg-white/85 backdrop-blur-xl supports-[backdrop-filter]:bg-white/70"
-        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+        className="lg:hidden fixed bottom-3 inset-x-3 z-30 liquid-glass-strong rounded-[28px] px-2"
+        style={{ paddingBottom: "max(env(safe-area-inset-bottom), 4px)", paddingTop: "4px" }}
       >
         <div className="grid grid-cols-5 h-16 items-center">
           {mobileNav.map((item, idx) => {
@@ -147,9 +148,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                     aria-haspopup="dialog"
                     aria-expanded={createOpen}
                     data-tour="nav-add"
-                    className="brand-gradient text-primary-foreground h-[56px] w-[56px] rounded-full shadow-elegant -mt-6 flex items-center justify-center transition-transform active:scale-95 focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/40"
+                    className="brand-gradient text-primary-foreground h-14 w-14 rounded-full shadow-elegant -mt-8 flex items-center justify-center liquid-press focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/40 ring-4 ring-white/70"
                   >
-                    <Plus className="h-7 w-7" strokeWidth={2.5} />
+                    <Plus className="h-6 w-6" strokeWidth={2.5} />
                   </button>
                 </div>
               );
@@ -161,12 +162,15 @@ export function AppShell({ children }: { children: ReactNode }) {
                 key={item.to ?? idx}
                 to={item.to}
                 data-tour={item.tour}
-                className="flex flex-col items-center justify-center gap-1 text-xs text-muted-foreground min-h-11"
+                className={cn(
+                  "flex flex-col items-center justify-center gap-0.5 text-[11px] min-h-11 rounded-2xl mx-1 liquid-press",
+                  active ? "text-primary" : "text-muted-foreground",
+                )}
                 aria-label={item.label}
                 aria-current={active ? "page" : undefined}
               >
                 <Icon className="h-5 w-5" />
-                <span className={cn(active ? "text-primary font-semibold" : "")}>{item.label}</span>
+                <span className={cn(active ? "font-semibold" : "")}>{item.label}</span>
               </Link>
             );
           })}
@@ -183,21 +187,21 @@ export function AppShell({ children }: { children: ReactNode }) {
           <button
             type="button"
             aria-label="Close"
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/30 backdrop-blur-md"
             onClick={() => setCreateOpen(false)}
           />
           <div
-            className="absolute bottom-0 inset-x-0 bg-white rounded-t-3xl border-t border-border shadow-elegant p-4"
+            className="absolute bottom-3 inset-x-3 liquid-glass-strong rounded-[28px] p-4"
             style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 16px)" }}
           >
-            <div className="mx-auto h-1.5 w-10 rounded-full bg-muted mb-4" />
+            <div className="mx-auto h-1.5 w-10 rounded-full bg-foreground/15 mb-4" />
             <div className="flex items-center justify-between mb-3 px-1">
               <h2 className="text-base font-semibold">Create</h2>
               <button
                 type="button"
                 aria-label="Close"
                 onClick={() => setCreateOpen(false)}
-                className="h-9 w-9 rounded-full flex items-center justify-center hover:bg-muted"
+                className="h-9 w-9 rounded-full flex items-center justify-center hover:bg-white/60 liquid-press"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -210,9 +214,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                     key={a.to + a.label}
                     to={a.to}
                     onClick={() => setCreateOpen(false)}
-                    className="flex items-center gap-3 rounded-2xl px-3 py-3 hover:bg-muted transition min-h-12"
+                    className="flex items-center gap-3 rounded-2xl px-3 py-3 hover:bg-white/60 transition min-h-12 liquid-press"
                   >
-                    <span className="h-10 w-10 rounded-xl brand-gradient text-primary-foreground flex items-center justify-center">
+                    <span className="h-10 w-10 rounded-2xl brand-gradient text-primary-foreground flex items-center justify-center shadow-card">
                       <Icon className="h-5 w-5" />
                     </span>
                     <span className="text-sm font-medium">{a.label}</span>

@@ -35,6 +35,20 @@ function SettingsPage() {
       <PageCanvas>
         <SurfaceHeader eyebrow="Settings" title="Preferences" subtitle="Tune FreBob to how you work" />
 
+        <Link
+          to="/settings/business"
+          className="mb-6 flex items-center gap-4 rounded-3xl border border-border bg-card p-5 hover:bg-secondary/30 transition group"
+        >
+          <div className="h-12 w-12 rounded-2xl brand-gradient text-primary-foreground flex items-center justify-center shrink-0">
+            <Settings2 className="h-5 w-5" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-display font-bold text-primary">Business settings</p>
+            <p className="text-xs text-subtle-foreground">Business info, regional preferences, AI, notifications, audit log and more.</p>
+          </div>
+          <ChevronRight className="h-5 w-5 text-primary/60 group-hover:translate-x-0.5 transition" />
+        </Link>
+
         {saved && <div className="mb-4"><SuccessBanner title={saved} onDismiss={() => setSaved(null)} /></div>}
 
         <div className="grid gap-6 lg:grid-cols-2">

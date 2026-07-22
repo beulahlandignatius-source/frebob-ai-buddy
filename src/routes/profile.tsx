@@ -89,12 +89,18 @@ function Profile() {
                 <h2 className="font-display text-2xl font-extrabold text-primary truncate">{displayName}</h2>
                 <StatusBadge tone="success">Verified</StatusBadge>
               </div>
-              <p className="text-sm text-subtle-foreground truncate">{DEMO_USER.businessName}</p>
-              <p className="text-xs text-muted-foreground mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
-                <span className="inline-flex items-center gap-1"><Mail className="h-3 w-3" /> chinedu@alabasmart.ng</span>
-                <span className="inline-flex items-center gap-1"><Phone className="h-3 w-3" /> 0803 111 2233</span>
-                <span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3" /> Alaba Market, Lagos</span>
-              </p>
+              <p className="text-sm text-subtle-foreground truncate">{demoActive ? DEMO_USER.businessName : "Your business"}</p>
+              {demoActive ? (
+                <p className="text-xs text-muted-foreground mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
+                  <span className="inline-flex items-center gap-1"><Mail className="h-3 w-3" /> chinedu@alabasmart.ng</span>
+                  <span className="inline-flex items-center gap-1"><Phone className="h-3 w-3" /> 0803 111 2233</span>
+                  <span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3" /> Alaba Market, Lagos</span>
+                </p>
+              ) : email ? (
+                <p className="text-xs text-muted-foreground mt-2 inline-flex items-center gap-1">
+                  <Mail className="h-3 w-3" /> {email}
+                </p>
+              ) : null}
             </div>
             <Button size="sm" variant="outline" onClick={() => { setSaved("Profile changes saved."); }}>Edit</Button>
           </div>

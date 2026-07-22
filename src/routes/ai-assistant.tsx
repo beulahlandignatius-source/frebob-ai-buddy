@@ -251,101 +251,96 @@ function AIAssistantPage() {
   return (
     <AppShell>
       <DemoHint hintKey="ai-assistant-v1" title="Ask Bob anything">Bob answers in English, Pidgin, Yoruba, Hausa and Igbo — grounded in your Business Memory. Tap Listen to hear replies.</DemoHint>
-      <PageCanvas>
-        <SurfaceHeader
-          eyebrow="AI Assistant"
-          title="Chat with Bob"
-          subtitle={snapshot.totalApproved > 0
-            ? `Bob is reading ${snapshot.totalApproved} approved record${snapshot.totalApproved === 1 ? "" : "s"} from Business Memory`
-            : "Approve a record in Business Memory to unlock grounded answers from Bob"}
-          action={
-            <div className="flex items-center gap-2">
-              <Button size="sm" variant="outline" onClick={() => setShowHistory(true)}>
-                <History className="h-4 w-4" /> History
-              </Button>
-              <Button size="sm" onClick={handleNew}>
-                <Plus className="h-4 w-4" /> New chat
-              </Button>
+      <div className="-mx-4 lg:-mx-8 -my-6 lg:-my-10 flex flex-col h-[calc(100dvh-4rem)] lg:h-[calc(100dvh-5rem)] bg-card">
+        {/* Chat header (full-bleed) */}
+        <div className="glass-card px-4 sm:px-6 py-3 border-b border-secondary/70 shrink-0">
+          <div className="flex items-center gap-3">
+            <BobAvatar size="md" />
+            <div className="min-w-0 flex-1">
+              <p className="font-display font-bold text-sm text-primary">Bob</p>
+              <p className="text-[11px] text-muted-foreground truncate">
+                {snapshot.totalApproved > 0
+                  ? `Reading ${snapshot.totalApproved} approved record${snapshot.totalApproved === 1 ? "" : "s"}`
+                  : "Grounded on Business Memory · never invents data"}
+              </p>
             </div>
-          }
-        />
-
-        <div className="relative rounded-[24px] border border-secondary bg-card overflow-hidden flex flex-col h-[calc(100vh-240px)] min-h-[520px] shadow-card">
-          {/* Header strip */}
-          <div className="glass-card px-5 py-3 border-b border-secondary/70">
-            <div className="flex items-center gap-3">
-              <BobAvatar size="md" />
-              <div className="min-w-0">
-                <p className="font-display font-bold text-sm text-primary">Bob</p>
-                <p className="text-[11px] text-muted-foreground truncate">Grounded on Business Memory · never invents data</p>
-              </div>
-              <span className="ml-auto inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--success)] shrink-0">
-                <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)] animate-pulse" /> Online
-              </span>
+            <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--success)] shrink-0">
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)] animate-pulse" /> Online
+            </span>
+            <div className="flex items-center gap-1 shrink-0">
+              <Button size="sm" variant="outline" onClick={() => setShowHistory(true)} aria-label="History">
+                <History className="h-4 w-4" />
+                <span className="hidden sm:inline">History</span>
+              </Button>
+              <Button size="sm" onClick={handleNew} aria-label="New chat">
+                <Plus className="h-4 w-4" />
+                <span className="hidden sm:inline">New</span>
+              </Button>
             </div>
           </div>
+        </div>
 
-          {/* Messages */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 bg-[var(--surface-tinted)]/40">
-            {messages.length === 0 ? (
-              snapshot.totalApproved === 0 ? (
-                <IntelligentEmptyState
-                  icon={Sparkles}
-                  title="I'm ready to help"
-                  description="Record your first conversation, scan a receipt or explore the demo business so I can answer questions about your business."
-                  primary={{ label: "Record Conversation", icon: Plus, to: "/add-record" }}
-                  secondary={[{ label: "Scan Receipt", to: "/scanner" }]}
-                />
-              ) : (
-                <EmptyChatState />
-              )
+        {/* Messages */}
+        <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3 bg-[var(--surface-tinted)]/40">
+          {messages.length === 0 ? (
+            snapshot.totalApproved === 0 ? (
+              <IntelligentEmptyState
+                icon={Sparkles}
+                title="I'm ready to help"
+                description="Record your first conversation, scan a receipt or explore the demo business so I can answer questions about your business."
+                primary={{ label: "Record Conversation", icon: Plus, to: "/add-record" }}
+                secondary={[{ label: "Scan Receipt", to: "/scanner" }]}
+              />
             ) : (
-              messages.map((m) => (
-                <div key={m.id} className="space-y-1.5">
-                  <ChatBubble msg={m} />
-                  {m.role === "assistant" && m.text && (
-                    <div className="pl-1">
-                      <ListenButton
-                        text={m.text}
-                        language={COPILOT_TO_LANG[language]}
-                        sourceType="copilot_reply"
-                      />
-                    </div>
-                  )}
-                </div>
-              ))
-            )}
-
-
-            {thinking && <AIThinkingIndicator />}
-
-            {messages.length === 0 && (
-              <div className="mt-4 space-y-3">
-                <SummaryCard
-                  onDaily={() => send("Give me a daily summary of my business.")}
-                  onWeekly={() => send("Give me a weekly summary of my business.")}
-                  onMonthly={() => send("Give me a monthly summary of my business.")}
-                />
-                <div>
-                  <p className="text-[11px] font-semibold text-primary/60 uppercase tracking-wider mb-2 px-1">
-                    Suggested questions
-                  </p>
-                  <div className="grid grid-cols-2 gap-2">
-                    {suggestionCatalog.map((s) => (
-                      <SuggestedQuestionCard
-                        key={s.key}
-                        icon={s.icon}
-                        label={s.label}
-                        onClick={() => send(s.question)}
-                      />
-                    ))}
+              <EmptyChatState />
+            )
+          ) : (
+            messages.map((m) => (
+              <div key={m.id} className="space-y-1.5">
+                <ChatBubble msg={m} />
+                {m.role === "assistant" && m.text && (
+                  <div className="pl-1">
+                    <ListenButton
+                      text={m.text}
+                      language={COPILOT_TO_LANG[language]}
+                      sourceType="copilot_reply"
+                    />
                   </div>
+                )}
+              </div>
+            ))
+          )}
+
+          {thinking && <AIThinkingIndicator />}
+
+          {messages.length === 0 && (
+            <div className="mt-4 space-y-3">
+              <SummaryCard
+                onDaily={() => send("Give me a daily summary of my business.")}
+                onWeekly={() => send("Give me a weekly summary of my business.")}
+                onMonthly={() => send("Give me a monthly summary of my business.")}
+              />
+              <div>
+                <p className="text-[11px] font-semibold text-primary/60 uppercase tracking-wider mb-2 px-1">
+                  Suggested questions
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  {suggestionCatalog.map((s) => (
+                    <SuggestedQuestionCard
+                      key={s.key}
+                      icon={s.icon}
+                      label={s.label}
+                      onClick={() => send(s.question)}
+                    />
+                  ))}
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
+        </div>
 
-          {/* Composer */}
+        {/* Composer */}
+        <div className="shrink-0 border-t border-secondary/70 bg-card">
           <ChatInput
             value={input}
             onChange={setInput}
@@ -356,18 +351,19 @@ function AIAssistantPage() {
             onLanguageChange={setLanguage}
             languages={COPILOT_LANGUAGES}
           />
-
-          {showHistory && (
-            <ConversationHistory
-              items={historyItems}
-              activeId={activeId}
-              onSelect={(id) => { setActiveId(id); setShowHistory(false); }}
-              onNew={handleNew}
-              onClose={() => setShowHistory(false)}
-            />
-          )}
         </div>
-      </PageCanvas>
+
+        {showHistory && (
+          <ConversationHistory
+            items={historyItems}
+            activeId={activeId}
+            onSelect={(id) => { setActiveId(id); setShowHistory(false); }}
+            onNew={handleNew}
+            onClose={() => setShowHistory(false)}
+          />
+        )}
+      </div>
     </AppShell>
   );
 }
+

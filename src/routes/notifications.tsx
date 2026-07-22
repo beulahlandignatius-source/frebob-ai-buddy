@@ -175,18 +175,20 @@ function NotificationsPage() {
         <NotificationSkeleton rows={5} />
       ) : view === "error" ? (
         <NotificationErrorState onRetry={() => setView("ready")} />
+      ) : items.length === 0 ? (
+        <IntelligentEmptyState
+          icon={Bell}
+          title="No notifications yet"
+          description="FreBob will notify you when something important needs your attention — stock alerts, order updates and payment reminders."
+          primary={{ label: "Refresh", onClick: handleRefresh }}
+          demoCta
+        />
       ) : filtered.length === 0 ? (
         <EmptyNotificationState
           action={
-            items.length === 0 ? (
-              <Button size="sm" variant="outline" onClick={handleRefresh}>
-                Generate from live data
-              </Button>
-            ) : (
-              <Button size="sm" variant="ghost" onClick={() => { setCategory("all"); setPriority("all"); setReadState("all"); setQuery(""); }}>
-                Clear filters
-              </Button>
-            )
+            <Button size="sm" variant="ghost" onClick={() => { setCategory("all"); setPriority("all"); setReadState("all"); setQuery(""); }}>
+              Clear filters
+            </Button>
           }
         />
       ) : (

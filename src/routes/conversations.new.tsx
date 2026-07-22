@@ -128,25 +128,8 @@ function NewConversation() {
     }
   };
 
-  const startRecording = async () => {
-    try {
-      const rec = await startMicRecorder();
-      recorderRef.current = rec;
-      setRecording(true);
-      setElapsed(0);
-      timerRef.current = setInterval(() => setElapsed((s) => s + 1), 1000);
-    } catch {
-      toast.error("Microphone access is needed to record.");
-    }
-  };
-
-  const stopRecording = async () => {
-    if (!recorderRef.current) return;
-    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
-    setRecording(false);
-    const blob = await recorderRef.current.stop();
-    recorderRef.current = null;
-    await runTranscription(blob, "voice", `recording-${Date.now()}.wav`);
+  const handleVoiceConfirm = async (blob: Blob) => {
+    await runTranscription(blob, "voice", `recording-${Date.now()}.webm`);
   };
 
   const handleAudioUpload = async (f: File) => {

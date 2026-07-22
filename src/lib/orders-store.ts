@@ -249,13 +249,15 @@ export function buildTimeline(order: Order): TimelineEvent[] {
     });
   }
   for (const p of order.payments.slice().sort((a, b) => (a.date < b.date ? -1 : 1))) {
+    const isRefund = p.kind === "refund";
     events.push({
       time: p.date,
-      title: `Payment received · ${formatMoney(p.amount)}`,
+      title: `${isRefund ? "Refund issued" : kindLabel(p.kind) + " received"} · ${formatMoney(p.amount)}`,
       detail: `${methodLabel(p.method)}${p.reference ? ` · ref ${p.reference}` : ""}`,
       kind: "payment",
     });
   }
+
   const override = getStatusOverride(order.id);
   if (override) {
     events.push({

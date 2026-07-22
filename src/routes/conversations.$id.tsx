@@ -14,6 +14,7 @@ import {
   saveConversation, type ConversationRecord, type Extraction, type ExtractionItem,
 } from "@/lib/records-store";
 import { extractConversation } from "@/lib/extraction.functions";
+import { extractBusinessRecord, approveExtraction, rejectExtraction } from "@/lib/source-inputs.functions";
 import { toast } from "sonner";
 import { fmt } from "@/lib/mock-data";
 

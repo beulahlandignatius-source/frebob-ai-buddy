@@ -1,10 +1,11 @@
 // Server function for FreBob Business Copilot.
-// Accepts a question + business snapshot + short chat history + language,
-// calls Gemini via the Lovable AI gateway, and returns a grounded reply.
+// Calls Gemini via the Lovable AI gateway, returns a grounded reply, and
+// (B5) logs every query to `assistant_queries` for evidence-based history.
 // Falls back gracefully — the caller uses its own deterministic mock when
 // the AI is unavailable, so this function never blocks the app.
 
 import { createServerFn } from "@tanstack/react-start";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { CopilotLanguage, BusinessSnapshot, EvidenceItem } from "./copilot-context";
 
 type ChatTurn = { role: "user" | "assistant"; content: string };
@@ -14,6 +15,7 @@ type CopilotInput = {
   language: CopilotLanguage;
   snapshot: BusinessSnapshot;
   history: ChatTurn[];
+  businessId?: string | null;
 };
 
 type CopilotResult = {
@@ -21,6 +23,7 @@ type CopilotResult = {
   text: string;
   evidence: EvidenceItem[];
   note?: string;
+  queryId?: string;
 };
 
 const SYSTEM_PROMPT = `You are FreBob (also called "Bob"), an AI Business Copilot for Nigerian SMEs.
@@ -56,6 +59,7 @@ Bob's recommendation
 
 
 export const askCopilot = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => {
     const d = data as CopilotInput;
     if (!d || typeof d.question !== "string" || d.question.trim().length < 2) {
@@ -67,12 +71,44 @@ export const askCopilot = createServerFn({ method: "POST" })
       language: (d.language ?? "english") as CopilotLanguage,
       snapshot: d.snapshot ?? { totalApproved: 0 },
       history: Array.isArray(d.history) ? d.history.slice(-6) : [],
+      businessId: d.businessId ?? null,
     } as CopilotInput;
   })
-  .handler(async ({ data }): Promise<CopilotResult> => {
+  .handler(async ({ data, context }): Promise<CopilotResult> => {
+    const { supabase, userId } = context;
     const key = process.env.LOVABLE_API_KEY;
+    const started = Date.now();
+
+    const log = async (result: {
+      answer: string;
+      evidence: EvidenceItem[];
+      error?: string | null;
+    }): Promise<string | undefined> => {
+      if (!data.businessId) return undefined;
+      try {
+        const { data: row } = await supabase
+          .from("assistant_queries")
+          .insert({
+            business_id: data.businessId,
+            user_id: userId,
+            question: data.question,
+            answer: result.answer,
+            evidence: result.evidence as never,
+            language: data.language,
+            latency_ms: Date.now() - started,
+            error: result.error ?? null,
+          })
+          .select("id")
+          .single();
+        return row?.id as string | undefined;
+      } catch {
+        return undefined;
+      }
+    };
+
     if (!key) {
-      return { mode: "mock", text: "", evidence: [], note: "LOVABLE_API_KEY missing — client fallback in use." };
+      const queryId = await log({ answer: "", evidence: [], error: "LOVABLE_API_KEY missing" });
+      return { mode: "mock", text: "", evidence: [], note: "LOVABLE_API_KEY missing — client fallback in use.", queryId };
     }
 
     const snapshotStr = JSON.stringify(data.snapshot);
@@ -97,21 +133,35 @@ export const askCopilot = createServerFn({ method: "POST" })
         }),
       });
 
-      if (res.status === 429) return { mode: "mock", text: "", evidence: [], note: "Rate limited — client fallback in use." };
-      if (res.status === 402) return { mode: "mock", text: "", evidence: [], note: "AI credits exhausted — client fallback in use." };
-      if (!res.ok) return { mode: "mock", text: "", evidence: [], note: `AI error ${res.status} — fallback in use.` };
+      if (res.status === 429) {
+        const queryId = await log({ answer: "", evidence: [], error: "rate_limited" });
+        return { mode: "mock", text: "", evidence: [], note: "Rate limited — client fallback in use.", queryId };
+      }
+      if (res.status === 402) {
+        const queryId = await log({ answer: "", evidence: [], error: "credits_exhausted" });
+        return { mode: "mock", text: "", evidence: [], note: "AI credits exhausted — client fallback in use.", queryId };
+      }
+      if (!res.ok) {
+        const queryId = await log({ answer: "", evidence: [], error: `ai_error_${res.status}` });
+        return { mode: "mock", text: "", evidence: [], note: `AI error ${res.status} — fallback in use.`, queryId };
+      }
 
       const json = (await res.json()) as { choices?: { message?: { content?: string } }[] };
       const content = json.choices?.[0]?.message?.content?.trim();
-      if (!content) return { mode: "mock", text: "", evidence: [], note: "AI returned empty response." };
+      if (!content) {
+        const queryId = await log({ answer: "", evidence: [], error: "empty_response" });
+        return { mode: "mock", text: "", evidence: [], note: "AI returned empty response.", queryId };
+      }
 
       const evidence: EvidenceItem[] = [
         { label: "Source", value: "Business Memory" },
         { label: "Approved Records", value: String(data.snapshot.totalApproved ?? 0) },
       ];
-      return { mode: "ai", text: content, evidence };
+      const queryId = await log({ answer: content, evidence });
+      return { mode: "ai", text: content, evidence, queryId };
     } catch (err) {
       const note = err instanceof Error ? err.message : "AI request failed";
-      return { mode: "mock", text: "", evidence: [], note: `${note} — fallback in use.` };
+      const queryId = await log({ answer: "", evidence: [], error: note });
+      return { mode: "mock", text: "", evidence: [], note: `${note} — fallback in use.`, queryId };
     }
   });

@@ -414,89 +414,25 @@ function TrustedFor() {
   );
 }
 
-/* ---------------- Problem ---------------- */
-
-function ProblemSection() {
-  const chaos = [
-    { icon: MessageCircle, label: "WhatsApp chats" },
-    { icon: Receipt, label: "Paper receipts" },
-    { icon: Wallet, label: "Transfer screenshots" },
-    { icon: FileText, label: "Notebook records" },
-    { icon: Users, label: "Forgotten balances" },
-    { icon: Mic, label: "Voice notes" },
-  ];
-  return (
-    <section className="py-20 lg:py-28">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="max-w-2xl">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
-            Running a business shouldn't feel <span className="text-accent">scattered</span>.
-          </h2>
-          <p className="mt-4 text-muted-foreground text-lg">Your operations live in a dozen places. FreBob brings them together.</p>
-        </div>
-
-        <div className="mt-12 grid lg:grid-cols-[1fr_auto_1fr] items-center gap-8">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {chaos.map((c) => (
-              <div key={c.label} className="rounded-2xl border border-border bg-background p-4 shadow-card hover:rotate-[-1deg] transition-transform">
-                <c.icon className="h-5 w-5 text-muted-foreground" />
-                <div className="mt-2 text-sm font-medium">{c.label}</div>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex flex-col items-center gap-2 py-4">
-            <div className="hidden lg:block h-16 w-px bg-border" />
-            <div className="rounded-2xl brand-gradient text-primary-foreground px-5 py-3 shadow-elegant font-display font-semibold">FreBob</div>
-            <div className="hidden lg:block h-16 w-px bg-border" />
-          </div>
-
-          <div className="rounded-3xl border border-primary/15 bg-gradient-to-br from-primary/5 to-accent/5 p-8">
-            <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-2xl brand-gradient grid place-items-center text-primary-foreground">
-                <Brain className="h-6 w-6" />
-              </div>
-              <div>
-                <div className="font-display font-bold text-lg">One connected business system</div>
-                <div className="text-sm text-muted-foreground">Records · Customers · Orders · Inventory · Reports</div>
-              </div>
-            </div>
-            <ul className="mt-5 space-y-2 text-sm text-foreground">
-              {["AI captures the details", "You review and approve", "Everything stays connected", "Bob answers your questions"].map((t) => (
-                <li key={t} className="flex items-center gap-2"><Check className="h-4 w-4 text-success" /> {t}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 /* ---------------- How it works ---------------- */
 
 function HowItWorks() {
   const steps = [
-    { icon: MessageSquare, title: "Conversation", body: "Paste a chat, upload a voice note, or scan a receipt." },
-    { icon: Sparkles, title: "AI Extraction", body: "Bob reads the details and drafts a business record." },
-    { icon: Shield, title: "Human Review", body: "You review and approve before anything is saved." },
-    { icon: Brain, title: "Business Memory", body: "Approved records become your trusted brain." },
-    { icon: Users, title: "Customers", body: "Balances, history and interactions stay in sync." },
-    { icon: ShoppingBag, title: "Orders", body: "Items, status and payment records — end-to-end." },
-    { icon: Package, title: "Inventory", body: "Stock movement and low-stock alerts." },
-    { icon: BarChart3, title: "Reports", body: "Sales, expenses, customers and trends." },
-    { icon: MessageSquare, title: "Chat (Bob)", body: "Ask anything, backed by your own records." },
+    { icon: MessageSquare, title: "Share", body: "Paste a chat, upload a voice note, or scan a receipt." },
+    { icon: Sparkles, title: "Bob drafts it", body: "The details become a clean, structured record." },
+    { icon: Shield, title: "You approve", body: "Nothing is saved until you review and confirm." },
+    { icon: Brain, title: "Business Memory", body: "Approved records connect customers, orders and inventory." },
   ];
   return (
-    <section id="how" className="py-20 lg:py-28 bg-surface-warm">
+    <section id="how" className="py-16 sm:py-20 lg:py-24 bg-surface-warm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHead
           eyebrow="How it works"
           title="From conversation to confident decisions"
           subtitle="A single flow keeps every part of your business connected."
         />
-        <ol className="mt-14 relative grid gap-4 md:grid-cols-3">
-          <div className="hidden md:block absolute inset-x-0 top-8 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" aria-hidden />
+        <ol className="mt-10 sm:mt-14 relative grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="hidden lg:block absolute inset-x-0 top-8 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" aria-hidden />
           {steps.map((s, i) => (
             <li key={s.title} className="relative rounded-2xl border border-border bg-background p-5 shadow-card animate-in fade-in slide-in-from-bottom-2" style={{ animationDelay: `${i * 40}ms` }}>
               <div className="flex items-center gap-3">

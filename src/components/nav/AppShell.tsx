@@ -12,7 +12,7 @@ type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; highli
 const mobileNav: NavItem[] = [
   { to: "/dashboard", label: "Home", icon: LayoutDashboard },
   { to: "/ai-assistant", label: "AI", icon: Sparkles },
-  { to: "/scanner", label: "Add", icon: Plus, highlight: true },
+  { to: "/add-record", label: "Add", icon: Plus, highlight: true },
   { to: "/reports", label: "Reports", icon: BarChart3 },
   { to: "/profile", label: "Profile", icon: User },
 ];

@@ -32,6 +32,17 @@ import {
 } from "@/lib/copilot-context";
 import { askCopilot } from "@/lib/copilot.functions";
 import { listApprovedRecords } from "@/lib/records-store";
+import { ListenButton } from "@/components/audio/ListenButton";
+import type { LanguageCode } from "@/i18n/languages";
+
+const COPILOT_TO_LANG: Record<CopilotLanguage, LanguageCode> = {
+  english: "en",
+  nigerian_pidgin: "pcm",
+  yoruba: "yo",
+  hausa: "ha",
+  igbo: "ig",
+};
+
 
 export const Route = createFileRoute("/ai-assistant")({
   head: () => ({
@@ -260,8 +271,22 @@ function AIAssistantPage() {
             {messages.length === 0 ? (
               <EmptyChatState />
             ) : (
-              messages.map((m) => <ChatBubble key={m.id} msg={m} />)
+              messages.map((m) => (
+                <div key={m.id} className="space-y-1.5">
+                  <ChatBubble msg={m} />
+                  {m.role === "assistant" && m.text && (
+                    <div className="pl-1">
+                      <ListenButton
+                        text={m.text}
+                        language={COPILOT_TO_LANG[language]}
+                        sourceType="copilot_reply"
+                      />
+                    </div>
+                  )}
+                </div>
+              ))
             )}
+
 
             {thinking && <AIThinkingIndicator />}
 

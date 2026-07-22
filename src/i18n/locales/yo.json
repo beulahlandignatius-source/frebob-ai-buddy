@@ -1,0 +1,89 @@
+{
+  "_meta": { "status": "draft", "language": "Yorùbá", "notes": "Draft translation. Needs native-speaker review." },
+  "common": {
+    "loading": "Ń gbé…",
+    "save": "Fi pamọ́",
+    "cancel": "Fagilé",
+    "retry": "Gbìyànjú lẹ́ẹ̀kansi",
+    "close": "Tì",
+    "search": "Ṣàwárí",
+    "add": "Fikun",
+    "edit": "Ṣàtúnṣe",
+    "remove": "Yọ",
+    "delete": "Parẹ́",
+    "back": "Padà",
+    "next": "Tẹ̀síwájú",
+    "done": "Tán",
+    "yes": "Bẹ́ẹ̀ni",
+    "no": "Bẹ́ẹ̀kọ́",
+    "signIn": "Wọlé",
+    "signOut": "Jáde",
+    "optional": "Yíyàn",
+    "required": "Ó pọn dandan"
+  },
+  "nav": {
+    "home": "Ilé", "dashboard": "Dáṣíbọ́ọ̀dì", "ai": "Bob", "add": "Fikun",
+    "inventory": "Ọjà", "reports": "Ìròyìn", "businessMemory": "Ìránti Iṣẹ́",
+    "orders": "Àṣẹ", "customers": "Àwọn Oníbàárà", "scanner": "Ọlọ́gbọ́n",
+    "notifications": "Ìfitọ́ mọ̀", "settings": "Ètò", "profile": "Àyẹ̀wò"
+  },
+  "dashboard": {
+    "greeting": { "morning": "Ẹ káàárọ̀", "afternoon": "Ẹ káàsán", "evening": "Ẹ kúùrọ̀lẹ́" }
+  },
+  "ai": {
+    "title": "Bá Bob sọ̀rọ̀",
+    "eyebrow": "AI Assistant",
+    "onlineStatus": "Ó wà",
+    "grounded": "Bob nìkan ń lo Ìránti Iṣẹ́ tí a fọwọ́sí",
+    "responseLanguage": "Dáhùn ní",
+    "empty": "Bèèrè ohunkóhun nípa iṣẹ́ rẹ.",
+    "thinking": "Bob ń ronú…",
+    "listen": "Gbọ́",
+    "listenGenerating": "Ń pese ohùn",
+    "listenAgain": "Tẹ̀ lẹ́ẹ̀kansi"
+  },
+  "audio": {
+    "play": "Tẹ", "pause": "Dúró", "stop": "Fópin", "replay": "Tẹ̀ lẹ́ẹ̀kansi",
+    "listen": "Gbọ́", "generating": "Ń pese ohùn", "ready": "Ohùn ti ṣetán",
+    "playing": "Ń dún", "paused": "Ó dúró", "completed": "Ó parí",
+    "speed": "Ìyára", "voice": "Ohùn",
+    "notConfigured": "Ohùn kò tíì ṣetán. Gbìyànjú nígbàmíì.",
+    "unsupportedPidgin": "Ohùn Pidgin kò sí lọ́wọ́. Ẹ tẹ̀síwájú láti ka ọ̀rọ̀ náà.",
+    "unsupportedLanguage": "Ohùn kò sí fún èdè yìí lọ́wọ́.",
+    "generationFailed": "FreBob kò lè pèsè ohùn báyìí. Ẹ tẹ̀síwájú láti ka ọ̀rọ̀ náà.",
+    "networkError": "Ohùn kò lè gbé. Ẹ ṣàyẹ̀wò intánẹ́ẹ̀tì kí ẹ tún gbìyànjú.",
+    "voiceUnavailable": "Ohùn yìí kò wà lọ́wọ́. Yan òmíràn.",
+    "textTooLong": "Ọ̀rọ̀ yìí gùn — a ó fi ipin ipin dún.",
+    "noText": "Kò sí ọ̀rọ̀ láti kà.",
+    "disclosure": "A ń pèsè ohùn pẹ̀lú YarnGPT. Ọ̀rọ̀ tí ẹ yàn ni a fi ránṣẹ́."
+  },
+  "language": {
+    "select": "Yan èdè",
+    "changeSaved": "Èdè ti yípadà",
+    "audioAvailable": "Ohùn wà",
+    "textOnly": "Ọ̀rọ̀ nìkan",
+    "fallbackNotice": "Ọ̀rọ̀ yìí kò tíì ṣetán ní èdè rẹ. Èdè Gẹ̀ẹ́sì la ń fihàn."
+  },
+  "status": {
+    "pending": "Ń dúró", "completed": "Ó parí", "cancelled": "A fagilé",
+    "paid": "Ó ti san", "partially_paid": "Ó san diẹ̀", "unpaid": "Kò san",
+    "in_stock": "Ó wà", "low_stock": "Ó fẹ́ tán", "out_of_stock": "Ó tán",
+    "approved": "A fọwọ́sí", "needs_review": "Ṣàyẹ̀wò", "rejected": "A kọ̀"
+  },
+  "inventory": {
+    "title": "Ọjà rẹ",
+    "addProduct": "Fi ọjà kún",
+    "search": "Ṣàwárí ọjà",
+    "empty": { "title": "Kò sí ọjà", "description": "Yan àsẹ̀ tuntun tàbí fi ọjà kún." },
+    "filters": { "all": "Gbogbo", "in": "Ó wà", "low": "Ó fẹ́ tán", "out": "Ó tán" }
+  },
+  "settings": {
+    "audioSection": "Ohùn àti Èdè",
+    "enableAudio": "Fi ohùn ṣiṣẹ́",
+    "preferredVoice": "Ohùn tí o fẹ́",
+    "playbackSpeed": "Ìyára orin",
+    "responseLanguage": "Èdè ìdáhùn AI",
+    "interfaceLanguage": "Èdè app"
+  },
+  "errors": { "network": "Ìṣòro dá. Ẹ ṣàyẹ̀wò intánẹ́ẹ̀tì.", "generic": "Kò ṣiṣẹ́. Gbìyànjú lẹ́ẹ̀kansi." }
+}

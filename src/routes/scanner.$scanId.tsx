@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { ChevronLeft, RotateCcw, Trash2, Check, X, FileText, Image as ImageIcon, ShieldCheck, ArrowRight } from "lucide-react";
+import { ChevronLeft, RotateCcw, Trash2, Check, X, FileText, Image as ImageIcon, ShieldCheck } from "lucide-react";
+import { ScanActionCentre } from "@/components/scanner/conversion";
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
 import { PageCanvas, SurfaceHeader, SectionLabel, LoadingSkeleton, ErrorState, SuccessBanner } from "@/components/dash";

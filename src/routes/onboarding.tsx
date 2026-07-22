@@ -74,28 +74,31 @@ function Onboarding() {
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) navigate({ to: "/signin" });
-      else setUserId(data.user.id);
+      if (data.user) setUserId(data.user.id);
     });
-  }, [navigate]);
+  }, []);
 
   const next = () => setIndex((i) => Math.min(i + 1, totalSteps - 1));
   const prev = () => setIndex((i) => Math.max(i - 1, 0));
 
   const save = async () => {
-    if (!userId) return;
     if (!category) return toast.error("Please choose a business category");
     setSaving(true);
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        business_category: category,
-        preferred_language: language,
-        onboarding_completed: true,
-      })
-      .eq("id", userId);
+    if (userId) {
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          business_category: category,
+          preferred_language: language,
+          onboarding_completed: true,
+        })
+        .eq("id", userId);
+      if (error) {
+        setSaving(false);
+        return toast.error(error.message);
+      }
+    }
     setSaving(false);
-    if (error) return toast.error(error.message);
     navigate({ to: "/business-setup" });
   };
 

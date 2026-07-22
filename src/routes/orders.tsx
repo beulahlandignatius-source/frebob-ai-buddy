@@ -12,6 +12,7 @@ import { OrderCard, OrderTable, OrderSummaryStat } from "@/components/orders";
 import { formatMoney, listOrders, summariseOrders, type Order } from "@/lib/orders-store";
 import type { OrderStatus, PaymentStatus } from "@/lib/records-store";
 import { toast } from "sonner";
+import { DemoHint } from "@/components/demo/DemoHint";
 
 export const Route = createFileRoute("/orders")({
   head: () => ({
@@ -75,6 +76,7 @@ function OrdersPage() {
 
   return (
     <AppShell>
+      <DemoHint hintKey="orders-v1" title="Track every sale">Orders combine what Bob extracts from conversations with what you scan. Open one to record a payment.</DemoHint>
       <PageCanvas>
         <SurfaceHeader
           eyebrow="Orders & Payments"

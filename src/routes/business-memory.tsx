@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { listApprovedRecords, type ApprovedRecord } from "@/lib/records-store";
 import { humanise, StatusPill } from "@/components/record";
+import { DemoHint } from "@/components/demo/DemoHint";
 
 export const Route = createFileRoute("/business-memory")({
   head: () => ({
@@ -70,6 +71,7 @@ function BusinessMemory() {
 
   return (
     <AppShell>
+      <DemoHint hintKey="business-memory-v1" title="Your source of truth">Every approved conversation, scan and record lands here. Bob only answers from what's saved in Business Memory.</DemoHint>
       <PageCanvas>
         <SurfaceHeader
           eyebrow="Business Memory"

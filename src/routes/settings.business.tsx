@@ -30,6 +30,7 @@ import { listCustomers } from "@/lib/customers-store";
 import { listUserProducts } from "@/lib/user-products-store";
 import { listScans } from "@/lib/scanner-store";
 import { listApprovedRecords } from "@/lib/records-store";
+import { DemoHint } from "@/components/demo/DemoHint";
 
 export const Route = createFileRoute("/settings/business")({
   head: () => ({
@@ -202,6 +203,7 @@ function BusinessSettingsPage() {
 
   return (
     <AppShell>
+      <DemoHint hintKey="settings-business-v1" title="Tune FreBob to your shop">Update business info, regional settings and AI preferences. Every change is recorded in the audit log below.</DemoHint>
       <div className="flex items-center gap-3 mb-6">
         <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/settings" })}>
           <ArrowLeft className="h-4 w-4 mr-1" /> All settings

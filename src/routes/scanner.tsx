@@ -7,6 +7,7 @@ import { PageCanvas, SurfaceHeader, SectionLabel, EmptyState } from "@/component
 import { CaptureOptionCard, ScanHistoryCard } from "@/components/scanner";
 import { listScans, type DocumentScan } from "@/lib/scanner-store";
 import { cn } from "@/lib/utils";
+import { DemoHint } from "@/components/demo/DemoHint";
 
 export const Route = createFileRoute("/scanner")({
   head: () => ({
@@ -43,6 +44,7 @@ function ScannerDashboard() {
 
   return (
     <AppShell>
+      <DemoHint hintKey="scanner-v1" title="Scan receipts and invoices">Upload or snap a document. Bob extracts line items so you can review, edit and turn them into orders or stock updates.</DemoHint>
       <PageCanvas>
         <SurfaceHeader
           eyebrow="Scanner"

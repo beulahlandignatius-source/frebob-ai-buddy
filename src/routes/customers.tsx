@@ -16,6 +16,7 @@ import {
   formatMoney, normalizePhone,
   type Customer, type CustomerMetrics, type CustomerStatus,
 } from "@/lib/customers-store";
+import { DemoHint } from "@/components/demo/DemoHint";
 
 export const Route = createFileRoute("/customers")({
   head: () => ({
@@ -118,6 +119,7 @@ function CustomersPage() {
 
   return (
     <AppShell>
+      <DemoHint hintKey="customers-v1" title="Know your regulars">Customers are auto-linked from orders. Amaka's demo has a duplicate pair — try the Duplicates review to merge them.</DemoHint>
       <PageCanvas>
         <SurfaceHeader
           eyebrow="Customers"

@@ -15,6 +15,7 @@ import {
 import {
   resolvePreset, resolveCompare, type PresetKey, type CompareKey,
 } from "@/lib/reporting/period";
+import { DemoHint } from "@/components/demo/DemoHint";
 
 const TAB_VALUES = ["overview", "sales", "payments", "orders", "inventory", "customers", "ai"] as const;
 type TabKey = typeof TAB_VALUES[number];
@@ -71,6 +72,7 @@ function Reports() {
 
   return (
     <AppShell>
+      <DemoHint hintKey="reports-v1" title="Numbers, explained">Charts come from your operational records. Change the period tabs to see how sales and stock shift over time.</DemoHint>
       <PageCanvas>
         <SurfaceHeader
           eyebrow="Reports"

@@ -34,6 +34,7 @@ import { askCopilot } from "@/lib/copilot.functions";
 import { listApprovedRecords } from "@/lib/records-store";
 import { ListenButton } from "@/components/audio/ListenButton";
 import type { LanguageCode } from "@/i18n/languages";
+import { DemoHint } from "@/components/demo/DemoHint";
 
 const COPILOT_TO_LANG: Record<CopilotLanguage, LanguageCode> = {
   english: "en",
@@ -232,6 +233,7 @@ function AIAssistantPage() {
 
   return (
     <AppShell>
+      <DemoHint hintKey="ai-assistant-v1" title="Ask Bob anything">Bob answers in English, Pidgin, Yoruba, Hausa and Igbo — grounded in your Business Memory. Tap Listen to hear replies.</DemoHint>
       <PageCanvas>
         <SurfaceHeader
           eyebrow="AI Assistant"

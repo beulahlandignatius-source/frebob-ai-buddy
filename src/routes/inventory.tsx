@@ -14,6 +14,7 @@ import {
 } from "@/lib/user-products-store";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { DemoHint } from "@/components/demo/DemoHint";
 
 export const Route = createFileRoute("/inventory")({
   head: () => ({
@@ -54,6 +55,7 @@ function Inventory() {
 
   return (
     <AppShell>
+      <DemoHint hintKey="inventory-v1" title="Stock at a glance">Filter by low or out-of-stock to see what needs restocking. Tap Add to try creating a new product.</DemoHint>
       <PageCanvas>
         <SurfaceHeader
           eyebrow="Inventory"

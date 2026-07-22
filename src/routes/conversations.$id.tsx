@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate, useParams, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useParams } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Plus, Trash2, Check, X, RefreshCcw, ArrowLeft, Sparkles } from "lucide-react";

@@ -1,144 +1,61 @@
-# Batch 7B — Scanner Record Conversion & Module Linking
 
-Convert approved scans into orders, payments, customers, and inventory events — with previews, duplicate checks, idempotency, evidence trails, and safe reversals. Reuse the existing localStorage stores (scanner, records, orders, customers, duplicates, notifications). Nothing gets written until the user confirms.
+# Batch 8A — Reports & Business Insights
 
-## Data layer (`src/lib/scan-conversions-store.ts`)
+Rebuild `/reports` on top of the real operational stores (orders, payments, customers, products, inventory events, scans) using the principle: **"Operational records calculate the numbers. AI explains the numbers."**
 
-New localStorage store, mirroring the pattern used by other stores.
+## Scope
 
-- `ScanConversionAction` — `{ id, scanId, actionType, destinationType, destinationRecordId, status, inputSnapshot, outputSnapshot, idempotencyKey, error?, confirmedBy, confirmedAt, reversedAt? }`
-  - `actionType`: `create_order | link_order | create_payment | link_payment | update_inventory | link_customer | create_customer | save_evidence`
-  - `status`: `not_started | in_progress | completed | linked | failed | reversed | needs_review`
-- `ScanRecordLink` — `{ id, scanId, recordType, recordId, relationshipType, actionId, createdAt }`
-- `ScanConversionEvent` — audit rows tied to a scan and (optionally) an action
-- Idempotency key = `sha1(scanId | actionType | destinationRecordId | attempt)` (simple hash utility, no crypto dep).
-- Helpers: `suggestActions(scan)` (deterministic map by doc type), `findExistingLinks(scanId)`, `recordAction()`, `linkRecord()`, `reverseAction()`, `hasCompleted(idempotencyKey)`, `listForScan(scanId)`, `listForRecord(type,id)`.
-- All writes emit a `ScanConversionEvent` for audit.
+Replace the current mock-data reports screen with a tabbed reporting module driven by a single shared analytics service. Keep dashboard, notifications shell, and all other modules untouched except for wiring dashboard tiles into the same service.
 
-## Suggested-action mapping
+## New files
 
-Pure function inside the store, no AI call:
+- `src/lib/reporting/period.ts` — date-range presets (Today, Yesterday, This/Last week, This/Last month, Last 30 days, Custom) + comparison-period resolver + Africa/Lagos formatting.
+- `src/lib/reporting/service.ts` — the single source of truth. Pure functions over existing stores:
+  - `getSalesReport(range)` — totals, trend series, sales-by-product, sales-by-day.
+  - `getPaymentsReport(range)` — totals, method breakdown, trend, outstanding balances per customer.
+  - `getOrdersReport(range)` — status counts, completion/cancellation rate, orders-by-day, delayed orders.
+  - `getInventoryReport(range)` — stock status counts, top sellers, slow movers, movements from `inventory-events-store`.
+  - `getCustomersReport(range)` — new / repeat / returning, top customers, outstanding, dormant.
+  - `getOverview(range, compare)` — 6 headline metrics + comparison values + direction.
+  - Shared exclusions: cancelled orders excluded from sales, reversed payments excluded, merged-duplicate customers excluded, drafts/rejected scans excluded.
+- `src/lib/reporting/ai-insights.functions.ts` — `createServerFn` that receives already-computed metrics + selected language and asks Lovable AI (Gemini 2.5 flash) to write a plain-language summary. Server fn never touches raw records; if metrics are empty it returns the "not enough approved records" copy without calling the model.
+- `src/components/reports/` — shared UI primitives:
+  - `DateRangeBar.tsx` (range + compare + refresh + last-updated stamp)
+  - `MetricCard.tsx` (label, value, comparison line, direction chip, drill link)
+  - `TrendChart.tsx`, `BarCompareChart.tsx`, `StatusDonut.tsx`, `RankBar.tsx` — thin wrappers over recharts with title, empty/loading/error states, ₦ formatting, accessible text summary.
+  - `ReportTable.tsx` — sortable, paginated, mobile-cards fallback.
+  - `TabsBar.tsx` — horizontally scrollable tabs on mobile.
 
-```
-sales_receipt        → create_order, create_payment, link_customer
-customer_order       → create_order, link_customer
-transfer_confirmation→ create_payment, link_order
-pos_receipt          → create_payment, link_order, save_evidence
-supplier_invoice     → update_inventory (add), save_evidence
-stock_list           → update_inventory (correction)
-expense_receipt      → save_evidence
-handwritten_note     → gated by extracted fields; require review flag
-```
+## Route changes
 
-Cards render as disabled with an explanation when the target module or approved data is missing.
+- `src/routes/reports.tsx` — becomes the Reports shell: header, `DateRangeBar`, tabs (Overview / Sales / Payments / Orders / Inventory / Customers / AI Insights). Tab state stored in URL search params (`tab`, `from`, `to`, `preset`, `compare`) via TanStack search validation so drill-downs preserve context.
+- Each tab is a component in `src/components/reports/tabs/` (OverviewTab, SalesTab, PaymentsTab, OrdersTab, InventoryTab, CustomersTab, AIInsightsTab).
+- Drill-downs use `<Link>` to `/orders`, `/customers`, `/inventory`, `/customers/$id`, etc., passing filter query params where those routes already support them; otherwise link to the entity page unchanged.
 
-## Screen 1 — Action Centre (extend `/scanner/$scanId`)
+## Dashboard integration
 
-Add a "What would you like to do with this document?" section under the approved header:
-- Grid of `SuggestedActionCard`s (title, explanation, destination, impact, status pill, CTA).
-- Chip row summarising conversion status: `Not converted / In progress / Partially converted / Converted / Linked / Failed / Needs review`.
-- New "Related records" panel listing every `ScanRecordLink`: type, name/number, status, created date, "View" button, "Unlink" (safe reversal only).
-- "History" collapsible showing conversion events for this scan.
+- Update `src/routes/dashboard.tsx` today-tiles (sales / received / outstanding / pending / low-stock / new customers) to call the same `reporting/service.ts` with a `Today` range so numbers cannot diverge from `/reports`. No visual overhaul.
 
-## Screen 2 — Focused conversion routes
+## Data rules encoded once
 
-One route per action type (each keeps a single job simple):
+- `valid_sales` = sum of non-cancelled order totals in range.
+- `money_received` = sum of non-reversed payments in range.
+- `outstanding_current` = Σ max(order_total − paid, 0) across all open orders (not range-bound); `outstanding_created_in_period` reported separately and clearly labelled.
+- Percentage change guarded against zero previous — shows "No sales were recorded in the comparison period." No infinite growth.
+- Inventory value hidden with the required message when cost coverage is incomplete.
 
-- `/scanner/$scanId/convert/order` — Create Order From Scan (Workflow A)
-- `/scanner/$scanId/convert/link-order` — Link to Existing Order (B)
-- `/scanner/$scanId/convert/payment` — Record Payment From Scan (C)
-- `/scanner/$scanId/convert/link-payment` — Link to Existing Payment (D)
-- `/scanner/$scanId/convert/inventory` — Prepare Inventory Update (E)
-- `/scanner/$scanId/convert/customer` — Link or Create Customer (F)
+## Notifications hook
 
-Every route shows: approved document summary card, selected action, destination, duplicate warnings, editable preview, Confirm/Cancel. Uses existing form primitives (`fb/Input`, `fb/Button`, `PageCanvas`, `SurfaceHeader`).
+- Add a small helper `src/lib/reporting/alerts.ts` used by the existing notifications page to surface: unusual outstanding, low stock on top sellers, many pending orders, no sales in period, approved records awaiting conversion. No new notification UI — reuses the existing shell.
 
-### Workflow A — Create order
-- Prefill customer, date, line items, prices, paid, balance from scan extraction.
-- Customer matcher reuses `customers-store` + `duplicates-store` (Select existing / Review possible match / Create new / Continue without).
-- Line-item table: each row = scanned name → suggested product (from `mock-data.inventory`) → link/search/create/keep unlinked/remove.
-- Duplicate check: same reference #, customer, date, total, line items, source scan → shows "similar order may exist" panel with View / Link scan / Continue / Cancel.
-- Inventory impact banner explains "Pending won't reduce stock; Reserved will".
-- On confirm: creates order via `orders-store.createOrder(...)`, writes `ScanConversionAction(completed)`, links via `ScanRecordLink(type=order)`.
+## Explicitly out of scope (kept for later batches)
 
-### Workflow B — Link to existing order
-Search orders by number/customer/date/amount/balance. Show matching + conflicting fields side-by-side. Only writes a `ScanRecordLink(relationshipType=evidence)`; no order mutation. Option "Review order changes" opens a separate confirm before applying edits.
+- CSV / PDF export (export button remains a "coming soon" placeholder).
+- Saved report views / advanced filter management.
+- Server-side cached summary tables — everything computed client-side from existing stores; documented in `service.ts` header so 8B can add caching without breaking callers.
 
-### Workflow C — Create payment
-- Prefill amount, date, method, reference, related order, customer.
-- Order selector: search by customer/order#/balance, or "Unallocated payment".
-- Duplicate check: same tx ref + amount + date + order → warn.
-- Validation: amount > 0; ≤ balance unless overpayment allowed; unique reference; not on cancelled order; same business.
-- Confirmation shows current balance → payment → new balance.
-- Atomic path: `recordPayment` in orders-store already updates paid/balance/status. Wrap in try/rollback: if link write fails, delete the payment.
+## Technical notes
 
-### Workflow D — Link to existing payment
-Search by tx ref/amount/date/customer/order/method. Compare fields. Evidence-only link, no value changes.
-
-### Workflow E — Prepare inventory update
-- Table: scanned name → suggested product → variant → scanned qty → current stock → proposed adj → new expected → action.
-- Adjustment type: Add / Correct / Evidence only.
-- Formulas rendered before confirm: `new = current + qty` or `new = confirmed_count`.
-- Duplicate check: same scan already converted, same invoice#, same product+qty set.
-- Confirm creates an `inventory_event` in a new lightweight `inventory-events-store.ts` (append-only) plus updates the in-memory product stock. Reuses existing `mock-data.inventory` snapshot.
-
-### Workflow F — Link/Create customer
-- Show extracted name/phone/email/address + `duplicates-store` matches.
-- Actions: Link / Create / Skip / Review later. Creating goes through `customers-store.upsertCustomer(...)` and existing duplicate rules; profile is not overwritten silently.
-
-## Multi-step progress
-On the scan Action Centre, once ≥1 conversion exists, render a `ConversionProgressPanel` (Customer linked → Order created → Payment pending → Completed). Users can Skip / Save progress / Complete later — nothing is forced.
-
-## Conversion summary screen
-After each confirm, show a summary card inline (records created, linked, financial + inventory impact, remaining suggested actions, View buttons). No separate route needed.
-
-## Evidence on destination pages
-Small "Source Document" panel added to:
-- `orders.$id.tsx` — thumbnail + doc type + "View approved scan" (queries `listForRecord('order', id)`)
-- `orders.$id.payment.tsx` — same for payment (evidence card)
-- `customers.$id.tsx` — "Linked from approved document" row in activity
-- Inventory events surface a source scan chip
-
-## Reversal
-- Safe: unlink scan from record, reverse untouched inventory adjustment with opposite event, delete newly-created order if `status === 'pending'` and no payments, unlink customer source.
-- Unsafe: message "Use the destination record's correction workflow." Evidence never deleted.
-
-## Idempotency
-Before every mutating confirm, compute the idempotency key and `hasCompleted()` → if true, show "This action has already been completed for this document" with a link.
-
-## Dashboard + notifications
-- Dashboard: add a single "Scanner ready" strip listing counts (approved-not-converted, payment docs to link, stock lists awaiting review). Click → filtered `/scanner` list.
-- Notifications: extend `mock-data.notifications` seed with a `scanner` category (or reuse `system`) and push events on completion/failure via existing localStorage notification pattern — no push/SMS.
-
-## AI Assistant integration
-Extend the snapshot in `copilot-context.ts` with a `scans` summary (approved count, unconverted, pending payment/stock docs) so Bob can answer "which scans have not been converted?" grounded on real data. No new server function.
-
-## Security / RLS
-This prototype stores everything client-side, so RLS lives conceptually in helpers:
-- `assertSameBusiness(scan, destination)` guard in the store; every conversion helper checks approval status and business id.
-- Server-side calls (`extract-scanner`, `transcribe`, `askCopilot`) unchanged — they already keep the AI key server-side.
-- No new tables this batch. When the app moves to Supabase, the three tables (`scan_record_links`, `scan_conversion_actions`, `scan_conversion_events`) plus RLS policies map directly from the store shape.
-
-## Files touched
-
-New:
-- `src/lib/scan-conversions-store.ts` (types, suggestions, idempotency, links, events, reversal)
-- `src/lib/inventory-events-store.ts` (append-only adjustments)
-- `src/components/scanner/conversion.tsx` (SuggestedActionCard, ConversionStatusChip, ConversionProgressPanel, RelatedRecordsPanel, DuplicateWarning, EvidenceLink)
-- `src/routes/scanner.$scanId.convert.order.tsx`
-- `src/routes/scanner.$scanId.convert.link-order.tsx`
-- `src/routes/scanner.$scanId.convert.payment.tsx`
-- `src/routes/scanner.$scanId.convert.link-payment.tsx`
-- `src/routes/scanner.$scanId.convert.inventory.tsx`
-- `src/routes/scanner.$scanId.convert.customer.tsx`
-
-Edited:
-- `src/routes/scanner.$scanId.tsx` — Action Centre + Related records + History
-- `src/routes/orders.$id.tsx`, `orders.$id.payment.tsx`, `customers.$id.tsx` — evidence panels
-- `src/routes/dashboard.tsx` — "Scanner ready" strip
-- `src/lib/copilot-context.ts` — add scan snapshot fields
-- `src/lib/mock-data.ts` — extend notifications with scanner category
-
-## Verification
-- `bunx tsgo --noEmit` after each store + route batch.
-- Smoke test in preview: approve a demo scan → convert to order → convert to payment → check evidence panel appears on the order page → attempt duplicate conversion → confirm idempotency block.
+- All stores are localStorage-backed; no Supabase schema changes needed for 8A.
+- AI insight route uses existing `LOVABLE_API_KEY` and follows the same server-fn pattern as `copilot.functions.ts` / `extraction.functions.ts`.
+- Multilingual insights reuse the language preference already on `profiles.preferred_language`; the prompt instructs Gemini to preserve ₦ amounts, dates, names, and order numbers verbatim.

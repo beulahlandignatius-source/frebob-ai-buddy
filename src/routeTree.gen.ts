@@ -27,8 +27,10 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AiAssistantRouteImport } from './routes/ai-assistant'
 import { Route as AddRecordRouteImport } from './routes/add-record'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as OrdersIdRouteImport } from './routes/orders.$id'
 import { Route as ConversationsNewRouteImport } from './routes/conversations.new'
 import { Route as ConversationsIdRouteImport } from './routes/conversations.$id'
+import { Route as OrdersIdPaymentRouteImport } from './routes/orders.$id.payment'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -120,6 +122,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrdersIdRoute = OrdersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => OrdersRoute,
+} as any)
 const ConversationsNewRoute = ConversationsNewRouteImport.update({
   id: '/conversations/new',
   path: '/conversations/new',
@@ -129,6 +136,11 @@ const ConversationsIdRoute = ConversationsIdRouteImport.update({
   id: '/conversations/$id',
   path: '/conversations/$id',
   getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersIdPaymentRoute = OrdersIdPaymentRouteImport.update({
+  id: '/payment',
+  path: '/payment',
+  getParentRoute: () => OrdersIdRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -143,7 +155,7 @@ export interface FileRoutesByFullPath {
   '/inventory': typeof InventoryRoute
   '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
-  '/orders': typeof OrdersRoute
+  '/orders': typeof OrdersRouteWithChildren
   '/profile': typeof ProfileRoute
   '/reports': typeof ReportsRoute
   '/scanner': typeof ScannerRoute
@@ -152,6 +164,8 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/conversations/$id': typeof ConversationsIdRoute
   '/conversations/new': typeof ConversationsNewRoute
+  '/orders/$id': typeof OrdersIdRouteWithChildren
+  '/orders/$id/payment': typeof OrdersIdPaymentRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -165,7 +179,7 @@ export interface FileRoutesByTo {
   '/inventory': typeof InventoryRoute
   '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
-  '/orders': typeof OrdersRoute
+  '/orders': typeof OrdersRouteWithChildren
   '/profile': typeof ProfileRoute
   '/reports': typeof ReportsRoute
   '/scanner': typeof ScannerRoute
@@ -174,6 +188,8 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/conversations/$id': typeof ConversationsIdRoute
   '/conversations/new': typeof ConversationsNewRoute
+  '/orders/$id': typeof OrdersIdRouteWithChildren
+  '/orders/$id/payment': typeof OrdersIdPaymentRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -188,7 +204,7 @@ export interface FileRoutesById {
   '/inventory': typeof InventoryRoute
   '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
-  '/orders': typeof OrdersRoute
+  '/orders': typeof OrdersRouteWithChildren
   '/profile': typeof ProfileRoute
   '/reports': typeof ReportsRoute
   '/scanner': typeof ScannerRoute
@@ -197,6 +213,8 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/conversations/$id': typeof ConversationsIdRoute
   '/conversations/new': typeof ConversationsNewRoute
+  '/orders/$id': typeof OrdersIdRouteWithChildren
+  '/orders/$id/payment': typeof OrdersIdPaymentRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -221,6 +239,8 @@ export interface FileRouteTypes {
     | '/signup'
     | '/conversations/$id'
     | '/conversations/new'
+    | '/orders/$id'
+    | '/orders/$id/payment'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -243,6 +263,8 @@ export interface FileRouteTypes {
     | '/signup'
     | '/conversations/$id'
     | '/conversations/new'
+    | '/orders/$id'
+    | '/orders/$id/payment'
   id:
     | '__root__'
     | '/'
@@ -265,6 +287,8 @@ export interface FileRouteTypes {
     | '/signup'
     | '/conversations/$id'
     | '/conversations/new'
+    | '/orders/$id'
+    | '/orders/$id/payment'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -279,7 +303,7 @@ export interface RootRouteChildren {
   InventoryRoute: typeof InventoryRoute
   NotificationsRoute: typeof NotificationsRoute
   OnboardingRoute: typeof OnboardingRoute
-  OrdersRoute: typeof OrdersRoute
+  OrdersRoute: typeof OrdersRouteWithChildren
   ProfileRoute: typeof ProfileRoute
   ReportsRoute: typeof ReportsRoute
   ScannerRoute: typeof ScannerRoute
@@ -418,6 +442,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/orders/$id': {
+      id: '/orders/$id'
+      path: '/$id'
+      fullPath: '/orders/$id'
+      preLoaderRoute: typeof OrdersIdRouteImport
+      parentRoute: typeof OrdersRoute
+    }
     '/conversations/new': {
       id: '/conversations/new'
       path: '/conversations/new'
@@ -432,8 +463,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConversationsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/orders/$id/payment': {
+      id: '/orders/$id/payment'
+      path: '/payment'
+      fullPath: '/orders/$id/payment'
+      preLoaderRoute: typeof OrdersIdPaymentRouteImport
+      parentRoute: typeof OrdersIdRoute
+    }
   }
 }
+
+interface OrdersIdRouteChildren {
+  OrdersIdPaymentRoute: typeof OrdersIdPaymentRoute
+}
+
+const OrdersIdRouteChildren: OrdersIdRouteChildren = {
+  OrdersIdPaymentRoute: OrdersIdPaymentRoute,
+}
+
+const OrdersIdRouteWithChildren = OrdersIdRoute._addFileChildren(
+  OrdersIdRouteChildren,
+)
+
+interface OrdersRouteChildren {
+  OrdersIdRoute: typeof OrdersIdRouteWithChildren
+}
+
+const OrdersRouteChildren: OrdersRouteChildren = {
+  OrdersIdRoute: OrdersIdRouteWithChildren,
+}
+
+const OrdersRouteWithChildren =
+  OrdersRoute._addFileChildren(OrdersRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -447,7 +508,7 @@ const rootRouteChildren: RootRouteChildren = {
   InventoryRoute: InventoryRoute,
   NotificationsRoute: NotificationsRoute,
   OnboardingRoute: OnboardingRoute,
-  OrdersRoute: OrdersRoute,
+  OrdersRoute: OrdersRouteWithChildren,
   ProfileRoute: ProfileRoute,
   ReportsRoute: ReportsRoute,
   ScannerRoute: ScannerRoute,

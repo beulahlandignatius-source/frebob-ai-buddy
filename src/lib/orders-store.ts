@@ -11,18 +11,23 @@ import {
 } from "./records-store";
 
 export type PaymentMethod = "cash" | "bank_transfer" | "pos" | "other";
+export type PaymentKind = "payment" | "deposit" | "balance" | "refund";
 
 export type Payment = {
   id: string;
   orderId: string; // matches ApprovedRecord.reference
   amount: number;
   method: PaymentMethod;
+  kind: PaymentKind;
   reference: string;
+  proofUrl?: string; // data URL of uploaded proof (screenshot / receipt / POS slip)
+  proofName?: string;
   date: string; // ISO
   notes: string;
   recordedBy: string;
   createdAt: string;
 };
+
 
 export type OrderStatusOverride = {
   orderId: string;

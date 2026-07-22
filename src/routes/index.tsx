@@ -318,30 +318,20 @@ function SwipeableCards() {
 import frustratedAlaba from "@/assets/landing/frustrated-alaba.mp4.asset.json";
 import frustratedWhatsapp from "@/assets/landing/frustrated-whatsapp.mp4.asset.json";
 import frustratedCV from "@/assets/landing/frustrated-computer-village.mp4.asset.json";
-import heroAfricanBusiness from "@/assets/landing/hero-african-business.jpg.asset.json";
 
-const reelClips = [
-  { src: frustratedAlaba.url, label: "Alaba International Market", caption: "Notebooks lost. Customers waiting." },
-  { src: frustratedWhatsapp.url, label: "WhatsApp Vendor", caption: "1,200 chats. Which one paid?" },
-  { src: frustratedCV.url, label: "Computer Village, Ikeja", caption: "Receipts everywhere. Profit unclear." },
-];
-
-// Additional category scenarios — labelled honestly as sample/demo scenarios,
-// not real FreBob customers. Each card plays on demand; only one at a time.
-const categoryScenarios: {
-  category: string;
-  problem: string;
-  kind: "Product demonstration" | "Example workflow" | "Sample business scenario";
-  gradient: string;
-  icon: typeof MessageCircle;
-  src: string;
-}[] = [
-  { category: "Fashion Designer", problem: "Lost customer conversations across WhatsApp chats.", kind: "Sample business scenario", gradient: "from-[#5d2ac2] via-[#7a3fd6] to-[#f7931e]", icon: MessageCircle, src: frustratedWhatsapp.url },
-  { category: "Retail Shop", problem: "Stock confusion — what sold, what's left?", kind: "Product demonstration", gradient: "from-[#2a1057] via-[#4b1fa6] to-[#5d2ac2]", icon: Package, src: frustratedAlaba.url },
-  { category: "Restaurant / Food", problem: "Forgotten orders and unrecorded daily takings.", kind: "Example workflow", gradient: "from-[#f7931e] via-[#e56b1a] to-[#5d2ac2]", icon: Receipt, src: frustratedCV.url },
-  { category: "Beauty / Salon", problem: "Scattered receipts and missed appointment payments.", kind: "Sample business scenario", gradient: "from-[#7a3fd6] via-[#5d2ac2] to-[#2a1057]", icon: Wallet, src: frustratedWhatsapp.url },
-  { category: "Pharmacy / Health Retail", problem: "Unrecorded payment evidence and stock movement.", kind: "Product demonstration", gradient: "from-[#4b1fa6] via-[#7a3fd6] to-[#f7931e]", icon: ScanLine, src: frustratedAlaba.url },
-  { category: "Professional Service", problem: "Hard to see how the business is really doing this month.", kind: "Example workflow", gradient: "from-[#2a1057] via-[#5d2ac2] to-[#f7931e]", icon: BarChart3, src: frustratedCV.url },
+// A single unified reel — 9 real short clips in one continuous marquee row.
+// The three source videos are reused; each card gets its own honest label and
+// caption per category. Only the marquee plays automatically (muted, looped).
+const reelClips: { src: string; label: string; caption: string }[] = [
+  { src: frustratedAlaba.url,    label: "Alaba International Market", caption: "Notebooks lost. Customers waiting." },
+  { src: frustratedWhatsapp.url, label: "WhatsApp Vendor",            caption: "1,200 chats. Which one paid?" },
+  { src: frustratedCV.url,       label: "Computer Village, Ikeja",     caption: "Receipts everywhere. Profit unclear." },
+  { src: frustratedWhatsapp.url, label: "Fashion Designer",            caption: "Lost customer conversations across WhatsApp." },
+  { src: frustratedAlaba.url,    label: "Retail Shop",                 caption: "Stock confusion — what sold, what's left?" },
+  { src: frustratedCV.url,       label: "Restaurant / Food",           caption: "Forgotten orders and unrecorded takings." },
+  { src: frustratedWhatsapp.url, label: "Beauty / Salon",              caption: "Scattered receipts and missed payments." },
+  { src: frustratedAlaba.url,    label: "Pharmacy / Health Retail",    caption: "Unrecorded stock movement and evidence." },
+  { src: frustratedCV.url,       label: "Professional Service",        caption: "Hard to see how the month is really going." },
 ];
 
 function FrustrationReel() {
@@ -356,8 +346,9 @@ function FrustrationReel() {
         <h2 className="mt-3 text-2xl sm:text-4xl font-bold text-foreground">
           Running a business shouldn't feel like this.
         </h2>
-        <p className="mt-2 text-sm sm:text-base text-muted-foreground max-w-xl mx-auto">
-          From Alaba to Computer Village to WhatsApp DMs — vendors lose hours to scattered notes, missed payments and chaos.
+        <p className="mt-2 text-sm sm:text-base text-muted-foreground max-w-xl mx-auto px-2">
+          From Alaba to Computer Village to WhatsApp DMs — across every kind of business,
+          vendors lose hours to scattered notes, missed payments and chaos.
         </p>
       </div>
 
@@ -365,11 +356,11 @@ function FrustrationReel() {
         className="relative"
         style={{ maskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)", WebkitMaskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)" }}
       >
-        <div className="flex gap-4 sm:gap-6 w-max animate-[reelScroll_40s_linear_infinite] hover:[animation-play-state:paused]">
+        <div className="flex gap-3 sm:gap-5 w-max animate-[reelScroll_80s_linear_infinite] hover:[animation-play-state:paused]">
           {loop.map((clip, i) => (
             <figure
               key={i}
-              className="shrink-0 w-[240px] sm:w-[280px] aspect-[9/16] rounded-2xl overflow-hidden relative shadow-card bg-black"
+              className="shrink-0 w-[200px] sm:w-[240px] md:w-[280px] aspect-[9/16] rounded-2xl overflow-hidden relative shadow-card bg-black"
             >
               <video
                 src={clip.src}
@@ -380,8 +371,8 @@ function FrustrationReel() {
                 preload="metadata"
                 className="absolute inset-0 h-full w-full object-cover"
               />
-              <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
-                <div className="text-[10px] uppercase tracking-wider text-white/70">{clip.label}</div>
+              <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/85 via-black/40 to-transparent">
+                <div className="text-[10px] uppercase tracking-wider text-white/70 truncate">{clip.label}</div>
                 <div className="text-xs sm:text-sm font-medium text-white mt-0.5">{clip.caption}</div>
               </div>
             </figure>
@@ -389,103 +380,12 @@ function FrustrationReel() {
         </div>
       </div>
 
-      <CategoryScenarioGrid />
+      <p className="mt-6 text-center text-[11px] text-muted-foreground px-4">
+        Illustrative footage — sample scenarios, not real FreBob customers.
+      </p>
 
       <style>{`@keyframes reelScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }`}</style>
     </section>
-  );
-}
-
-/* Category scenarios — extends the reel above. Only one video plays at a time. */
-function CategoryScenarioGrid() {
-  const [activeIdx, setActiveIdx] = useState<number | null>(null);
-  const refs = useRef<Array<HTMLVideoElement | null>>([]);
-
-  const playOnly = (i: number) => {
-    refs.current.forEach((el, idx) => {
-      if (!el) return;
-      if (idx === i) {
-        el.currentTime = el.currentTime || 0;
-        el.play().catch(() => {});
-      } else {
-        el.pause();
-      }
-    });
-    setActiveIdx(i);
-  };
-  const pauseAt = (i: number) => {
-    const el = refs.current[i];
-    if (el) el.pause();
-    if (activeIdx === i) setActiveIdx(null);
-  };
-
-  return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-10 sm:mt-14">
-      <div className="text-center mb-6 sm:mb-8">
-        <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-wider text-muted-foreground">
-          <span className="h-1.5 w-1.5 rounded-full bg-primary" /> Across every kind of business
-        </div>
-        <h3 className="mt-3 text-xl sm:text-2xl font-semibold text-foreground">
-          The same chaos, in six familiar shapes.
-        </h3>
-        <p className="mt-2 text-sm text-muted-foreground max-w-xl mx-auto">
-          Tap a card to preview a sample scenario. Only one plays at a time.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
-        {categoryScenarios.map((c, i) => {
-          const isActive = activeIdx === i;
-          const Icon = c.icon;
-          return (
-            <figure
-              key={c.category}
-              className="relative rounded-2xl overflow-hidden shadow-card bg-black aspect-[9/16]"
-            >
-              <video
-                ref={(el) => { refs.current[i] = el; }}
-                src={c.src}
-                loop
-                muted
-                playsInline
-                preload="metadata"
-                onPause={() => { if (activeIdx === i) setActiveIdx(null); }}
-                className={cn(
-                  "absolute inset-0 h-full w-full object-cover transition-opacity",
-                  isActive ? "opacity-100" : "opacity-40",
-                )}
-              />
-              {!isActive ? (
-                <div className={cn("absolute inset-0 bg-gradient-to-br opacity-70", c.gradient)} />
-              ) : null}
-
-              <button
-                type="button"
-                onClick={() => (isActive ? pauseAt(i) : playOnly(i))}
-                aria-label={isActive ? `Pause ${c.category} scenario` : `Play ${c.category} scenario`}
-                className="absolute inset-0 grid place-items-center focus-ring"
-              >
-                <span className="h-14 w-14 grid place-items-center rounded-full bg-white/90 text-foreground shadow-elegant hover:bg-white transition">
-                  {isActive ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 translate-x-0.5" />}
-                </span>
-              </button>
-
-              <div className="absolute top-2 left-2 rounded-full bg-black/55 backdrop-blur px-2 py-0.5 text-[10px] uppercase tracking-wider text-white/90 flex items-center gap-1.5">
-                <Icon className="h-3 w-3" /> {c.kind}
-              </div>
-
-              <figcaption className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/85 via-black/50 to-transparent">
-                <div className="text-[10px] uppercase tracking-wider text-white/70">{c.category}</div>
-                <div className="text-xs sm:text-sm font-medium text-white mt-0.5">{c.problem}</div>
-              </figcaption>
-            </figure>
-          );
-        })}
-      </div>
-      <p className="mt-4 text-center text-[11px] text-muted-foreground">
-        Illustrative scenarios — not real FreBob customers.
-      </p>
-    </div>
   );
 }
 

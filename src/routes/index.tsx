@@ -135,26 +135,24 @@ function Hero() {
             <Sparkles className="h-3.5 w-3.5" /> Your Business Assistant
           </span>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.05] tracking-tight">
-            Run Your Business.{" "}
-            <span className="brand-gradient-text">Let Bob Handle</span>{" "}
-            the Complexity.
+            Run Your Business with a{" "}
+            <span className="brand-gradient-text">Smarter Assistant</span>
           </h1>
           <p className="text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed">
-            FreBob helps African businesses turn everyday conversations, receipts and
-            documents into trusted business records, organised operations and smarter
-            business decisions.
+            FreBob helps African business owners organise conversations, customers,
+            orders, inventory and business records in one trusted place.
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
-            <Link to="/signup"><Button variant="primary" size="lg" className="w-full sm:w-auto">Get Started <ArrowRight className="h-4 w-4" /></Button></Link>
+            <Link to="/signup"><Button variant="primary" size="lg" className="w-full sm:w-auto">Create Free Account <ArrowRight className="h-4 w-4" /></Button></Link>
             <Link to="/signin"><Button variant="outline" size="lg" className="w-full sm:w-auto">Explore Demo</Button></Link>
           </div>
           <p className="text-xs text-muted-foreground flex items-center gap-2">
-            <Shield className="h-3.5 w-3.5 text-primary" /> Built for African SMEs. Launching in Nigeria.
+            <Shield className="h-3.5 w-3.5 text-primary" /> Built for African SMEs. Starting in Nigeria.
           </p>
         </div>
 
         <div className="flex flex-col gap-5 lg:pl-2">
-          <HeroVideo />
+          <HeroComposition />
           <SwipeableCards />
         </div>
       </div>
@@ -162,73 +160,78 @@ function Hero() {
   );
 }
 
-function HeroVideo() {
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [playing, setPlaying] = useState(true);
-  const [muted, setMuted] = useState(true);
-  const [hasSource] = useState(false); // no video source yet; show poster + mock
-
-  const toggle = () => {
-    const v = videoRef.current; if (!v) return;
-    if (v.paused) { v.play(); setPlaying(true); } else { v.pause(); setPlaying(false); }
-  };
-  const replay = () => { const v = videoRef.current; if (!v) return; v.currentTime = 0; v.play(); setPlaying(true); };
-  const toggleMute = () => { const v = videoRef.current; if (!v) return; v.muted = !v.muted; setMuted(v.muted); };
-
+function HeroComposition() {
   return (
-    <div className="relative rounded-3xl overflow-hidden glass-card shadow-elegant aspect-video">
-      {hasSource ? (
-        <video
-          ref={videoRef}
-          className="h-full w-full object-cover"
-          autoPlay muted playsInline loop
-          poster="/__l5e/assets-v1/placeholder-poster"
+    <div className="relative">
+      {/* Photo mosaic — real African SME imagery */}
+      <div className="relative grid grid-cols-5 grid-rows-6 gap-2 sm:gap-3 aspect-[4/5] sm:aspect-[5/4] rounded-3xl overflow-hidden shadow-elegant">
+        {/* Primary image — fashion designer */}
+        <div className="relative col-span-3 row-span-6 overflow-hidden rounded-2xl">
+          <img
+            src={heroFashion.url}
+            alt="Nigerian fashion designer reviewing customer orders on her phone in her tailoring atelier"
+            className="h-full w-full object-cover"
+            width={1024}
+            height={1280}
+            fetchPriority="high"
+          />
+          {/* Readable overlay — purple/black to transparent, biased to the bottom-left where copy sits */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-[#1a0a3a]/60 via-[#1a0a3a]/20 to-transparent" aria-hidden />
+        </div>
+
+        {/* Secondary image — retail shop owner */}
+        <div className="relative col-span-2 row-span-3 overflow-hidden rounded-2xl">
+          <img
+            src={heroRetail.url}
+            alt="Nigerian shop owner checking inventory on his smartphone in his retail store"
+            className="h-full w-full object-cover"
+            width={1024}
+            height={1024}
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#1a0a3a]/40" aria-hidden />
+        </div>
+
+        {/* Tertiary image — restaurant owner */}
+        <div className="relative col-span-2 row-span-3 overflow-hidden rounded-2xl">
+          <img
+            src={heroRestaurant.url}
+            alt="Nigerian restaurant owner reviewing daily business records on her phone at her food counter"
+            className="h-full w-full object-cover"
+            width={1024}
+            height={1024}
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#1a0a3a]/50 via-transparent to-transparent" aria-hidden />
+        </div>
+      </div>
+
+      {/* Floating glass assistant preview — clearly labelled sample data */}
+      <div
+        className="absolute -bottom-4 left-3 right-3 sm:left-auto sm:right-4 sm:bottom-4 sm:w-[300px] rounded-2xl liquid-glass shadow-elegant p-4 border border-white/40"
+        role="complementary"
+        aria-label="Sample assistant preview"
+      >
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-full brand-gradient grid place-items-center text-primary-foreground shrink-0">
+            <Sparkles className="h-5 w-5" />
+          </div>
+          <div className="min-w-0">
+            <div className="text-sm font-semibold text-foreground truncate">Good morning, Amaka</div>
+            <div className="text-[11px] text-muted-foreground">Sample preview</div>
+          </div>
+        </div>
+        <ul className="mt-3 space-y-1.5 text-[13px] text-foreground">
+          <li className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-primary" /> 3 pending orders</li>
+          <li className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-accent" /> 2 customers with outstanding balances</li>
+          <li className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-destructive" /> 4 products running low</li>
+        </ul>
+        <Link
+          to="/signin"
+          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl brand-gradient text-primary-foreground text-sm font-semibold px-4 py-2.5 focus-ring hover:opacity-95 transition"
         >
-          <track kind="captions" />
-        </video>
-      ) : (
-        <VideoPosterMock />
-      )}
-      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 p-3 bg-gradient-to-t from-black/50 to-transparent">
-        <div className="flex items-center gap-2">
-          <button onClick={toggle} aria-label={playing ? "Pause" : "Play"} className="h-11 w-11 grid place-items-center rounded-full bg-white/90 text-foreground hover:bg-white focus-ring">
-            {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-          </button>
-          <button onClick={replay} aria-label="Replay" className="h-11 w-11 grid place-items-center rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur focus-ring">
-            <RotateCcw className="h-4 w-4" />
-          </button>
-          <button onClick={toggleMute} aria-label={muted ? "Unmute" : "Mute"} className="h-11 w-11 grid place-items-center rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur focus-ring">
-            {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-          </button>
-        </div>
-        <span className="text-[11px] text-white/80 pr-2">Product walkthrough · 45s</span>
-      </div>
-    </div>
-  );
-}
-
-function VideoPosterMock() {
-  // Authentic African business imagery — replaces the previous mock composite.
-  return (
-    <div className="absolute inset-0">
-      <img
-        src={heroAfricanBusiness.url}
-        alt="Nigerian small business owner running her boutique with her smartphone"
-        className="absolute inset-0 h-full w-full object-cover"
-        width={1280}
-        height={960}
-      />
-      <div className="absolute inset-0 bg-gradient-to-tr from-black/45 via-black/10 to-transparent" />
-      <div className="absolute top-3 left-3 rounded-full bg-white/85 backdrop-blur px-2.5 py-1 text-[10px] font-medium text-foreground flex items-center gap-1.5">
-        <Sparkles className="h-3 w-3 text-accent" /> Real businesses. Real workflows.
-      </div>
-      <div className="absolute top-3 right-3 rounded-full bg-black/40 text-white text-[10px] px-2 py-1 backdrop-blur">Preview</div>
-      <div className="absolute left-3 right-3 bottom-16 rounded-2xl bg-white/90 backdrop-blur-md p-3 shadow-card max-w-[75%] sm:max-w-[62%]">
-        <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
-          <Sparkles className="h-3.5 w-3.5 text-accent" /> Bob extracted from a WhatsApp chat
-        </div>
-        <div className="mt-1 text-sm font-semibold text-foreground">3× Ankara · ₦18,000 · Unpaid</div>
-        <div className="text-[11px] text-muted-foreground mt-0.5">Saved to Business Memory · Order #A-108</div>
+          Ask Bob <ArrowRight className="h-4 w-4" />
+        </Link>
       </div>
     </div>
   );

@@ -54,7 +54,7 @@ function NotificationsPage() {
   useNotifStore(); // subscribe
   const [mounted, setMounted] = useState(false);
   const items = mounted ? listNotifications() : [];
-  const summary = mounted ? summarise() : { unread: 0, critical: 0, total: 0, byCategory: {} as Record<string, number> };
+  const summary = mounted ? summarise() : { unread: 0, critical: 0, total: 0, today: 0, thisWeek: 0 };
   const [settings, setSettingsState] = useState(() => getSettings());
   const [view, setView] = useState<ViewState>("ready");
   const [category, setCategory] = useState<CategoryFilter>("all");

@@ -44,14 +44,32 @@ const STT_LANG: Partial<Record<Language, string>> = {
 
 function NewConversation() {
   const navigate = useNavigate();
+  const transcribe = useServerFn(transcribeAudio);
   const [tab, setTab] = useState<Tab>("paste");
   const [text, setText] = useState("");
   const [file, setFile] = useState<{ name: string; size: number; text: string } | null>(null);
   const [language, setLanguage] = useState<Language>("auto");
   const [busy, setBusy] = useState(false);
 
-  const activeText = tab === "upload" ? file?.text ?? "" : text;
-  const canProcess = activeText.trim().length > 4 && !busy;
+  // Voice recording state
+  const recorderRef = useRef<MicRecorder | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [recording, setRecording] = useState(false);
+  const [elapsed, setElapsed] = useState(0);
+  const [transcribing, setTranscribing] = useState(false);
+  const [audioSource, setAudioSource] = useState<"voice" | "whatsapp_audio" | null>(null);
+  const [audioFileName, setAudioFileName] = useState<string | null>(null);
+  const [transcript, setTranscript] = useState("");
+
+  useEffect(() => () => {
+    recorderRef.current?.cancel();
+    if (timerRef.current) clearInterval(timerRef.current);
+  }, []);
+
+  const activeText = tab === "upload"
+    ? file?.text ?? ""
+    : (tab === "voice" || tab === "whatsapp") ? transcript : text;
+  const canProcess = activeText.trim().length > 4 && !busy && !transcribing && !recording;
 
   const handleFile = async (f: File) => {
     const isText = f.type === "text/plain" || f.name.toLowerCase().endsWith(".txt");
@@ -67,6 +85,63 @@ function NewConversation() {
     setFile({ name: f.name, size: f.size, text: content });
   };
 
+  const runTranscription = async (blob: Blob, source: "voice" | "whatsapp_audio", fileName: string) => {
+    setTranscribing(true);
+    setAudioSource(source);
+    setAudioFileName(fileName);
+    setTranscript("");
+    try {
+      const { base64, size } = await blobToWavBase64(blob);
+      if (size < 2048) {
+        toast.error("That recording was empty — please try again.");
+        setTranscribing(false);
+        return;
+      }
+      const langCode = STT_LANG[language];
+      const result = await transcribe({ data: { audioBase64: base64, filename: fileName.replace(/\.[^.]+$/, ".wav"), language: langCode } });
+      if (result.ok) {
+        setTranscript(result.text);
+        toast.success("Bob transcribed your audio. Review and edit before processing.");
+      } else {
+        toast.error(result.note || "Transcription failed.");
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Could not read that audio.";
+      toast.error(msg);
+    } finally {
+      setTranscribing(false);
+    }
+  };
+
+  const startRecording = async () => {
+    try {
+      const rec = await startMicRecorder();
+      recorderRef.current = rec;
+      setRecording(true);
+      setElapsed(0);
+      timerRef.current = setInterval(() => setElapsed((s) => s + 1), 1000);
+    } catch {
+      toast.error("Microphone access is needed to record.");
+    }
+  };
+
+  const stopRecording = async () => {
+    if (!recorderRef.current) return;
+    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
+    setRecording(false);
+    const blob = await recorderRef.current.stop();
+    recorderRef.current = null;
+    await runTranscription(blob, "voice", `recording-${Date.now()}.wav`);
+  };
+
+  const handleAudioUpload = async (f: File) => {
+    if (f.size > 20_000_000) {
+      toast.error("Audio too large. Please keep under 20MB.");
+      return;
+    }
+    await runTranscription(f, "whatsapp_audio", f.name);
+  };
+
   const start = (sourceType: SourceType, textIn: string, fileName?: string) => {
     setBusy(true);
     const conv = createConversation({ text: textIn.trim(), language, sourceType, fileName });
@@ -77,25 +152,27 @@ function NewConversation() {
     <AppShell>
       <PageCanvas>
         <SurfaceHeader
-          eyebrow="Conversation Simulation"
+          eyebrow="Add to Business Memory"
           title="Import Business Conversation"
-          subtitle="For the MVP demo — live WhatsApp is not connected. Paste, upload a .txt export, or try a demo."
+          subtitle="Paste, record a voice summary, upload a WhatsApp voice note, upload a .txt export, or try a demo. Bob will draft a record for you to review."
         />
 
         <div className="mb-6 flex items-start gap-3 rounded-2xl border border-secondary bg-card p-4">
           <ShieldAlert className="h-4 w-4 text-accent mt-0.5 shrink-0" />
           <p className="text-sm text-muted-foreground">
-            Avoid pasting passwords, PINs, card details, BVN or NIN. FreBob treats the conversation as
+            Avoid sharing passwords, PINs, card details, BVN or NIN. Bob treats the content as
             data — never as instructions.
           </p>
         </div>
 
         {/* Tabs */}
-        <div className="mb-5 inline-flex rounded-full bg-secondary p-1 text-xs font-bold">
+        <div className="mb-5 flex flex-wrap gap-2 rounded-2xl bg-secondary p-1 text-xs font-bold">
           {([
-            { v: "paste", l: "Paste conversation", Icon: ClipboardPaste },
-            { v: "upload", l: "Upload chat (.txt)", Icon: Upload },
-            { v: "demo", l: "Demo conversation", Icon: Sparkles },
+            { v: "paste", l: "Paste text", Icon: ClipboardPaste },
+            { v: "voice", l: "Record voice", Icon: Mic },
+            { v: "whatsapp", l: "WhatsApp audio", Icon: MessageCircle },
+            { v: "upload", l: "Chat .txt", Icon: Upload },
+            { v: "demo", l: "Demo", Icon: Sparkles },
           ] as const).map(({ v, l, Icon }) => (
             <button
               key={v}

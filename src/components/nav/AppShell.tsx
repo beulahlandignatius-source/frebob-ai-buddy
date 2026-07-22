@@ -1,8 +1,9 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import {
-  LayoutDashboard, Sparkles, Plus, BarChart3, User, Brain, Boxes,
+  Home, MessageCircle, Plus, BarChart3, User, Brain, Boxes,
   ShoppingCart, Users, ScanLine, Bell, Settings, HelpCircle, PlayCircle,
+  LayoutDashboard,
 } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { cn } from "@/lib/utils";
@@ -11,20 +12,22 @@ import { useTour } from "@/components/tour/GuidedTour";
 import { EnterDemoButton } from "@/components/demo/EnterDemoButton";
 import { useDemo } from "@/lib/demo/context";
 
-type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; highlight?: boolean; tour?: string };
+type NavItem = { to: string; label: string; icon: typeof Home; highlight?: boolean; tour?: string };
 
+// Centralized mobile bottom navigation. Order and items are locked per spec:
+// Home, Chat, Create, Inventory, Reports. Do not modify without explicit request.
 const mobileNav: NavItem[] = [
-  { to: "/dashboard", label: "Home", icon: LayoutDashboard },
-  { to: "/ai-assistant", label: "Bob", icon: Sparkles, tour: "nav-bob" },
-  { to: "/add-record", label: "Add", icon: Plus, highlight: true, tour: "nav-add" },
+  { to: "/dashboard", label: "Home", icon: Home },
+  { to: "/ai-assistant", label: "Chat", icon: MessageCircle, tour: "nav-bob" },
+  { to: "/add-record", label: "Create", icon: Plus, highlight: true, tour: "nav-add" },
   { to: "/inventory", label: "Inventory", icon: Boxes, tour: "nav-inventory" },
   { to: "/reports", label: "Reports", icon: BarChart3 },
 ];
 
 const desktopNav: NavItem[] = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/dashboard", label: "Home", icon: LayoutDashboard },
+  { to: "/ai-assistant", label: "Chat", icon: MessageCircle, tour: "nav-bob" },
   { to: "/business-memory", label: "Business Memory", icon: Brain, tour: "nav-memory" },
-  { to: "/ai-assistant", label: "AI Assistant", icon: Sparkles, tour: "nav-bob" },
   { to: "/inventory", label: "Inventory", icon: Boxes, tour: "nav-inventory" },
   { to: "/orders", label: "Orders", icon: ShoppingCart },
   { to: "/customers", label: "Customers", icon: Users },
@@ -34,6 +37,7 @@ const desktopNav: NavItem[] = [
   { to: "/settings", label: "Settings", icon: Settings },
   { to: "/profile", label: "Profile", icon: User },
 ];
+
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });

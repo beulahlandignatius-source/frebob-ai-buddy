@@ -92,7 +92,6 @@ export function IntelligentEmptyState({
               renderAction(
                 {
                   label: "Explore Demo Business",
-                  icon: Rocket,
                   onClick: () => {
                     (demoOnEnter ?? enter)();
                   },
@@ -100,6 +99,7 @@ export function IntelligentEmptyState({
                 "demo",
                 "ghost",
               )}
+
           </div>
         )}
 

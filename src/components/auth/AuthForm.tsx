@@ -55,8 +55,20 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
     if (channel === "phone" && code.length !== 6) {
       return setError("Enter the 6-digit code");
     }
+    // Persist the display name so the app greets the actual user, not "You".
+    try {
+      if (isSignup && name.trim()) {
+        window.localStorage.setItem("frebob.userName", name.trim());
+      }
+      if (identifier) {
+        window.localStorage.setItem(
+          channel === "email" ? "frebob.userEmail" : "frebob.userPhone",
+          identifier,
+        );
+      }
+    } catch { /* ignore */ }
     toast.success(isSignup ? "Account created" : "Signed in");
-    navigate({ to: "/onboarding" });
+    navigate({ to: isSignup ? "/onboarding" : "/dashboard" });
   };
 
   return (

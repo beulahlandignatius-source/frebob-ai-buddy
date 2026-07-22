@@ -72,7 +72,11 @@ function MergeHistoryPage() {
           Past merges
         </SectionLabel>
 
-        {events.length === 0 ? (
+        {ui === "loading" ? (
+          <LoadingSkeleton rows={3} />
+        ) : ui === "error" ? (
+          <ErrorState message={loadError ?? "Could not load merge history."} onRetry={() => setTick((t) => t + 1)} />
+        ) : events.length === 0 ? (
           <EmptyState
             icon={ShieldCheck}
             title="No merges yet"

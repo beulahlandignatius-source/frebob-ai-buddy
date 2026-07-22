@@ -84,8 +84,8 @@ const activityStyle: Record<
 
 function Dashboard() {
   const { active: demoActive } = useDemo();
-  const [firstName, setFirstName] = useState<string>(DEMO_USER.firstName);
-  const [businessName, setBusinessName] = useState<string>(DEMO_USER.businessName);
+  const [firstName, setFirstName] = useState<string>(demoActive ? DEMO_USER.firstName : "there");
+  const [businessName, setBusinessName] = useState<string>(demoActive ? DEMO_USER.businessName : "Your business");
   const [notifTick, setNotifTick] = useState(0);
   const [mounted, setMounted] = useState(false);
   useEffect(() => {

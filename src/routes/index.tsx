@@ -53,6 +53,7 @@ function Landing() {
       <TopNav />
       <Hero />
       <TrustedFor />
+      <FrustrationReel />
       <ProblemSection />
       <HowItWorks />
       <FeatureSection />

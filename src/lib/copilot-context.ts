@@ -32,9 +32,13 @@ export type BusinessSnapshot = {
   today: PeriodStats;
   week: PeriodStats;
   month: PeriodStats;
+  previousWeek: PeriodStats;
   outstandingCustomers: { name: string; phone: string | null; balance: number; reference: string }[];
   pendingOrders: { reference: string; customer: string; status: string; total: number }[];
   bestSelling: { product: string; quantity: number; revenue: number }[];
+  lowStockProducts: { name: string; stock: number; reorder: number; unit: string; status: "low" | "out" }[];
+  pendingScans: number;
+  customerIssues: { duplicatesToReview: number; repeatDebtors: number };
 };
 
 export type PeriodStats = {

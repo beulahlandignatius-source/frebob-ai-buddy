@@ -171,7 +171,7 @@ function HeroComposition() {
         {/* Primary image — fashion designer */}
         <div className="relative col-span-3 row-span-6 overflow-hidden rounded-2xl">
           <img
-            src={heroFashion.url}
+            src={heroFashion}
             alt="Nigerian fashion designer reviewing customer orders on her phone in her tailoring atelier"
             className="h-full w-full object-cover"
             width={1024}
@@ -185,7 +185,7 @@ function HeroComposition() {
         {/* Secondary image — retail shop owner */}
         <div className="relative col-span-2 row-span-3 overflow-hidden rounded-2xl">
           <img
-            src={heroRetail.url}
+            src={heroRetail}
             alt="Nigerian shop owner checking inventory on his smartphone in his retail store"
             className="h-full w-full object-cover"
             width={1024}
@@ -198,7 +198,7 @@ function HeroComposition() {
         {/* Tertiary image — restaurant owner */}
         <div className="relative col-span-2 row-span-3 overflow-hidden rounded-2xl">
           <img
-            src={heroRestaurant.url}
+            src={heroRestaurant}
             alt="Nigerian restaurant owner reviewing daily business records on her phone at her food counter"
             className="h-full w-full object-cover"
             width={1024}

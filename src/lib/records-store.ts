@@ -20,7 +20,7 @@ export type EventType =
   | "cancellation"
   | "unknown";
 export type ConfidenceLabel = "high" | "needs_review" | "missing_information";
-export type SourceType = "paste" | "upload" | "demo";
+export type SourceType = "paste" | "upload" | "demo" | "voice" | "whatsapp_audio";
 export type Language =
   | "english"
   | "nigerian_pidgin"

@@ -44,16 +44,19 @@ function AddRecord() {
           />
           <RecordSourceCard
             title="Scanner"
-            description="Upload a receipt, invoice or notebook page."
-            status="Coming soon"
+            description="Upload a receipt, invoice or notebook page for Bob to extract."
+            status="Available"
             icon={ScanLine}
+            to="/scanner/new"
           />
           <RecordSourceCard
             title="SMS Record"
-            description="Process an SMS-style business message."
-            status="Coming soon"
+            description="Paste an SMS-style business message and Bob will extract the details."
+            status="Available"
             icon={MessageCircle}
+            to="/conversations/new"
           />
+
         </div>
 
         <p className="mt-6 text-xs text-muted-foreground max-w-xl">

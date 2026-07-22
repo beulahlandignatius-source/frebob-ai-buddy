@@ -22,7 +22,7 @@ import {
   type SupportedLanguage, type SupportedCurrency, type DateFormat,
   type NumberFormat, type AIResponseStyle, type DefaultOrderStatus,
 } from "@/lib/business-settings-store";
-import { BUSINESS_CATEGORIES, LANGUAGES } from "@/lib/constants";
+import { BUSINESS_CATEGORIES, LANGUAGES, APP_VERSION } from "@/lib/constants";
 import { getSettings as getNotifSettings, setSettings as setNotifSettings, type NotifSettings } from "@/lib/notifications-store";
 import { NotificationSettings } from "@/components/notifications";
 import { listOrders } from "@/lib/orders-store";
@@ -503,7 +503,7 @@ function BusinessSettingsPage() {
                 <ReadOnlyRow label="Date created" value={loaded?.info.createdAt ? new Date(loaded.info.createdAt).toLocaleString() : "—"} />
                 <ReadOnlyRow label="Current plan" value="FreBob Starter (Prototype)" tone="muted" />
                 <ReadOnlyRow label="Storage used" value="~ 2 MB" tone="muted" />
-                <ReadOnlyRow label="Application version" value="v0.10.0 — Batch 10A" tone="success" />
+                <ReadOnlyRow label="Application version" value={APP_VERSION} tone="success" />
                 <div className="pt-4">
                   <Button
                     variant="ghost" size="sm"

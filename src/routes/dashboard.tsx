@@ -39,6 +39,7 @@ import { cn } from "@/lib/utils";
 import { DemoHint } from "@/components/demo/DemoHint";
 import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
 import { useDemo } from "@/lib/demo/context";
+import { useTour } from "@/components/tour/GuidedTour";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({

@@ -131,7 +131,7 @@ function Hero() {
   return (
     <section className="relative hero-glow">
       <div className="absolute inset-0 pointer-events-none opacity-70 [background:radial-gradient(600px_300px_at_50%_0%,color-mix(in_oklab,#5d2ac2_10%,transparent),transparent)]" />
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-14 pb-20 lg:pt-24 lg:pb-28 grid lg:grid-cols-2 gap-12 items-center relative">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-16 sm:pb-20 lg:pt-24 lg:pb-28 grid lg:grid-cols-2 gap-8 lg:gap-12 items-center relative">
         <div className="flex flex-col gap-6 lg:pr-6">
           <span className="inline-flex items-center gap-2 self-start rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
             <Sparkles className="h-3.5 w-3.5" /> Your Business Assistant

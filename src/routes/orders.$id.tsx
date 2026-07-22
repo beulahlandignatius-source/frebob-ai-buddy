@@ -8,6 +8,8 @@ import { PageCanvas, SurfaceHeader, SectionLabel, EmptyState } from "@/component
 import {
   BalanceBadge, OrderStatusBadge, OrderTimeline, PaymentHistory,
 } from "@/components/orders";
+import { ScanSourceChip } from "@/components/scanner/conversion";
+import { findSourceScanIds } from "@/lib/scan-conversions-store";
 import {
   buildTimeline, formatMoney, getOrder, ORDER_STATUS_OPTIONS, setOrderStatus, statusLabel,
 } from "@/lib/orders-store";

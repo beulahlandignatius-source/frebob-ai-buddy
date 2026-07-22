@@ -1,16 +1,17 @@
 // Business Expenses — not linked to customer sales. Lives under Reports > Expenses.
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { ArrowLeft, Plus, Trash2, Upload, X, Receipt } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowLeft, Plus, Trash2, Upload, X, Receipt, Wallet } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
-import { PageCanvas, SurfaceHeader, SectionLabel, EmptyState } from "@/components/dash";
+import { PageCanvas, SurfaceHeader, SectionLabel, LoadingSkeleton, ErrorState } from "@/components/dash";
+import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
 import {
   addExpense, deleteExpense, listExpenses, fmtNaira,
   EXPENSE_CATEGORIES, categoryLabel, summariseExpenses,
-  type ExpenseCategory,
+  type ExpenseCategory, type Expense,
 } from "@/lib/expenses-store";
 import { fileToDataUrl } from "@/lib/order-extras-store";
 

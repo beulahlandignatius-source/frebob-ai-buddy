@@ -1,6 +1,10 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Mail, Phone, MapPin, Award, LogOut, Camera, Globe2 } from "lucide-react";
+import {
+  Mail, Phone, MapPin, Award, LogOut, Camera, Globe2,
+  PlayCircle, HelpCircle, Bell, Settings as SettingsIcon,
+  ShoppingCart, Users, ScanLine, Brain,
+} from "lucide-react";
 import { AppShell } from "@/components/nav/AppShell";
 import { Button } from "@/components/fb/Button";
 import { PageCanvas, SurfaceHeader, SectionLabel, SuccessBanner, StatusBadge } from "@/components/dash";
@@ -9,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { EnterDemoButton } from "@/components/demo/EnterDemoButton";
 import { LanguageSelector } from "@/components/i18n/LanguageSelector";
+import { useTour } from "@/components/tour/GuidedTour";
 
 
 

@@ -31,6 +31,7 @@ import { Route as SettingsBusinessRouteImport } from './routes/settings.business
 import { Route as ScannerNewRouteImport } from './routes/scanner.new'
 import { Route as ScannerHistoryRouteImport } from './routes/scanner.history'
 import { Route as ScannerScanIdRouteImport } from './routes/scanner.$scanId'
+import { Route as RecordsManualRouteImport } from './routes/records.manual'
 import { Route as OrdersIdRouteImport } from './routes/orders.$id'
 import { Route as CustomersNewRouteImport } from './routes/customers.new'
 import { Route as CustomersMergeHistoryRouteImport } from './routes/customers.merge-history'
@@ -154,6 +155,11 @@ const ScannerScanIdRoute = ScannerScanIdRouteImport.update({
   path: '/$scanId',
   getParentRoute: () => ScannerRoute,
 } as any)
+const RecordsManualRoute = RecordsManualRouteImport.update({
+  id: '/records/manual',
+  path: '/records/manual',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OrdersIdRoute = OrdersIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -243,6 +249,7 @@ export interface FileRoutesByFullPath {
   '/customers/merge-history': typeof CustomersMergeHistoryRoute
   '/customers/new': typeof CustomersNewRoute
   '/orders/$id': typeof OrdersIdRouteWithChildren
+  '/records/manual': typeof RecordsManualRoute
   '/scanner/$scanId': typeof ScannerScanIdRouteWithChildren
   '/scanner/history': typeof ScannerHistoryRoute
   '/scanner/new': typeof ScannerNewRoute
@@ -279,6 +286,7 @@ export interface FileRoutesByTo {
   '/customers/merge-history': typeof CustomersMergeHistoryRoute
   '/customers/new': typeof CustomersNewRoute
   '/orders/$id': typeof OrdersIdRouteWithChildren
+  '/records/manual': typeof RecordsManualRoute
   '/scanner/$scanId': typeof ScannerScanIdRouteWithChildren
   '/scanner/history': typeof ScannerHistoryRoute
   '/scanner/new': typeof ScannerNewRoute
@@ -316,6 +324,7 @@ export interface FileRoutesById {
   '/customers/merge-history': typeof CustomersMergeHistoryRoute
   '/customers/new': typeof CustomersNewRoute
   '/orders/$id': typeof OrdersIdRouteWithChildren
+  '/records/manual': typeof RecordsManualRoute
   '/scanner/$scanId': typeof ScannerScanIdRouteWithChildren
   '/scanner/history': typeof ScannerHistoryRoute
   '/scanner/new': typeof ScannerNewRoute
@@ -354,6 +363,7 @@ export interface FileRouteTypes {
     | '/customers/merge-history'
     | '/customers/new'
     | '/orders/$id'
+    | '/records/manual'
     | '/scanner/$scanId'
     | '/scanner/history'
     | '/scanner/new'
@@ -390,6 +400,7 @@ export interface FileRouteTypes {
     | '/customers/merge-history'
     | '/customers/new'
     | '/orders/$id'
+    | '/records/manual'
     | '/scanner/$scanId'
     | '/scanner/history'
     | '/scanner/new'
@@ -426,6 +437,7 @@ export interface FileRouteTypes {
     | '/customers/merge-history'
     | '/customers/new'
     | '/orders/$id'
+    | '/records/manual'
     | '/scanner/$scanId'
     | '/scanner/history'
     | '/scanner/new'
@@ -458,6 +470,7 @@ export interface RootRouteChildren {
   AdminYarngptRoute: typeof AdminYarngptRoute
   ConversationsIdRoute: typeof ConversationsIdRoute
   ConversationsNewRoute: typeof ConversationsNewRoute
+  RecordsManualRoute: typeof RecordsManualRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -615,6 +628,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/scanner/$scanId'
       preLoaderRoute: typeof ScannerScanIdRouteImport
       parentRoute: typeof ScannerRoute
+    }
+    '/records/manual': {
+      id: '/records/manual'
+      path: '/records/manual'
+      fullPath: '/records/manual'
+      preLoaderRoute: typeof RecordsManualRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/orders/$id': {
       id: '/orders/$id'
@@ -828,6 +848,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminYarngptRoute: AdminYarngptRoute,
   ConversationsIdRoute: ConversationsIdRoute,
   ConversationsNewRoute: ConversationsNewRoute,
+  RecordsManualRoute: RecordsManualRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

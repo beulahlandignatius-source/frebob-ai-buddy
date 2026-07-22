@@ -13,7 +13,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { listApprovedRecords } from "@/lib/records-store";
-import { listOrders } from "@/lib/orders-store";
+import { listOrders, summariseOrders } from "@/lib/orders-store";
 import { BobAvatar } from "@/components/copilot/BobAvatar";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -30,10 +30,12 @@ import {
   fmt,
   DEMO_USER,
   type Activity,
+  type Metric,
 } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 import { DemoHint } from "@/components/demo/DemoHint";
 import { IntelligentEmptyState } from "@/components/empty/IntelligentEmptyState";
+import { useDemo } from "@/lib/demo/context";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({

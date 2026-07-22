@@ -78,21 +78,38 @@ const activityStyle: Record<
 };
 
 function Dashboard() {
+  const { active: demoActive } = useDemo();
   const [firstName, setFirstName] = useState<string>(DEMO_USER.firstName);
   const [businessName, setBusinessName] = useState<string>(DEMO_USER.businessName);
   const [notifTick, setNotifTick] = useState(0);
+  const [mounted, setMounted] = useState(false);
   useEffect(() => {
+    setMounted(true);
     generateNotifications();
     const unsub = subscribeNotif(() => setNotifTick((t) => t + 1));
     return () => { unsub(); };
   }, []);
   void notifTick;
-  const unread = unreadCount();
-  const critical = criticalUnread()[0];
+  const unread = mounted ? unreadCount() : 0;
+  const critical = mounted ? criticalUnread()[0] : undefined;
   const today = new Date().toLocaleDateString("en-NG", {
     weekday: "long", day: "numeric", month: "long",
   });
-  const hasActivity = listApprovedRecords().length > 0 || listOrders().length > 0;
+
+  const realOrders = mounted ? listOrders() : [];
+  const realRecords = mounted ? listApprovedRecords() : [];
+  const hasActivity = realRecords.length > 0 || realOrders.length > 0;
+  const summary = summariseOrders(realOrders);
+
+  const metrics: Metric[] = demoActive
+    ? dashboardMetrics
+    : [
+        { key: "sales", label: "Today's Sales", value: summary.salesValue, sub: `${summary.total} orders`, linkLabel: "View", linkTo: "/reports" },
+        { key: "received", label: "Money Received", value: summary.receivedValue, sub: "from paid orders", linkLabel: "View", linkTo: "/reports" },
+        { key: "outstanding", label: "Outstanding Balance", value: summary.outstandingValue, sub: `${summary.pending + summary.reserved} open`, linkLabel: "View", linkTo: "/orders" },
+        { key: "pending", label: "Pending Orders", value: summary.pending, sub: "awaiting delivery", linkLabel: "View", linkTo: "/orders" },
+      ];
+  const activities: Activity[] = demoActive ? recentActivities : [];
 
 
   useEffect(() => {

@@ -125,11 +125,9 @@ export function OrderTable({ orders }: { orders: Order[] }) {
               <td className="px-4 py-3"><BalanceBadge status={o.paymentStatus} /></td>
               <td className="px-4 py-3"><OrderStatusBadge status={o.orderStatus} /></td>
               <td className="px-4 py-3 text-right">
-                <Button asChild={false as never} size="sm" variant="ghost" className="!h-8 !px-2">
-                  <Link to="/orders/$id" params={{ id: o.id }} className="inline-flex items-center gap-1 text-primary">
-                    View <ChevronRight className="h-3 w-3" />
-                  </Link>
-                </Button>
+                <Link to="/orders/$id" params={{ id: o.id }} className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+                  View <ChevronRight className="h-3 w-3" />
+                </Link>
               </td>
             </tr>
           ))}

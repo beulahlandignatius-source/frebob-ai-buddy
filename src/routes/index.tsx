@@ -57,7 +57,6 @@ function Landing() {
       <Hero />
       <TrustedFor />
       <FrustrationReel />
-      <ProblemSection />
       <HowItWorks />
       <FeatureSection />
       <AISection />

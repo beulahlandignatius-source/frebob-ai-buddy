@@ -828,11 +828,11 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 
 function FinalCTA() {
   return (
-    <section className="py-24">
+    <section className="py-16 sm:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-[2rem] p-10 sm:p-16 text-center brand-gradient text-primary-foreground shadow-elegant">
+        <div className="relative overflow-hidden rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-10 lg:p-16 text-center brand-gradient text-primary-foreground shadow-elegant">
           <div className="absolute inset-0 [background:radial-gradient(500px_240px_at_20%_0%,rgba(255,255,255,0.15),transparent),radial-gradient(500px_240px_at_100%_100%,rgba(247,147,30,0.35),transparent)] pointer-events-none" />
-          <h2 className="relative text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight max-w-3xl mx-auto">
+          <h2 className="relative text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight max-w-3xl mx-auto">
             Start running your business smarter today.
           </h2>
           <p className="relative mt-4 text-primary-foreground/80 max-w-xl mx-auto">

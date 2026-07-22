@@ -384,8 +384,103 @@ function FrustrationReel() {
         </div>
       </div>
 
+      <CategoryScenarioGrid />
+
       <style>{`@keyframes reelScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }`}</style>
     </section>
+  );
+}
+
+/* Category scenarios — extends the reel above. Only one video plays at a time. */
+function CategoryScenarioGrid() {
+  const [activeIdx, setActiveIdx] = useState<number | null>(null);
+  const refs = useRef<Array<HTMLVideoElement | null>>([]);
+
+  const playOnly = (i: number) => {
+    refs.current.forEach((el, idx) => {
+      if (!el) return;
+      if (idx === i) {
+        el.currentTime = el.currentTime || 0;
+        el.play().catch(() => {});
+      } else {
+        el.pause();
+      }
+    });
+    setActiveIdx(i);
+  };
+  const pauseAt = (i: number) => {
+    const el = refs.current[i];
+    if (el) el.pause();
+    if (activeIdx === i) setActiveIdx(null);
+  };
+
+  return (
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-10 sm:mt-14">
+      <div className="text-center mb-6 sm:mb-8">
+        <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-wider text-muted-foreground">
+          <span className="h-1.5 w-1.5 rounded-full bg-primary" /> Across every kind of business
+        </div>
+        <h3 className="mt-3 text-xl sm:text-2xl font-semibold text-foreground">
+          The same chaos, in six familiar shapes.
+        </h3>
+        <p className="mt-2 text-sm text-muted-foreground max-w-xl mx-auto">
+          Tap a card to preview a sample scenario. Only one plays at a time.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
+        {categoryScenarios.map((c, i) => {
+          const isActive = activeIdx === i;
+          const Icon = c.icon;
+          return (
+            <figure
+              key={c.category}
+              className="relative rounded-2xl overflow-hidden shadow-card bg-black aspect-[9/16]"
+            >
+              <video
+                ref={(el) => { refs.current[i] = el; }}
+                src={c.src}
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                onPause={() => { if (activeIdx === i) setActiveIdx(null); }}
+                className={cn(
+                  "absolute inset-0 h-full w-full object-cover transition-opacity",
+                  isActive ? "opacity-100" : "opacity-40",
+                )}
+              />
+              {!isActive ? (
+                <div className={cn("absolute inset-0 bg-gradient-to-br opacity-70", c.gradient)} />
+              ) : null}
+
+              <button
+                type="button"
+                onClick={() => (isActive ? pauseAt(i) : playOnly(i))}
+                aria-label={isActive ? `Pause ${c.category} scenario` : `Play ${c.category} scenario`}
+                className="absolute inset-0 grid place-items-center focus-ring"
+              >
+                <span className="h-14 w-14 grid place-items-center rounded-full bg-white/90 text-foreground shadow-elegant hover:bg-white transition">
+                  {isActive ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 translate-x-0.5" />}
+                </span>
+              </button>
+
+              <div className="absolute top-2 left-2 rounded-full bg-black/55 backdrop-blur px-2 py-0.5 text-[10px] uppercase tracking-wider text-white/90 flex items-center gap-1.5">
+                <Icon className="h-3 w-3" /> {c.kind}
+              </div>
+
+              <figcaption className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/85 via-black/50 to-transparent">
+                <div className="text-[10px] uppercase tracking-wider text-white/70">{c.category}</div>
+                <div className="text-xs sm:text-sm font-medium text-white mt-0.5">{c.problem}</div>
+              </figcaption>
+            </figure>
+          );
+        })}
+      </div>
+      <p className="mt-4 text-center text-[11px] text-muted-foreground">
+        Illustrative scenarios — not real FreBob customers.
+      </p>
+    </div>
   );
 }
 

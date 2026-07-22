@@ -216,15 +216,7 @@ function Dashboard() {
             </div>
           </section>
         ) : !hasActivity ? (
-          <div className="mb-6">
-            <IntelligentEmptyState
-              icon={Sparkles}
-              title={`👋 Welcome to FreBob, ${firstName}`}
-              description="You're ready to start managing your business. You haven't recorded any business activity yet — add your first record and Bob will start summarising your day."
-              primary={{ label: "Add Business Record", icon: Plus, to: "/add-record" }}
-              secondary={[{ label: "Scan Document", to: "/scanner" }, { label: "Explore Demo", to: "/profile" }]}
-            />
-          </div>
+          <GettingStarted firstName={firstName} businessName={businessName} />
         ) : null}
 
         {/* Metrics */}

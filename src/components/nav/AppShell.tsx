@@ -17,13 +17,15 @@ import {
 import { Logo } from "@/components/brand/Logo";
 import { cn } from "@/lib/utils";
 
-const mobileNav = [
+type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; highlight?: boolean };
+
+const mobileNav: NavItem[] = [
   { to: "/dashboard", label: "Home", icon: LayoutDashboard },
   { to: "/dashboard", label: "AI", icon: Sparkles },
   { to: "/dashboard", label: "Add", icon: Plus, highlight: true },
   { to: "/dashboard", label: "Reports", icon: BarChart3 },
   { to: "/dashboard", label: "Profile", icon: User },
-] as const;
+];
 
 const desktopNav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },

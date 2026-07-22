@@ -197,6 +197,20 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
                 <span className="text-[11px] uppercase tracking-wider text-muted-foreground">or</span>
                 <div className="h-px flex-1 bg-border" />
               </div>
+
+              <button
+                type="button"
+                onClick={signInWithGoogle}
+                disabled={googleLoading}
+                className="mt-3 w-full inline-flex items-center justify-center gap-3 rounded-2xl border border-border bg-background px-4 py-3 text-sm font-medium text-foreground shadow-card hover:bg-muted transition disabled:opacity-60 disabled:cursor-not-allowed focus-ring"
+                aria-label={isSignup ? "Sign up with Google" : "Sign in with Google"}
+              >
+                <GoogleGlyph />
+                {googleLoading
+                  ? "Opening Google…"
+                  : isSignup ? "Sign up with Google" : "Continue with Google"}
+              </button>
+
               <EnterDemoButton
                 variant="ghost"
                 className="mt-3"

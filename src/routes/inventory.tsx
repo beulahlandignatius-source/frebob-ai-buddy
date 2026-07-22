@@ -136,7 +136,7 @@ function Inventory() {
                           <p className="font-semibold">{p.name}</p>
                           <p className="text-xs text-muted-foreground">
                             {p.sku}
-                            {"quality" in p && p.quality ? <> · <span className="capitalize">{p.quality}</span></> : null}
+                            {"quality" in p && p.quality ? ` · ${p.quality}` : ""}
                           </p>
                         </div>
                       </div>
@@ -166,7 +166,7 @@ function Inventory() {
                     <p className="text-sm font-semibold truncate">{p.name}</p>
                     <p className="text-xs text-muted-foreground truncate">
                       {fmt(p.price)} · {p.stock} {p.unit}
-                      {"quality" in p && p.quality ? <> · <span className="capitalize">{p.quality}</span></> : null}
+                      {"quality" in p && p.quality ? ` · ${p.quality}` : ""}
                     </p>
                   </div>
                   <ProductStatus p={p} />

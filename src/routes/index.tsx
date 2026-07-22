@@ -23,7 +23,7 @@ function Splash() {
     const run = async () => {
       const { data } = await supabase.auth.getUser();
       // brief splash
-      await new Promise((r) => setTimeout(r, 5200));
+      await new Promise((r) => setTimeout(r, 7000));
       if (cancelled) return;
       if (data.user) {
         // Check onboarding + business setup

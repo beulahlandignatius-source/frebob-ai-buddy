@@ -35,9 +35,9 @@ import { listApprovedRecords } from "@/lib/records-store";
 export const Route = createFileRoute("/ai-assistant")({
   head: () => ({
     meta: [
-      { title: "AI Copilot — FreBob" },
-      { name: "description", content: "Ask FreBob about your sales, stock, customers and money. Grounded on approved records." },
-      { property: "og:title", content: "AI Copilot — FreBob" },
+      { title: "Bob — FreBob AI Assistant" },
+      { name: "description", content: "Chat with Bob about your sales, stock, customers and money. Grounded on approved records." },
+      { property: "og:title", content: "Chat with Bob — FreBob" },
       { property: "og:description", content: "Your smart business assistant, grounded on real approved records." },
     ],
   }),
@@ -222,11 +222,11 @@ function AIAssistantPage() {
     <AppShell>
       <PageCanvas>
         <SurfaceHeader
-          eyebrow="AI Copilot"
-          title="Ask FreBob"
+          eyebrow="AI Assistant"
+          title="Chat with Bob"
           subtitle={snapshot.totalApproved > 0
-            ? `Reading ${snapshot.totalApproved} approved record${snapshot.totalApproved === 1 ? "" : "s"} from Business Memory`
-            : "Approve a record in Business Memory to unlock grounded answers"}
+            ? `Bob is reading ${snapshot.totalApproved} approved record${snapshot.totalApproved === 1 ? "" : "s"} from Business Memory`
+            : "Approve a record in Business Memory to unlock grounded answers from Bob"}
           action={
             <div className="flex items-center gap-2">
               <Button size="sm" variant="outline" onClick={() => setShowHistory(true)}>
@@ -247,7 +247,7 @@ function AIAssistantPage() {
                 <Sparkles className="h-4 w-4" />
               </div>
               <div className="min-w-0">
-                <p className="font-display font-bold text-sm text-primary">FreBob AI</p>
+                <p className="font-display font-bold text-sm text-primary">Bob</p>
                 <p className="text-[11px] text-muted-foreground truncate">Grounded on Business Memory · never invents data</p>
               </div>
               <span className="ml-auto inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--success)] shrink-0">

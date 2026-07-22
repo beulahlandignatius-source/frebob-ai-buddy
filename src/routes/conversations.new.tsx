@@ -1,11 +1,14 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
-import { ClipboardPaste, Upload, Sparkles, X, FileText, ShieldAlert } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { ClipboardPaste, Upload, Sparkles, X, FileText, ShieldAlert, Mic, Square, MessageCircle, Loader2, RefreshCw } from "lucide-react";
 import { AppShell } from "@/components/nav/AppShell";
 import { PageCanvas, SurfaceHeader, SectionLabel } from "@/components/dash";
 import { Button } from "@/components/fb/Button";
 import { DEMO_CONVERSATIONS } from "@/lib/demo-conversations";
 import { createConversation, type Language, type SourceType } from "@/lib/records-store";
+import { transcribeAudio } from "@/lib/transcribe.functions";
+import { blobToWavBase64, startMicRecorder, type MicRecorder } from "@/lib/audio-wav";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -21,7 +24,7 @@ export const Route = createFileRoute("/conversations/new")({
   component: NewConversation,
 });
 
-type Tab = "paste" | "upload" | "demo";
+type Tab = "paste" | "voice" | "whatsapp" | "upload" | "demo";
 const LANGS: { value: Language; label: string }[] = [
   { value: "auto", label: "Auto-detect" },
   { value: "english", label: "English" },
@@ -31,16 +34,42 @@ const LANGS: { value: Language; label: string }[] = [
   { value: "igbo", label: "Igbo (team test)" },
 ];
 
+const STT_LANG: Partial<Record<Language, string>> = {
+  english: "en",
+  nigerian_pidgin: "en",
+  yoruba: "yo",
+  hausa: "ha",
+  igbo: "ig",
+};
+
 function NewConversation() {
   const navigate = useNavigate();
+  const transcribe = useServerFn(transcribeAudio);
   const [tab, setTab] = useState<Tab>("paste");
   const [text, setText] = useState("");
   const [file, setFile] = useState<{ name: string; size: number; text: string } | null>(null);
   const [language, setLanguage] = useState<Language>("auto");
   const [busy, setBusy] = useState(false);
 
-  const activeText = tab === "upload" ? file?.text ?? "" : text;
-  const canProcess = activeText.trim().length > 4 && !busy;
+  // Voice recording state
+  const recorderRef = useRef<MicRecorder | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [recording, setRecording] = useState(false);
+  const [elapsed, setElapsed] = useState(0);
+  const [transcribing, setTranscribing] = useState(false);
+  const [audioSource, setAudioSource] = useState<"voice" | "whatsapp_audio" | null>(null);
+  const [audioFileName, setAudioFileName] = useState<string | null>(null);
+  const [transcript, setTranscript] = useState("");
+
+  useEffect(() => () => {
+    recorderRef.current?.cancel();
+    if (timerRef.current) clearInterval(timerRef.current);
+  }, []);
+
+  const activeText = tab === "upload"
+    ? file?.text ?? ""
+    : (tab === "voice" || tab === "whatsapp") ? transcript : text;
+  const canProcess = activeText.trim().length > 4 && !busy && !transcribing && !recording;
 
   const handleFile = async (f: File) => {
     const isText = f.type === "text/plain" || f.name.toLowerCase().endsWith(".txt");
@@ -56,6 +85,63 @@ function NewConversation() {
     setFile({ name: f.name, size: f.size, text: content });
   };
 
+  const runTranscription = async (blob: Blob, source: "voice" | "whatsapp_audio", fileName: string) => {
+    setTranscribing(true);
+    setAudioSource(source);
+    setAudioFileName(fileName);
+    setTranscript("");
+    try {
+      const { base64, size } = await blobToWavBase64(blob);
+      if (size < 2048) {
+        toast.error("That recording was empty — please try again.");
+        setTranscribing(false);
+        return;
+      }
+      const langCode = STT_LANG[language];
+      const result = await transcribe({ data: { audioBase64: base64, filename: fileName.replace(/\.[^.]+$/, ".wav"), language: langCode } });
+      if (result.ok) {
+        setTranscript(result.text);
+        toast.success("Bob transcribed your audio. Review and edit before processing.");
+      } else {
+        toast.error(result.note || "Transcription failed.");
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Could not read that audio.";
+      toast.error(msg);
+    } finally {
+      setTranscribing(false);
+    }
+  };
+
+  const startRecording = async () => {
+    try {
+      const rec = await startMicRecorder();
+      recorderRef.current = rec;
+      setRecording(true);
+      setElapsed(0);
+      timerRef.current = setInterval(() => setElapsed((s) => s + 1), 1000);
+    } catch {
+      toast.error("Microphone access is needed to record.");
+    }
+  };
+
+  const stopRecording = async () => {
+    if (!recorderRef.current) return;
+    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
+    setRecording(false);
+    const blob = await recorderRef.current.stop();
+    recorderRef.current = null;
+    await runTranscription(blob, "voice", `recording-${Date.now()}.wav`);
+  };
+
+  const handleAudioUpload = async (f: File) => {
+    if (f.size > 20_000_000) {
+      toast.error("Audio too large. Please keep under 20MB.");
+      return;
+    }
+    await runTranscription(f, "whatsapp_audio", f.name);
+  };
+
   const start = (sourceType: SourceType, textIn: string, fileName?: string) => {
     setBusy(true);
     const conv = createConversation({ text: textIn.trim(), language, sourceType, fileName });
@@ -66,25 +152,27 @@ function NewConversation() {
     <AppShell>
       <PageCanvas>
         <SurfaceHeader
-          eyebrow="Conversation Simulation"
+          eyebrow="Add to Business Memory"
           title="Import Business Conversation"
-          subtitle="For the MVP demo — live WhatsApp is not connected. Paste, upload a .txt export, or try a demo."
+          subtitle="Paste, record a voice summary, upload a WhatsApp voice note, upload a .txt export, or try a demo. Bob will draft a record for you to review."
         />
 
         <div className="mb-6 flex items-start gap-3 rounded-2xl border border-secondary bg-card p-4">
           <ShieldAlert className="h-4 w-4 text-accent mt-0.5 shrink-0" />
           <p className="text-sm text-muted-foreground">
-            Avoid pasting passwords, PINs, card details, BVN or NIN. FreBob treats the conversation as
+            Avoid sharing passwords, PINs, card details, BVN or NIN. Bob treats the content as
             data — never as instructions.
           </p>
         </div>
 
         {/* Tabs */}
-        <div className="mb-5 inline-flex rounded-full bg-secondary p-1 text-xs font-bold">
+        <div className="mb-5 flex flex-wrap gap-2 rounded-2xl bg-secondary p-1 text-xs font-bold">
           {([
-            { v: "paste", l: "Paste conversation", Icon: ClipboardPaste },
-            { v: "upload", l: "Upload chat (.txt)", Icon: Upload },
-            { v: "demo", l: "Demo conversation", Icon: Sparkles },
+            { v: "paste", l: "Paste text", Icon: ClipboardPaste },
+            { v: "voice", l: "Record voice", Icon: Mic },
+            { v: "whatsapp", l: "WhatsApp audio", Icon: MessageCircle },
+            { v: "upload", l: "Chat .txt", Icon: Upload },
+            { v: "demo", l: "Demo", Icon: Sparkles },
           ] as const).map(({ v, l, Icon }) => (
             <button
               key={v}
@@ -174,17 +262,100 @@ function NewConversation() {
               </div>
             )}
 
+            {(tab === "voice" || tab === "whatsapp") && (
+              <div className="bg-card border border-secondary rounded-[20px] p-5 space-y-4">
+                {tab === "voice" ? (
+                  <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-secondary py-8 text-center">
+                    <div className={cn(
+                      "h-16 w-16 rounded-full flex items-center justify-center transition",
+                      recording ? "bg-accent/20 text-accent animate-pulse" : "brand-gradient text-primary-foreground shadow-elegant",
+                    )}>
+                      {recording ? <Square className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
+                    </div>
+                    <div>
+                      <p className="font-bold text-sm">
+                        {recording ? "Recording…" : transcribing ? "Bob is transcribing…" : "Record a business summary"}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {recording
+                          ? `${Math.floor(elapsed / 60)}:${String(elapsed % 60).padStart(2, "0")} — tap stop when done`
+                          : "Speak in English, Pidgin, Yoruba, Hausa or Igbo. Bob will draft the record."}
+                      </p>
+                    </div>
+                    {!recording ? (
+                      <Button size="sm" onClick={startRecording} disabled={transcribing}>
+                        <Mic className="h-4 w-4" /> Start recording
+                      </Button>
+                    ) : (
+                      <Button size="sm" variant="outline" onClick={stopRecording}>
+                        <Square className="h-4 w-4" /> Stop & transcribe
+                      </Button>
+                    )}
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-secondary py-10 text-center cursor-pointer hover:border-primary/40 transition">
+                    <MessageCircle className="h-6 w-6 text-primary" />
+                    <p className="font-bold">Upload a WhatsApp voice note</p>
+                    <p className="text-xs text-muted-foreground">.ogg, .opus, .m4a, .mp3, .wav — up to 20MB</p>
+                    <input
+                      type="file"
+                      accept="audio/*,.ogg,.opus,.m4a,.mp3,.wav,.webm"
+                      className="hidden"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) handleAudioUpload(f);
+                      }}
+                    />
+                  </label>
+                )}
+
+                {transcribing && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Loader2 className="h-4 w-4 animate-spin" /> Transcribing audio…
+                  </div>
+                )}
+
+                {transcript && !transcribing && (
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-xs font-bold uppercase tracking-wider text-primary/60">
+                        Transcript {audioFileName ? `· ${audioFileName}` : ""}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => { setTranscript(""); setAudioSource(null); setAudioFileName(null); }}
+                        className="text-xs text-primary hover:underline inline-flex items-center gap-1"
+                      >
+                        <RefreshCw className="h-3 w-3" /> Redo
+                      </button>
+                    </div>
+                    <textarea
+                      value={transcript}
+                      onChange={(e) => setTranscript(e.target.value)}
+                      className="w-full min-h-[200px] resize-y rounded-xl border border-secondary bg-background p-3 text-sm leading-relaxed focus:outline-none focus:border-primary/40"
+                    />
+                    <p className="mt-2 text-[11px] text-muted-foreground">
+                      Edit anything Bob got wrong before processing.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
             {tab !== "demo" && (
               <div className="flex items-center justify-end gap-3">
                 <Button
                   onClick={() => {
                     if (tab === "paste") start("paste", text);
-                    else if (file) start("upload", file.text, file.name);
+                    else if (tab === "upload" && file) start("upload", file.text, file.name);
+                    else if ((tab === "voice" || tab === "whatsapp") && transcript.trim()) {
+                      start(audioSource ?? (tab === "voice" ? "voice" : "whatsapp_audio"), transcript, audioFileName ?? undefined);
+                    }
                   }}
                   disabled={!canProcess}
                   loading={busy}
                 >
-                  <Sparkles className="h-4 w-4" /> Process with AI
+                  <Sparkles className="h-4 w-4" /> Process with Bob
                 </Button>
               </div>
             )}

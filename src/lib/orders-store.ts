@@ -37,7 +37,7 @@ export type Order = {
   createdAt: string;
   customerName: string;
   customerPhone: string | null;
-  channel: "paste" | "upload" | "demo";
+  channel: "paste" | "upload" | "demo" | "voice" | "whatsapp_audio";
   sourceText: string;
   items: {
     product_name: string | null;

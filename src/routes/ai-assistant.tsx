@@ -26,6 +26,8 @@ import {
 import {
   buildSnapshot,
   mockAnswer,
+  detectIntent,
+  formatHealthReport,
   COPILOT_LANGUAGES,
   type CopilotLanguage,
   type BusinessSnapshot,

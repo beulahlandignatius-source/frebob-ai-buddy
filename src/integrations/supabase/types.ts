@@ -14,6 +14,62 @@ export type Database = {
   }
   public: {
     Tables: {
+      audio_cache: {
+        Row: {
+          audio_base64: string
+          business_id: string | null
+          created_at: string
+          duration_seconds: number | null
+          expires_at: string
+          id: string
+          language_code: string
+          response_format: string
+          source_record_id: string | null
+          source_type: string | null
+          text_hash: string
+          user_id: string
+          voice_name: string
+        }
+        Insert: {
+          audio_base64: string
+          business_id?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          expires_at?: string
+          id?: string
+          language_code: string
+          response_format?: string
+          source_record_id?: string | null
+          source_type?: string | null
+          text_hash: string
+          user_id: string
+          voice_name: string
+        }
+        Update: {
+          audio_base64?: string
+          business_id?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          expires_at?: string
+          id?: string
+          language_code?: string
+          response_format?: string
+          source_record_id?: string | null
+          source_type?: string | null
+          text_hash?: string
+          user_id?: string
+          voice_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audio_cache_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       businesses: {
         Row: {
           address: string | null
@@ -82,6 +138,9 @@ export type Database = {
       }
       profiles: {
         Row: {
+          ai_response_language: string | null
+          audio_enabled: boolean
+          audio_playback_speed: number
           business_category: string | null
           business_setup_completed: boolean
           created_at: string
@@ -90,9 +149,13 @@ export type Database = {
           onboarding_completed: boolean
           phone: string | null
           preferred_language: string | null
+          preferred_voice: string | null
           updated_at: string
         }
         Insert: {
+          ai_response_language?: string | null
+          audio_enabled?: boolean
+          audio_playback_speed?: number
           business_category?: string | null
           business_setup_completed?: boolean
           created_at?: string
@@ -101,9 +164,13 @@ export type Database = {
           onboarding_completed?: boolean
           phone?: string | null
           preferred_language?: string | null
+          preferred_voice?: string | null
           updated_at?: string
         }
         Update: {
+          ai_response_language?: string | null
+          audio_enabled?: boolean
+          audio_playback_speed?: number
           business_category?: string | null
           business_setup_completed?: boolean
           created_at?: string
@@ -112,6 +179,7 @@ export type Database = {
           onboarding_completed?: boolean
           phone?: string | null
           preferred_language?: string | null
+          preferred_voice?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -156,6 +224,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      yarngpt_voice_status: {
+        Row: {
+          enabled: boolean
+          id: string
+          language_code: string
+          notes: string | null
+          tested: boolean
+          updated_at: string
+          updated_by: string | null
+          voice_name: string
+        }
+        Insert: {
+          enabled?: boolean
+          id?: string
+          language_code: string
+          notes?: string | null
+          tested?: boolean
+          updated_at?: string
+          updated_by?: string | null
+          voice_name: string
+        }
+        Update: {
+          enabled?: boolean
+          id?: string
+          language_code?: string
+          notes?: string | null
+          tested?: boolean
+          updated_at?: string
+          updated_by?: string | null
+          voice_name?: string
+        }
+        Relationships: []
       }
     }
     Views: {

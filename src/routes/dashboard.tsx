@@ -164,17 +164,17 @@ function Dashboard() {
       <DemoHint hintKey="dashboard-v1" title="Your daily command centre">Metrics update from your orders and payments. Tap notifications to jump into stock and payment alerts.</DemoHint>
       <div className="-mx-4 lg:-mx-8 -my-6 lg:-my-10 px-4 lg:px-8 py-6 lg:py-10 bg-[var(--surface-tinted)] min-h-[calc(100dvh-0px)]">
         {/* Header */}
-        <header className="flex items-center justify-between mb-6">
-          <div className="min-w-0">
+        <header className="flex items-start justify-between gap-3 mb-6">
+          <div className="min-w-0 flex-1">
             <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-primary/60">
               {today}
             </p>
-            <h1 className="mt-1 font-display text-[26px] sm:text-[32px] font-extrabold text-primary tracking-tight truncate">
+            <h1 className="mt-1 font-display text-[22px] sm:text-[32px] font-extrabold text-primary tracking-tight break-words">
               {greeting()}, {firstName}
             </h1>
-            <p className="text-sm text-subtle-foreground truncate">{businessName}</p>
+            <p className="text-sm text-subtle-foreground break-words">{businessName}</p>
           </div>
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
             <Link
               to="/notifications"
               className="relative h-11 w-11 rounded-full bg-card shadow-card flex items-center justify-center text-primary hover:shadow-soft transition focus-ring"

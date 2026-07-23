@@ -316,20 +316,22 @@ export function PeriodTabs<T extends string>({
   options: { value: T; label: string }[];
 }) {
   return (
-    <div className="inline-flex rounded-full bg-muted p-1">
-      {options.map((o) => (
-        <button
-          key={o.value}
-          type="button"
-          onClick={() => onChange(o.value)}
-          className={cn(
-            "px-4 py-1.5 rounded-full text-sm font-medium transition",
-            value === o.value ? "bg-card shadow-card text-foreground" : "text-muted-foreground",
-          )}
-        >
-          {o.label}
-        </button>
-      ))}
+    <div className="-mx-4 sm:mx-0 overflow-x-auto no-scrollbar">
+      <div className="inline-flex rounded-full bg-muted p-1 mx-4 sm:mx-0 whitespace-nowrap">
+        {options.map((o) => (
+          <button
+            key={o.value}
+            type="button"
+            onClick={() => onChange(o.value)}
+            className={cn(
+              "px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium transition shrink-0",
+              value === o.value ? "bg-card shadow-card text-foreground" : "text-muted-foreground",
+            )}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

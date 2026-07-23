@@ -315,6 +315,10 @@
 @utility shadow-md { box-shadow: var(--shadow-md); }
 @utility shadow-lg { box-shadow: var(--shadow-lg); }
 @utility shadow-xl { box-shadow: var(--shadow-xl); }
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
 
 /* ── Accessibility & performance fallbacks for glass ─────── */
 

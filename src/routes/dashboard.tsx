@@ -375,39 +375,38 @@ function GettingStarted({ firstName, businessName }: { firstName: string; busine
   ];
   return (
     <section aria-label="Getting started" className="mb-6">
-      <div className="relative overflow-hidden rounded-[24px] p-5 sm:p-6 glass-card">
-        <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-accent/20 blur-3xl" />
-        <div className="pointer-events-none absolute -left-10 bottom-0 h-24 w-24 rounded-full bg-primary/15 blur-3xl" />
+      <div className="relative overflow-hidden rounded-[20px] p-4 glass-card">
+        <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-accent/20 blur-3xl" />
         <div className="relative">
-          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary/60">Getting started</p>
-          <h2 className="mt-1 font-display text-[22px] sm:text-[26px] font-extrabold text-primary tracking-tight">
-            Welcome, {firstName} 👋
-          </h2>
-          <p className="mt-1 text-sm text-foreground/75">
-            {businessName} is ready. Finish these quick steps to fill your dashboard with real numbers.
+          <div className="flex items-baseline justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary/60">Getting started</p>
+              <h2 className="mt-0.5 font-display text-[17px] sm:text-[19px] font-extrabold text-primary tracking-tight truncate">
+                Welcome, {firstName} 👋
+              </h2>
+            </div>
+            <EnterDemoButton variant="inline" className="shrink-0 rounded-full bg-primary/10 text-primary hover:bg-primary/15 px-2.5 py-1 text-[11px] font-semibold" />
+          </div>
+          <p className="mt-1 text-[12px] text-foreground/70 truncate">
+            {businessName} — finish these quick steps.
           </p>
 
-          <ol className="mt-5 space-y-2.5">
+          <ol className="mt-3 rounded-[14px] border border-white/60 bg-white/70 divide-y divide-white/60 overflow-hidden">
             {steps.map((s, i) => {
               const Icon = s.icon;
               const inner = (
                 <>
-                  <div className="h-10 w-10 rounded-2xl brand-gradient text-primary-foreground flex items-center justify-center shrink-0 shadow-soft">
-                    <Icon className="h-5 w-5" />
+                  <span className="text-[10px] font-bold text-primary/50 w-4 shrink-0">{i + 1}</span>
+                  <div className="h-7 w-7 rounded-lg brand-gradient text-primary-foreground flex items-center justify-center shrink-0">
+                    <Icon className="h-3.5 w-3.5" />
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[13px] font-semibold text-foreground truncate">
-                      <span className="text-primary/50 mr-1.5">{String(i + 1).padStart(2, "0")}</span>
-                      {s.title}
-                    </p>
-                    <p className="text-[12px] text-muted-foreground truncate">{s.desc}</p>
-                  </div>
-                  <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-primary shrink-0">
-                    {s.cta} <ArrowRight className="h-3.5 w-3.5" />
-                  </span>
+                  <p className="min-w-0 flex-1 text-[12px] font-semibold text-foreground truncate">
+                    {s.title}
+                  </p>
+                  <ArrowRight className="h-3.5 w-3.5 text-primary/50 shrink-0" />
                 </>
               );
-              const cls = "group w-full flex items-center gap-3 rounded-[16px] bg-white/70 hover:bg-white p-3 sm:p-3.5 border border-white/60 hover:border-primary/25 transition focus-ring text-left";
+              const cls = "group w-full flex items-center gap-2 px-3 py-2 hover:bg-white transition focus-ring text-left";
               return (
                 <li key={s.key}>
                   {s.to ? (
@@ -419,13 +418,6 @@ function GettingStarted({ firstName, businessName }: { firstName: string; busine
               );
             })}
           </ol>
-
-          <div className="mt-5 flex flex-wrap items-center gap-2 rounded-[16px] border border-primary/15 bg-white/60 p-3">
-            <p className="text-xs text-foreground/80 flex-1 min-w-0">
-              Prefer to explore first? Try the demo workspace — your real business stays untouched.
-            </p>
-            <EnterDemoButton variant="inline" className="rounded-full bg-primary text-primary-foreground hover:opacity-90 px-3 py-1.5 text-xs font-semibold" />
-          </div>
         </div>
       </div>
     </section>
